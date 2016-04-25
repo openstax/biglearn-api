@@ -1,0 +1,11 @@
+gem install rails  ## 4.2.6
+gem install pg     ## postgres gem
+rails new . --database=postgresql --skip-test-unit
+
+## configure postgres in database.yml
+bundle exec rake db:migrate
+bundle exec rake db:setup
+
+## add rspec-rails gem
+bundle install
+bundle exec rails generate rspec:install
