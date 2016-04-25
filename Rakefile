@@ -3,4 +3,9 @@
 
 require File.expand_path('../config/application', __FILE__)
 
+## override the output formatter setting in .rspec
+task :spec do
+  ENV['SPEC_OPTS'] = '--format progress'
+end
+
 Rails.application.load_tasks
