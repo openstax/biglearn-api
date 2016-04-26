@@ -53,4 +53,6 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
 end
