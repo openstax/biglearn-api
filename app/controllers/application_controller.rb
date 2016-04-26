@@ -12,9 +12,11 @@ class ApplicationController < ActionController::Base
       return
     end
 
+    payload_params_key = request.params['controller'].singularize
+
     errors = JSON::Validator.fully_validate(
       input_schema,
-      request.params[:setup],
+      request.params[payload_params_key],
       insert_defaults: true,
       validate_schema: true
     )
