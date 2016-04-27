@@ -21,8 +21,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def _validate_request(input_schema)
+  def json_parsed_request_payload
     payload_params_key = request.params['controller'].singularize
+    request.params[payload_params_key]
+  end
+
+  def _validate_request(input_schema)
 
     errors =
       if request.content_type != 'application/json'
@@ -30,7 +34,7 @@ class ApplicationController < ActionController::Base
       else
         validation_errors = JSON::Validator.fully_validate(
           input_schema,
-          request.params[payload_params_key],
+          json_parsed_request_payload,
           insert_defaults: true,
           validate_schema: true
         )
