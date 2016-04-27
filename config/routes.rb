@@ -55,4 +55,5 @@ Rails.application.routes.draw do
   #   end
 
   post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
+  post '/create_learners' => 'learners#create'
 end
