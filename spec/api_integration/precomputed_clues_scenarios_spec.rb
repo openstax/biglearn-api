@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'POST /retrieve_precomputed_clues' do
+describe 'precomputed CLUEs scenarios' do
 
   context 'with invalid uuid(s)' do
     it 'returns 422 (unprocessable entity) with appropriate error messages', type: :request do
