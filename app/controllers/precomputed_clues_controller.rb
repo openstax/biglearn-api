@@ -52,43 +52,4 @@ class PrecomputedCluesController < ApplicationController
       },
     }
   end
-
-  def standard_definitions
-    {
-      'uuid': {
-        'type': 'string',
-        'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
-                   '[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-'  +
-                   '[a-fA-F0-9]{12}$',
-      },
-      'number_between_0_and_1': {
-        'type': 'number',
-        'minimum': 0,
-        'maximum': 1,
-      },
-      'non_negative_integer': {
-        'type': 'integer',
-        'minumum': 0,
-      },
-    }
-  end
-
-  def generic_error_schema
-    {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
-
-      'type': 'object',
-      'properties': {
-        'errors': {
-          'type': 'array',
-          'items': {
-            'type': 'string',
-          },
-          'minItems': 1,
-        },
-      },
-      'required': ['errors'],
-      'additionProperties': false,
-    }
-  end
 end

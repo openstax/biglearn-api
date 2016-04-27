@@ -8,8 +8,7 @@ describe 'POST /retrieve_precomputed_clues' do
 
       make_post_request(
         route: '/retrieve_precomputed_clues',
-        headers: { 'Accept'       => 'application/json',
-                   'Content-Type' => 'application/json' },
+        headers: { 'Content-Type' => 'application/json' },
         body:  payload.to_json
       )
       # debugger
