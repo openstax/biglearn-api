@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe 'precomputed CLUEs scenarios' do
 
-  context 'with invalid uuid(s)' do
-    it 'returns 422 (unprocessable entity) with appropriate error messages', type: :request do
+  context 'retrieve precomputed CLUEs with invalid precompute CLUE uuid(s)' do
+    it 'returns 422 (unprocessable entity) with appropriate error message(s)', type: :request do
       target_invalid_uuids = [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ]
 
       response_status, response_payload = request_precomputed_clues(target_invalid_uuids)
@@ -15,7 +15,7 @@ describe 'precomputed CLUEs scenarios' do
     end
   end
 
-  context 'with valid uuid(s)' do
+  context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)' do
     it 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
       ## these are drawn from the currently hard-coded
       ## valid uuids in the controller
