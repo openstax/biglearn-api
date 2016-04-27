@@ -31,8 +31,15 @@ class LearnerPoolsController < ApplicationController
 
       'definitions': {
         'learner_pool_def': {
-          'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'type': 'object',
+          'properties': {
+            'learner_uuids': {
+              'type': 'array',
+              'items': {'$ref': '#standard_definitions/uuid'},
+            },
+          },
+          'required': ['learner_uuids'],
+          'additionalProperties': false,
         },
       },
     }

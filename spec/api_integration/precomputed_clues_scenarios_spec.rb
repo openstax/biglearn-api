@@ -31,7 +31,8 @@ describe 'precomputed CLUEs scenarios' do
       ## Create learner pool uuids
       ##
 
-      learner_pool_defs = [ learner_uuids[0..5], learner_uuids[6..-1] ]
+      learner_pool_defs = [ { 'learner_uuids': learner_uuids[0..5]  },
+                            { 'learner_uuids': learner_uuids[6..-1] }, ]
       response_status, response_payload = create_learner_pools(learner_pool_defs)
       expect(response_status).to eq(200)
       expect(response_payload['learner_pool_uuids'].count).to eq(2)
