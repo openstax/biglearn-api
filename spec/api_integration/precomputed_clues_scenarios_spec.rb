@@ -110,6 +110,21 @@ def create_learner_uuids(count)
   [response_status, response_payload]
 end
 
+
+def create_learner_pools(learner_pool_defs)
+  request_payload = { 'learner_pool_defs': learner_pool_defs }
+
+  make_post_request(
+    route: '/create_learner_pools',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
 def request_precomputed_clues(precomputed_clue_uuids)
   request_payload = { 'precomputed_clue_uuids': precomputed_clue_uuids }
 

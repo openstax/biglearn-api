@@ -54,6 +54,9 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
-  post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
   post '/create_learners' => 'learners#create'
+
+  post '/create_learner_pools' => 'learner_pools#create'
+
+  post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
 end
