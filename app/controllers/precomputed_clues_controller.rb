@@ -1,9 +1,9 @@
 class PrecomputedCluesController < ApplicationController
 
   def retrieve
-    with_json_apis(input_schema:      retrieve_request_payload_schema,
-                   output_schema_map: { 200 => retrieve_response_200_payload_schema,
-                                        422 => generic_error_schema }) do
+    with_json_apis(input_schema:      _retrieve_request_payload_schema,
+                   output_schema_map: { 200 => _retrieve_response_200_payload_schema,
+                                        422 => _generic_error_schema }) do
       errors, precomputed_clues = _process_precomputed_clue_uuids(
         json_parsed_request_payload['precomputed_clue_uuids']
       )
@@ -19,6 +19,7 @@ class PrecomputedCluesController < ApplicationController
     end
   end
 
+
   def _process_precomputed_clue_uuids(precomputed_clue_uuids)
     errors            = []
     precomputed_clues = []
@@ -33,7 +34,7 @@ class PrecomputedCluesController < ApplicationController
 
     precomputed_clue_uuids.each_with_index do |uuid, idx|
       if valid_precomputed_clue_uuids.include? uuid
-        precomputed_clues << "PCP for #{uuid} = #{idx}"
+        precomputed_clues << _create_random_clue
       else
         errors << "invalid precomputed_clue_uuid: #{uuid}"
       end
@@ -42,7 +43,28 @@ class PrecomputedCluesController < ApplicationController
     [errors, precomputed_clues]
   end
 
-  def retrieve_request_payload_schema
+
+  def _create_random_clue
+    left, aggregate, right = [Random.rand(1.0), Random.rand(1.0), Random.rand(1.0)].sort
+    unique_learner_count, sample_size = [1+Random.rand(10), 1+Random.rand(10)].sort
+    {
+      'aggregate': aggregate,
+      'confidence': {
+        'left':  left,
+        'right': right,
+        'sample_size': sample_size,
+        'unique_learner_count': unique_learner_count,
+      },
+      'interpretation': {
+        'confidence': ['good', 'bad'].sample,
+        'level': ['low', 'medium', 'high'].sample,
+        'threshold': ['above', 'below'].sample,
+      },
+    }
+  end
+
+
+  def _retrieve_request_payload_schema
     {
       '$schema': 'http://json-schema.org/draft-04/schema#',
 
@@ -57,11 +79,12 @@ class PrecomputedCluesController < ApplicationController
       'required': ['precomputed_clue_uuids'],
       'additionProperties': false,
 
-      'standard_definitions': standard_definitions,
+      'standard_definitions': _standard_definitions,
     }
   end
 
-  def retrieve_response_200_payload_schema
+
+  def _retrieve_response_200_payload_schema
     {
       '$schema': 'http://json-schema.org/draft-04/schema#',
 
@@ -75,12 +98,40 @@ class PrecomputedCluesController < ApplicationController
       'required': ['precomputed_clues'],
       'additionProperties': false,
 
-      'standard_definitions': standard_definitions,
+      'standard_definitions': _standard_definitions,
+
       'definitions': {
         'clue': {
-          'type': 'string',
+          'type': 'object',
+          'properties': {
+            'aggregate': {'$ref': '#standard_definitions/number_between_0_and_1'},
+            'confidence': {
+              'type': 'object',
+              'properties': {
+                'left':  {'$ref': '#standard_definitions/number_between_0_and_1'},
+                'right': {'$ref': '#standard_definitions/number_between_0_and_1'},
+                'sample_size': {'$ref': '#standard_definitions/non_negative_integer'},
+                'unique_learner_count': {'$ref': '#standard_definitions/non_negative_integer'},
+              },
+              'required': ['left', 'right', 'sample_size', 'unique_learner_count'],
+              'additionProperties': false,
+            },
+            'interpretation': {
+              'type': 'object',
+              'properties': {
+                'confidence': {'enum': ['good', 'bad']},
+                'level': {'enum': ['low', 'medium', 'high']},
+                'threshold': {'enum': ['above', 'below']},
+              },
+              'required': ['confidence', 'level', 'threshold'],
+              'additionProperties': false,
+            },
+          },
+          'required': ['aggregate', 'confidence', 'interpretation'],
+          'additionProperties': false,
         },
       },
     }
   end
+
 end

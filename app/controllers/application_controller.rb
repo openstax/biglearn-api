@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+
   def with_json_apis(input_schema:, output_schema_map:, &block)
     request_errors = _validate_request(input_schema)
     if request_errors.any?
@@ -21,13 +22,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
   def json_parsed_request_payload
     payload_params_key = request.params['controller'].singularize
     request.params[payload_params_key]
   end
 
-  def _validate_request(input_schema)
 
+  def _validate_request(input_schema)
     errors =
       if request.content_type != 'application/json'
         [ 'request must have Content-Type = application/json' ]
@@ -47,6 +49,7 @@ class ApplicationController < ActionController::Base
     errors
   end
 
+
   def _render_request_error_response(errors)
     request_headers = ActionDispatch::Http::Headers::CGI_VARIABLES.inject({}){ |result, key|
       value = request.headers[key]
@@ -64,6 +67,7 @@ class ApplicationController < ActionController::Base
     }
     render json: payload.to_json, status: 400
   end
+
 
   def _validate_response(output_schema_map)
     errors =
@@ -84,6 +88,7 @@ class ApplicationController < ActionController::Base
     errors
   end
 
+
   def _modify_response(errors)
     payload = {
      'errors': errors,
@@ -97,7 +102,8 @@ class ApplicationController < ActionController::Base
     response.body = payload.to_json
   end
 
-  def standard_definitions
+
+  def _standard_definitions
     {
       'uuid': {
         'type': 'string',
@@ -117,7 +123,8 @@ class ApplicationController < ActionController::Base
     }
   end
 
-  def generic_error_schema
+
+  def _generic_error_schema
     {
       '$schema': 'http://json-schema.org/draft-04/schema#',
 
