@@ -1,25 +1,38 @@
 require 'json-schema'
 
+class ApplicationError < StandardError;
+  def initialize(errors)
+    @errors = Array.new([errors].flatten)
+  end
+
+  attr_reader :errors
+end
+
+class RequestValidationError < ApplicationError; end
+class RequestHeaderError < RequestValidationError; end
+class RequestSchemaError < RequestValidationError; end
+
+class ResponseValidationError < ApplicationError; end
+class ResponseStatusError < ResponseValidationError; end
+class ResponseSchemaError < ResponseValidationError; end
+
+class UnprocessableError < ApplicationError; end
+
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  rescue_from RequestValidationError,  with: :_render_request_validation_error
+  rescue_from ResponseValidationError, with: :_render_response_validation_error
+  rescue_from UnprocessableError,      with: :_render_unprocessable_error
 
-  def with_json_apis(input_schema:, output_schema_map:, &block)
-    request_errors = _validate_request(input_schema)
-    if request_errors.any?
-      _render_request_error_response(request_errors)
-      return
-    end
 
+  def with_json_apis(input_schema:, output_schema:, &block)
+    _validate_request(input_schema)
     block.call
-
-    response_errors = _validate_response(output_schema_map)
-    if response_errors.any?
-      _modify_response(response_errors)
-      return
-    end
+    _validate_response(output_schema)
   end
 
 
@@ -30,27 +43,37 @@ class ApplicationController < ActionController::Base
 
 
   def _validate_request(input_schema)
-    errors =
-      if request.content_type != 'application/json'
-        [ 'request must have Content-Type = application/json' ]
-      else
-        validation_errors = JSON::Validator.fully_validate(
-          input_schema,
-          json_parsed_request_payload,
-          insert_defaults: true,
-          validate_schema: true
-        )
-        if validation_errors.any?
-          ['request body failed validation'] + validation_errors
-        else
-          []
-        end
-      end
-    errors
+    fail RequestHeaderError.new('request must have Content-Type = application/json') \
+      unless request.content_type == 'application/json'
+
+    validation_errors = JSON::Validator.fully_validate(
+      input_schema,
+      json_parsed_request_payload,
+      insert_defaults: true,
+      validate_schema: true
+    )
+
+    fail RequestSchemaError.new('request body failed validation', validation_errors) \
+      if validation_errors.any?
   end
 
 
-  def _render_request_error_response(errors)
+  def _validate_response(output_schema)
+    fail ResponseStatusError.new("invalid response status: #{response.status}") \
+      unless response.status == 200
+
+    validation_errors = JSON::Validator.fully_validate(
+      output_schema,
+      JSON.parse(response.body),
+      validate_schema: true
+    )
+
+    fail ResponseSchemaError.new('response body failed validation', validation_errors) \
+      if validation_errors.any?
+  end
+
+
+  def _render_request_validation_error(exception)
     request_headers = ActionDispatch::Http::Headers::CGI_VARIABLES.inject({}){ |result, key|
       value = request.headers[key]
       result[key] = value unless value.nil? ## TODO: find a way to recover original key
@@ -59,7 +82,7 @@ class ApplicationController < ActionController::Base
     request.body.rewind
     request_body = request.body.read
     payload = {
-      'errors': errors,
+      'errors': exception.errors,
       'request': {
         'headers': request_headers,
         'body':    request_body
@@ -69,29 +92,9 @@ class ApplicationController < ActionController::Base
   end
 
 
-  def _validate_response(output_schema_map)
-    errors =
-      if !output_schema_map.has_key? response.status
-        [ 'response status invalid' ]
-      else
-        validation_errors = JSON::Validator.fully_validate(
-          output_schema_map[response.status],
-          JSON.parse(response.body),
-          validate_schema: true
-        )
-        if validation_errors.any?
-          ['response body failed validation'] + validation_errors
-        else
-          []
-        end
-      end
-    errors
-  end
-
-
-  def _modify_response(errors)
+  def _render_response_validation_error(exception)
     payload = {
-     'errors': errors,
+     'errors': exception.errors,
       'response': {
         'status':  response.status,
         'headers': response.headers,
@@ -99,7 +102,13 @@ class ApplicationController < ActionController::Base
       }
     }
     response.status = 500
-    response.body = payload.to_json
+    response.body   = payload.to_json
+  end
+
+
+  def _render_unprocessable_error(exception)
+    payload = { 'errors': exception.errors }
+    render json: payload.to_json, status: 422
   end
 
 

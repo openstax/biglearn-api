@@ -1,21 +1,14 @@
 class LearnerPoolsController < ApplicationController
 
   def create
-    with_json_apis(input_schema: _create_request_payload_schema,
-                   output_schema_map: { 200 => _create_response_200_payload_schema,
-                                        422 => _generic_error_schema }) do
-      errors, learner_pool_uuids = _process_learner_pool_defs(
+    with_json_apis(input_schema:  _create_request_payload_schema,
+                   output_schema: _create_response_payload_schema) do
+      learner_pool_uuids = _process_learner_pool_defs(
         json_parsed_request_payload['learner_pool_defs']
       )
 
-      response_status, response_payload =
-        if errors.any?
-          [422, { 'errors': errors }]
-        else
-          [200, { 'learner_pool_uuids': learner_pool_uuids }]
-        end
-
-      render json: response_payload.to_json, status: response_status
+      response_payload = { 'learner_pool_uuids': learner_pool_uuids }
+      render json: response_payload.to_json, status: 200
     end
   end
 
@@ -32,7 +25,7 @@ class LearnerPoolsController < ApplicationController
     errors = invalid_learner_uuids.collect{ |uuid|
       "invalid learner uuid: #{uuid}"
     }
-    return [errors, []] if errors.any?
+    fail UnprocessableError.new(errors) if errors.any?
 
     ##
     ## create new learner pools
@@ -48,7 +41,7 @@ class LearnerPoolsController < ApplicationController
       end
     end
 
-    [[], learner_pool_uuids]
+    learner_pool_uuids
   end
 
 
@@ -84,7 +77,7 @@ class LearnerPoolsController < ApplicationController
     }
   end
 
-  def _create_response_200_payload_schema
+  def _create_response_payload_schema
     {
       '$schema': 'http://json-schema.org/draft-04/schema#',
 
