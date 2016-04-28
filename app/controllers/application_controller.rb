@@ -24,8 +24,8 @@ class ApplicationController < ActionController::Base
 
 
   def json_parsed_request_payload
-    payload_params_key = request.params['controller'].singularize
-    request.params[payload_params_key]
+    request.body.rewind
+    JSON.parse(request.body.read)
   end
 
 
