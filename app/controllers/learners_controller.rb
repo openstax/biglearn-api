@@ -6,11 +6,26 @@ class LearnersController < ApplicationController
                                         422 => _generic_error_schema }) do
       request_payload = json_parsed_request_payload
 
-      learner_uuids = request_payload['count'].times.collect{ SecureRandom.uuid.to_s }
-
-      render json: {'learner_uuids': learner_uuids}.to_json, status: 200
+      errors, learner_uuids = _process_count(request_payload['count'])
+      if errors.any?
+        render json: {'errors': errors }.to_json, status: 422
+      else
+        render json: {'learner_uuids': learner_uuids}.to_json, status: 200
+      end
     end
   end
+
+
+  def _process_count(count)
+    learner_uuids = count.times.collect{ SecureRandom.uuid.to_s }
+
+    Learner.transaction do
+      learner_uuids.collect{ |uuid| Learner.create!(uuid: uuid) }
+    end
+
+    [[], learner_uuids]
+  end
+
 
   def _create_request_payload_schema
     {
@@ -26,6 +41,7 @@ class LearnersController < ApplicationController
       'standard_definitions': _standard_definitions,
     }
   end
+
 
   def _create_response_200_payload_schema
     {
@@ -44,4 +60,5 @@ class LearnersController < ApplicationController
       'standard_definitions': _standard_definitions,
     }
   end
+
 end

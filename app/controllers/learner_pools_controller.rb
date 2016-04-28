@@ -21,29 +21,34 @@ class LearnerPoolsController < ApplicationController
 
 
   def _process_learner_pool_defs(learner_pool_defs)
-    errors             = []
-    learner_pool_uuids = []
+    ##
+    ## validate all learner uuids
+    ##
 
-    valid_learner_uuids = [
-      "13ecef9e-f7cf-4445-9744-5849be12739a",
-      "8e2e0a45-5e1e-4465-9013-2f17441ab8bc",
-      "275fd9ff-025c-4bc6-beb3-feccd7942ca1",
-      "89927d1a-14f3-4280-8954-7a6b06dd1ff5",
-      "3dcd1679-a83b-48d8-ab09-b3cb635d48cf"
-    ]
+    learner_uuids = learner_pool_defs.collect{ |lpd| lpd['learner_uuids'] }
+                                     .flatten.uniq
+    learners = Learner.where{uuid.in learner_uuids}
+    invalid_learner_uuids = learner_uuids - learners.collect(&:uuid)
+    errors = invalid_learner_uuids.collect{ |uuid|
+      "invalid learner uuid: #{uuid}"
+    }
+    return [errors, []] if errors.any?
 
-    learner_pool_defs.each_with_index do |learner_pool_def|
-      invalid_learner_uuids = learner_pool_def['learner_uuids'] - valid_learner_uuids
-      if invalid_learner_uuids.empty?
-        learner_pool_uuids << SecureRandom.uuid.to_s
-      else
-        invalid_learner_uuids.each do |uuid|
-          errors << "invalid learner_uuid: #{uuid}"
-        end
+    ##
+    ## create new learner pools
+    ##
+
+    learner_pool_uuids = learner_pool_defs.collect{ SecureRandom.uuid }
+
+    LearnerPool.transaction do
+      learner_pool_defs.zip(learner_pool_uuids).each do |learner_pool_def, learner_pool_uuid|
+        learners = Learner.where{uuid.in learner_pool_def['learner_uuids']}
+        learner_pool = LearnerPool.create!(uuid: learner_pool_uuid, learners: learners)
+        learner_pool.learners << learners
       end
     end
 
-    [errors, learner_pool_uuids]
+    [[], learner_pool_uuids]
   end
 
 

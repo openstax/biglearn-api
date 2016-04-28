@@ -18,16 +18,22 @@ describe 'learner pool scenarios' do
 
   context 'creating learner pool using valid learner uuids' do
     it 'returns 200 (success) with appropriate number of learner uuids', type: :request do
-      ## temporarily copied from LearnerPoolsController
-      valid_learner_uuids = [
-        "13ecef9e-f7cf-4445-9744-5849be12739a",
-        "8e2e0a45-5e1e-4465-9013-2f17441ab8bc",
-        "275fd9ff-025c-4bc6-beb3-feccd7942ca1",
-        "89927d1a-14f3-4280-8954-7a6b06dd1ff5",
-        "3dcd1679-a83b-48d8-ab09-b3cb635d48cf"
-      ]
-      learner_pool_defs = [ { learner_uuids: valid_learner_uuids[0..3] },
-                            { learner_uuids: valid_learner_uuids[3..4] } ]
+      ##
+      ## Create learner uuids
+      ##
+
+      response_status, response_payload = create_learner_uuids(5)
+      expect(response_status).to eq(200)
+      expect(response_payload['learner_uuids'].count).to eq(5)
+
+      learner_uuids = response_payload['learner_uuids']
+
+      ##
+      ## Create learner pool uuids
+      ##
+
+      learner_pool_defs = [ { learner_uuids: learner_uuids[0..3] },
+                            { learner_uuids: learner_uuids[3..4] } ]
 
       response_status, response_payload = create_learner_pools(learner_pool_defs)
 
