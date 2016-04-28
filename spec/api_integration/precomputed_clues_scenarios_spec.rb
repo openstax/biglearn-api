@@ -16,7 +16,7 @@ describe 'precomputed CLUEs scenarios' do
   end
 
   context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)' do
-    it 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
+    xit 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
       ##
       ## Create learner uuids
       ##
