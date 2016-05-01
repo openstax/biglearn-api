@@ -53,9 +53,9 @@ describe 'precomputed CLUEs scenarios' do
       ## Create question pool uuids
       ##
 
-      question_pool_defs = [ question_uuids[0..5],
-                             question_uuids[6..15],
-                             question_uuids[17..-1] ]
+      question_pool_defs = [ { 'question_uuids': question_uuids[0..5]   },
+                             { 'question_uuids': question_uuids[6..15]  },
+                             { 'question_uuids': question_uuids[17..-1] }, ]
       response_status, response_payload = create_question_pools(question_pool_defs)
       expect(response_status).to eq(200)
       expect(response_payload['question_pool_uuids'].count).to eq(3)
@@ -67,17 +67,17 @@ describe 'precomputed CLUEs scenarios' do
       ##
 
       precomputed_clue_defs = [ {'learner_pool_uuid':  learner_pool_uuids[0],
-                                 'question_pool_uuid': question_pool_uuid[0] },
+                                 'question_pool_uuid': question_pool_uuids[0] },
                                 {'learner_pool_uuid':  learner_pool_uuids[0],
-                                 'question_pool_uuid': question_pool_uuid[1] },
+                                 'question_pool_uuid': question_pool_uuids[1] },
                                 {'learner_pool_uuid':  learner_pool_uuids[0],
-                                 'question_pool_uuid': question_pool_uuid[2] },
+                                 'question_pool_uuid': question_pool_uuids[2] },
                                 {'learner_pool_uuid':  learner_pool_uuids[1],
-                                 'question_pool_uuid': question_pool_uuid[1] },
+                                 'question_pool_uuid': question_pool_uuids[1] },
                                 {'learner_pool_uuid':  learner_pool_uuids[1],
-                                 'question_pool_uuid': question_pool_uuid[2] },
+                                 'question_pool_uuid': question_pool_uuids[2] },
                                 {'learner_pool_uuid':  learner_pool_uuids[2],
-                                 'question_pool_uuid': question_pool_uuid[2] }, ]
+                                 'question_pool_uuid': question_pool_uuids[2] }, ]
       response_status, responst_payload = setup_precomputed_clues(precomputed_clue_defs)
       expect(response_status).to eq(200)
       expect(response_payload['precomputed_clue_uuids'].count).to eq(6)
@@ -148,6 +148,21 @@ def create_question_uuids(count)
 
   make_post_request(
     route: '/create_questions',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_question_pools(question_pool_defs)
+  request_payload = { 'question_pool_defs': question_pool_defs }
+
+  make_post_request(
+    route: '/create_question_pools',
     headers: { 'Content-Type' => 'application/json' },
     body:  request_payload.to_json
   )
