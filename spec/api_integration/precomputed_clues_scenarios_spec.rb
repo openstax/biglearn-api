@@ -97,6 +97,7 @@ describe 'precomputed CLUEs scenarios' do
 
 end
 
+
 def create_learner_uuids(count)
   request_payload = { 'count': count }
 
@@ -126,11 +127,27 @@ def create_learner_pools(learner_pool_defs)
   [response_status, response_payload]
 end
 
+
 def request_precomputed_clues(precomputed_clue_uuids)
   request_payload = { 'precomputed_clue_uuids': precomputed_clue_uuids }
 
   make_post_request(
     route: '/retrieve_precomputed_clues',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_question_uuids(count)
+  request_payload = { 'count': count }
+
+  make_post_request(
+    route: '/create_questions',
     headers: { 'Content-Type' => 'application/json' },
     body:  request_payload.to_json
   )
