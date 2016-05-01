@@ -33,7 +33,7 @@ class PrecomputedCluesController < ApplicationController
       end
     end
 
-    fail UnprocessableError.new(errors) if errors.any?
+    fail AppUnprocessableError.new(errors) if errors.any?
 
     precomputed_clues
   end

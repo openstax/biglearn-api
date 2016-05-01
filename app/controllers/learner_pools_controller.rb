@@ -25,7 +25,7 @@ class LearnerPoolsController < ApplicationController
     errors = invalid_learner_uuids.collect{ |uuid|
       "invalid learner uuid: #{uuid}"
     }
-    fail UnprocessableError.new(errors) if errors.any?
+    fail AppUnprocessableError.new(errors) if errors.any?
 
     ##
     ## create new learner pools
