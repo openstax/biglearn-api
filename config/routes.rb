@@ -61,4 +61,6 @@ Rails.application.routes.draw do
   post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
 
   post '/create_questions' => 'questions#create'
+
+  post '/create_question_pools' => 'question_pools#create'
 end

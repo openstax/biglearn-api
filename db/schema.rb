@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427225904) do
+ActiveRecord::Schema.define(version: 20160501233349) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,5 +39,29 @@ ActiveRecord::Schema.define(version: 20160427225904) do
   end
 
   add_index "learners", ["uuid"], name: "index_learners_on_uuid", unique: true, using: :btree
+
+  create_table "question_pools", force: :cascade do |t|
+    t.string   "uuid",       limit: 36, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "question_pools", ["uuid"], name: "index_question_pools_on_uuid", unique: true, using: :btree
+
+  create_table "question_pools_questions", id: false, force: :cascade do |t|
+    t.integer "question_id",      null: false
+    t.integer "question_pool_id", null: false
+  end
+
+  add_index "question_pools_questions", ["question_id"], name: "index_question_pools_questions_on_question_id", using: :btree
+  add_index "question_pools_questions", ["question_pool_id"], name: "index_question_pools_questions_on_question_pool_id", using: :btree
+
+  create_table "questions", force: :cascade do |t|
+    t.string   "uuid",       limit: 36, null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
 
 end

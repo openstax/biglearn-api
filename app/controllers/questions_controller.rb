@@ -15,9 +15,9 @@ class QuestionsController < JsonApiController
   def _process_count(count)
     question_uuids = count.times.collect{ SecureRandom.uuid.to_s }
 
-    # Learner.transaction do
-    #   question_uuids.collect{ |uuid| Learner.create!(uuid: uuid) }
-    # end
+    Question.transaction do
+      question_uuids.collect{ |uuid| Question.create!(uuid: uuid) }
+    end
 
     question_uuids
   end
