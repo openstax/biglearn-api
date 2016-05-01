@@ -1,4 +1,4 @@
-class PrecomputedCluesController < ApplicationController
+class PrecomputedCluesController < JsonApiController
 
   def retrieve
     with_json_apis(input_schema:  _retrieve_request_payload_schema,

@@ -1,4 +1,4 @@
-class LearnerPoolsController < ApplicationController
+class LearnerPoolsController < JsonApiController
 
   def create
     with_json_apis(input_schema:  _create_request_payload_schema,
