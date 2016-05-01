@@ -33,7 +33,7 @@ class PrecomputedCluesController < JsonApiController
       end
     end
 
-    fail AppUnprocessableError.new(errors) if errors.any?
+    fail Errors::AppUnprocessableError.new(errors) if errors.any?
 
     precomputed_clues
   end

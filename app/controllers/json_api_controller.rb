@@ -1,10 +1,13 @@
+require 'json-schema'
+
 class JsonApiController < ApplicationController
 
   protect_from_forgery #with: :exception
 
-  rescue_from AppRequestValidationError,  with: :_render_app_request_validation_error
-  rescue_from AppResponseValidationError, with: :_render_app_response_validation_error
-  rescue_from AppUnprocessableError,      with: :_render_app_unprocessable_error
+  rescue_from Errors::AppRequestValidationError,  with: :_render_app_request_validation_error
+  rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error
+  rescue_from Errors::AppUnprocessableError,      with: :_render_app_unprocessable_error
+
 
   def with_json_apis(input_schema:, output_schema:, &block)
     _validate_request(input_schema)
@@ -17,12 +20,12 @@ class JsonApiController < ApplicationController
     request.body.rewind
     JSON.parse(request.body.read)
   rescue StandardError => ex
-    fail AppRequestValidationError.new('could not parse request json payload')
+    fail Errors::AppRequestValidationError.new('could not parse request json payload')
   end
 
 
   def _validate_request(input_schema)
-    fail AppRequestHeaderError.new('request must have Content-Type = application/json') \
+    fail Errors::AppRequestHeaderError.new('request must have Content-Type = application/json') \
       unless request.content_type == 'application/json'
 
     validation_errors = JSON::Validator.fully_validate(
@@ -32,13 +35,13 @@ class JsonApiController < ApplicationController
       validate_schema: true
     )
 
-    fail AppRequestSchemaError.new('request body failed validation', validation_errors) \
+    fail Errors::AppRequestSchemaError.new('request body failed validation', validation_errors) \
       if validation_errors.any?
   end
 
 
   def _validate_response(output_schema)
-    fail AppResponseStatusError.new("invalid response status: #{response.status}") \
+    fail Errors::AppResponseStatusError.new("invalid response status: #{response.status}") \
       unless response.status == 200
 
     validation_errors = JSON::Validator.fully_validate(
@@ -47,10 +50,10 @@ class JsonApiController < ApplicationController
       validate_schema: true
     )
 
-    fail AppResponseSchemaError.new('response body failed validation', validation_errors) \
+    fail Errors::AppResponseSchemaError.new('response body failed validation', validation_errors) \
       if validation_errors.any?
   rescue StandardError => ex
-    fail AppResponseValidationError.new('could not parse response json payload')
+    fail Errors::AppResponseValidationError.new('could not parse response json payload')
   end
 
 

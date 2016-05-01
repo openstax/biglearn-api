@@ -25,7 +25,7 @@ class LearnerPoolsController < JsonApiController
     errors = invalid_learner_uuids.collect{ |uuid|
       "invalid learner uuid: #{uuid}"
     }
-    fail AppUnprocessableError.new(errors) if errors.any?
+    fail Errors::AppUnprocessableError.new(errors) if errors.any?
 
     ##
     ## create new learner pools
