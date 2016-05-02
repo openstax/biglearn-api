@@ -11,10 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160501233349) do
+ActiveRecord::Schema.define(version: 20160502222228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "clues", force: :cascade do |t|
+    t.string   "uuid",                 limit: 36, null: false
+    t.float    "aggregate",                       null: false
+    t.float    "left",                            null: false
+    t.float    "right",                           null: false
+    t.integer  "sample_size",                     null: false
+    t.integer  "unique_learner_count",            null: false
+    t.integer  "confidence",                      null: false
+    t.integer  "level",                           null: false
+    t.integer  "threshold",                       null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+  end
+
+  add_index "clues", ["uuid"], name: "index_clues_on_uuid", unique: true, using: :btree
 
   create_table "learner_pools", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
@@ -40,6 +56,19 @@ ActiveRecord::Schema.define(version: 20160501233349) do
 
   add_index "learners", ["uuid"], name: "index_learners_on_uuid", unique: true, using: :btree
 
+  create_table "precomputed_clues", force: :cascade do |t|
+    t.string   "uuid",             limit: 36, null: false
+    t.integer  "learner_pool_id",             null: false
+    t.integer  "question_pool_id",            null: false
+    t.integer  "clue_id",                     null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "precomputed_clues", ["clue_id"], name: "index_precomputed_clues_on_clue_id", unique: true, using: :btree
+  add_index "precomputed_clues", ["learner_pool_id"], name: "index_precomputed_clues_on_learner_pool_id", using: :btree
+  add_index "precomputed_clues", ["question_pool_id"], name: "index_precomputed_clues_on_question_pool_id", using: :btree
+
   create_table "question_pools", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
     t.datetime "created_at",            null: false
@@ -64,4 +93,9 @@ ActiveRecord::Schema.define(version: 20160501233349) do
 
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
 
+  add_foreign_key "learner_pools_learners", "learner_pools"
+  add_foreign_key "learner_pools_learners", "learners"
+  add_foreign_key "precomputed_clues", "clues"
+  add_foreign_key "precomputed_clues", "learner_pools"
+  add_foreign_key "precomputed_clues", "question_pools"
 end
