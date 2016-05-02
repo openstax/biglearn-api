@@ -16,7 +16,7 @@ describe 'precomputed CLUEs scenarios' do
   end
 
   context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)' do
-    xit 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
+    it 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
       ##
       ## Create learner uuids
       ##
@@ -73,12 +73,12 @@ describe 'precomputed CLUEs scenarios' do
                                 {'learner_pool_uuid':  learner_pool_uuids[0],
                                  'question_pool_uuid': question_pool_uuids[2] },
                                 {'learner_pool_uuid':  learner_pool_uuids[1],
+                                 'question_pool_uuid': question_pool_uuids[0] },
+                                {'learner_pool_uuid':  learner_pool_uuids[1],
                                  'question_pool_uuid': question_pool_uuids[1] },
                                 {'learner_pool_uuid':  learner_pool_uuids[1],
-                                 'question_pool_uuid': question_pool_uuids[2] },
-                                {'learner_pool_uuid':  learner_pool_uuids[2],
                                  'question_pool_uuid': question_pool_uuids[2] }, ]
-      response_status, responst_payload = setup_precomputed_clues(precomputed_clue_defs)
+      response_status, response_payload = create_precomputed_clues(precomputed_clue_defs)
       expect(response_status).to eq(200)
       expect(response_payload['precomputed_clue_uuids'].count).to eq(6)
 
@@ -88,7 +88,7 @@ describe 'precomputed CLUEs scenarios' do
       ## Retrieve the precomputed CLUEs
       ##
 
-      target_precomputed_clue_uuids = precomputed_clue_uuids.values_at(1,5,6)
+      target_precomputed_clue_uuids = precomputed_clue_uuids.values_at(1,4,5)
       response_status, response_payload = request_precomputed_clues(target_precomputed_clue_uuids)
       expect(response_status).to eq(200)
       expect(response_payload['precomputed_clues'].count).to eq(target_precomputed_clue_uuids.count)
@@ -165,6 +165,21 @@ def create_question_pools(question_pool_defs)
     route: '/create_question_pools',
     headers: { 'Content-Type' => 'application/json' },
     body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_precomputed_clues(precomputed_clue_defs)
+  request_payload = { 'precomputed_clue_defs': precomputed_clue_defs }
+
+  make_post_request(
+    route: '/create_precomputed_clues',
+    headers: { 'Content-Type' => 'application/json' },
+    body: request_payload.to_json
   )
   response_payload = JSON.parse(response.body)
   response_status = response.status
