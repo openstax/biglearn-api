@@ -33,7 +33,7 @@ class QuestionPoolsController < JsonApiController
 
     question_pool_uuids = question_pool_defs.collect{ SecureRandom.uuid }
 
-    QuestionPool.transaction do
+    QuestionPool.transaction(requires_new: true) do
       question_pool_defs.zip(question_pool_uuids).each do |question_pool_def, question_pool_uuid|
         questions = Question.where{uuid.in question_pool_def['question_uuids']}
         question_pool = QuestionPool.create!(uuid: question_pool_uuid, questions: questions)

@@ -29,7 +29,7 @@ class PrecomputedCluesController < JsonApiController
   def _process_precomputed_clue_defs(precomputed_clue_defs)
     precomputed_clue_uuids = precomputed_clue_defs.collect{ SecureRandom.uuid.to_s }
 
-    PrecomputedClue.transaction do
+    PrecomputedClue.transaction(requires_new: true) do
       precomputed_clue_uuids.zip(precomputed_clue_defs).each do |precomputed_clue_uuid, precomputed_clue_def|
         learner_pool  = LearnerPool.where{uuid == precomputed_clue_def['learner_pool_uuid']}.first
         question_pool = QuestionPool.where{uuid == precomputed_clue_def['question_pool_uuid']}.first
