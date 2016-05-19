@@ -56,9 +56,13 @@ Rails.application.routes.draw do
 
   post '/create_learners' => 'learners#create'
 
-  post '/create_learner_pools' => 'learner_pools#create'
-
   post '/create_questions' => 'questions#create'
+
+  post '/create_concepts' => 'concepts#create'
+
+  post '/create_question_concept_hints' => 'question_concept_hints#create'
+
+  post '/create_learner_pools' => 'learner_pools#create'
 
   post '/create_question_pools' => 'question_pools#create'
 
