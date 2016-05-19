@@ -64,6 +64,7 @@ describe 'question-concept hint scenarios' do
       response_status, response_payload = create_question_concept_hints(question_concept_hint_defs)
 
       expect(response_status).to eq(200)
+      expect(response_payload['num_created_hints']).to eq(20)
 
       ##
       ## check that duplicate hints are silently ignored
@@ -72,6 +73,7 @@ describe 'question-concept hint scenarios' do
       response_status, response_payload = create_question_concept_hints(question_concept_hint_defs)
 
       expect(response_status).to eq(200)
+      expect(response_payload['num_created_hints']).to eq(0)
     end
   end
 

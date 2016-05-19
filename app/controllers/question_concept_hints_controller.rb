@@ -5,9 +5,9 @@ class QuestionConceptHintsController < JsonApiController
                    output_schema: _create_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
-      _process_hints(request_payload['question_concept_hint_defs'])
+      num_created_hints = _process_hints(request_payload['question_concept_hint_defs'])
 
-      render json: {'message': 'success'}.to_json, status: 200
+      render json: {'num_created_hints': num_created_hints}.to_json, status: 200
     end
   end
 
@@ -37,6 +37,8 @@ class QuestionConceptHintsController < JsonApiController
     ## create the QuestionConceptHints (those that don't exist, anyway)
     ##
 
+    num_created_hints = 0
+
     QuestionConceptHint.transaction do
       entries.each do |entry|
         question_uuid = entry['question_uuid']
@@ -48,12 +50,16 @@ class QuestionConceptHintsController < JsonApiController
         concepts.each do |concept|
           question_concept_hint = QuestionConceptHint.find_or_create_by!(
             question_id: question.id,
-            concept_id:  concept.id) do |question_concept_hint|
+            concept_id:  concept.id
+          ) do |question_concept_hint|
             question_concept_hint.uuid = SecureRandom.uuid.to_s
+            num_created_hints += 1
           end
         end
       end
     end
+
+    num_created_hints
   end
 
 
@@ -95,11 +101,9 @@ class QuestionConceptHintsController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'message': {
-          'type': 'string',
-        },
+        'num_created_hints': { '$ref': '#/standard_definitions/non_negative_integer' },
       },
-      'required': ['message'],
+      'required': ['num_created_hints'],
       'additionalProperties': false,
 
       'standard_definitions': _standard_definitions,
