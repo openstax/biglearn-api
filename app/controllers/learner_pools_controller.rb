@@ -18,26 +18,31 @@ class LearnerPoolsController < JsonApiController
     ## validate all learner uuids
     ##
 
-    learner_uuids = learner_pool_defs.collect{ |lpd| lpd['learner_uuids'] }
-                                     .flatten.uniq
-    learners = Learner.where{uuid.in learner_uuids}
-    invalid_learner_uuids = learner_uuids - learners.collect(&:uuid)
+    lpd_learner_uuids = learner_pool_defs.collect{ |lpd| lpd['learner_uuids'] }
+                                         .flatten.uniq
+    db_learner_uuids = Learner.where{uuid.in lpd_learner_uuids}.collect(&:uuid)
+    invalid_learner_uuids = lpd_learner_uuids - db_learner_uuids
     errors = invalid_learner_uuids.collect{ |uuid|
       "invalid learner uuid: #{uuid}"
     }
     fail Errors::AppUnprocessableError.new(errors) if errors.any?
 
     ##
-    ## create new learner pools
+    ## create new learner pools and associated entries
     ##
 
     learner_pool_uuids = learner_pool_defs.collect{ SecureRandom.uuid }
 
     LearnerPool.transaction(requires_new: true) do
       learner_pool_defs.zip(learner_pool_uuids).each do |learner_pool_def, learner_pool_uuid|
-        learners = Learner.where{uuid.in learner_pool_def['learner_uuids']}
-        learner_pool = LearnerPool.create!(uuid: learner_pool_uuid, learners: learners)
-        learner_pool.learners << learners
+        learner_pool = LearnerPool.create!(uuid: learner_pool_uuid)
+
+        learner_pool_def['learner_uuids'].each do |learner_uuid|
+          learner_pool_learner = LearnerPoolEntry.create!(
+            learner_pool_uuid: learner_pool.uuid,
+            learner_uuid:      learner_uuid
+          )
+        end
       end
     end
 

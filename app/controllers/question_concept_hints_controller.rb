@@ -39,18 +39,15 @@ class QuestionConceptHintsController < JsonApiController
 
     num_created_hints = 0
 
-    QuestionConceptHint.transaction do
+    QuestionConceptHint.transaction(requires_new: true) do
       entries.each do |entry|
         question_uuid = entry['question_uuid']
-        question = Question.where{uuid == question_uuid}.take!
-
         concept_uuids = entry['concept_uuids']
-        concepts = Concept.where{uuid.in concept_uuids}
 
-        concepts.each do |concept|
+        concept_uuids.each do |concept_uuid|
           question_concept_hint = QuestionConceptHint.find_or_create_by!(
-            question_id: question.id,
-            concept_id:  concept.id
+            question_uuid: question_uuid,
+            concept_uuid:  concept_uuid,
           ) do |question_concept_hint|
             question_concept_hint.uuid = SecureRandom.uuid.to_s
             num_created_hints += 1

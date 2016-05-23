@@ -11,8 +11,11 @@ class CreateClues < ActiveRecord::Migration
       t.integer    :level,                 null: false
       t.integer    :threshold,             null: false
       t.timestamps                         null: false
-
-      t.index :uuid,  unique: true
     end
+
+    add_index :clues,  :uuid,
+                       unique: true
+
+    add_index :clues,  :created_at
   end
 end

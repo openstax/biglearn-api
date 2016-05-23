@@ -28,16 +28,21 @@ class QuestionPoolsController < JsonApiController
     fail Errors::AppUnprocessableError.new(errors) if errors.any?
 
     ##
-    ## create new question pools
+    ## create new question pool and associated entries
     ##
 
     question_pool_uuids = question_pool_defs.collect{ SecureRandom.uuid }
 
     QuestionPool.transaction(requires_new: true) do
       question_pool_defs.zip(question_pool_uuids).each do |question_pool_def, question_pool_uuid|
-        questions = Question.where{uuid.in question_pool_def['question_uuids']}
-        question_pool = QuestionPool.create!(uuid: question_pool_uuid, questions: questions)
-        question_pool.questions << questions
+        question_pool = QuestionPool.create!(uuid: question_pool_uuid)
+
+        question_pool_def['question_uuids'].each do |question_uuid|
+          question_pool_entry = QuestionPoolEntry.create!(
+            question_pool_uuid: question_pool.uuid,
+            question_uuid:      question_uuid
+          )
+        end
       end
     end
 

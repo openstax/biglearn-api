@@ -3,8 +3,11 @@ class CreateQuestionPools < ActiveRecord::Migration
     create_table :question_pools do |t|
       t.string     :uuid,  null: false,  limit: 36
       t.timestamps         null: false
-
-      t.index :uuid,  unique: true
     end
+
+    add_index :question_pools,  :uuid,
+                                unique: true
+
+    add_index :question_pools,  :created_at
   end
 end

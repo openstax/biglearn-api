@@ -5,6 +5,9 @@ class CreateLearnerPools < ActiveRecord::Migration
       t.timestamps         null: false
     end
 
-    add_index :learner_pools, :uuid, unique: true
+    add_index :learner_pools,  :uuid,
+                               unique: true
+
+    add_index :learner_pools,  :created_at
   end
 end

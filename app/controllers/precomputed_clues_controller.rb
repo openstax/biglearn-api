@@ -27,12 +27,41 @@ class PrecomputedCluesController < JsonApiController
 
 
   def _process_precomputed_clue_defs(precomputed_clue_defs)
+    ##
+    ## validate all learner pool and question pool uuids
+    ##
+
+    pc_learner_pool_uuids = precomputed_clue_defs.collect{ |pcd| pcd['learner_pool_uuid'] }
+                                                 .flatten.uniq
+    db_learner_pool_uuids = LearnerPool.where{uuid.in pc_learner_pool_uuids}.collect(&:uuid)
+    invalid_learner_pool_uuids = pc_learner_pool_uuids - db_learner_pool_uuids
+    learner_pool_errors = invalid_learner_pool_uuids.collect{ |uuid|
+      "invalid learner pool uuid: #{uuid}"
+    }
+
+    pc_question_pool_uuids = precomputed_clue_defs.collect{ |pcd| pcd['question_pool_uuid'] }
+                                                  .flatten.uniq
+    db_question_pool_uuids = QuestionPool.where{uuid.in pc_question_pool_uuids}.collect(&:uuid)
+    invalid_question_pool_uuids = pc_question_pool_uuids - db_question_pool_uuids
+    question_pool_errors = invalid_question_pool_uuids.collect{ |uuid|
+      "invalid question pool uuid: #{uuid}"
+    }
+
+    errors = learner_pool_errors + question_pool_errors
+    fail Errors::AppUnprocessableError.new(errors) if errors.any?
+
+    ##
+    ## create new precomputed clues
+    ##
+
     precomputed_clue_uuids = precomputed_clue_defs.collect{ SecureRandom.uuid.to_s }
 
     PrecomputedClue.transaction(requires_new: true) do
       precomputed_clue_uuids.zip(precomputed_clue_defs).each do |precomputed_clue_uuid, precomputed_clue_def|
-        learner_pool  = LearnerPool.where{uuid == precomputed_clue_def['learner_pool_uuid']}.first
-        question_pool = QuestionPool.where{uuid == precomputed_clue_def['question_pool_uuid']}.first
+        learner_pool_uuid  = precomputed_clue_def['learner_pool_uuid']
+        question_pool_uuid = precomputed_clue_def['question_pool_uuid']
+
+        unique_learner_count = LearnerPool.where{uuid == learner_pool_uuid}.count
 
         clue = Clue.create!(
           uuid:                 SecureRandom.uuid.to_s,
@@ -40,17 +69,17 @@ class PrecomputedCluesController < JsonApiController
           left:                 0.0,
           right:                1.0,
           sample_size:            0,
-          unique_learner_count: learner_pool.learners.count,
+          unique_learner_count: unique_learner_count,
           confidence:           'bad',
           level:                'low',
           threshold:            'below'
         )
 
         precomputed_clue = PrecomputedClue.create!(
-          uuid:             precomputed_clue_uuid,
-          learner_pool_id:  learner_pool.id,
-          question_pool_id: question_pool.id,
-          clue_id:          clue.id
+          uuid:               precomputed_clue_uuid,
+          learner_pool_uuid:  learner_pool_uuid,
+          question_pool_uuid: question_pool_uuid,
+          clue_uuid:          clue.uuid
         )
       end
     end
@@ -69,7 +98,7 @@ class PrecomputedCluesController < JsonApiController
       if invalid_precomputed_clue_uuids.any?
 
     clues = precomputed_clues.collect{ |precomputed_clue|
-      clue = precomputed_clue.clue
+      clue = Clue.where{uuid == precomputed_clue.clue_uuid}.take!
 
       {
         'aggregate': clue.aggregate,

@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",                      null: false
   end
 
+  add_index "clues", ["created_at"], name: "index_clues_on_created_at", using: :btree
   add_index "clues", ["uuid"], name: "index_clues_on_uuid", unique: true, using: :btree
 
   create_table "concepts", force: :cascade do |t|
@@ -38,7 +39,16 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",            null: false
   end
 
+  add_index "concepts", ["created_at"], name: "index_concepts_on_created_at", using: :btree
   add_index "concepts", ["uuid"], name: "index_concepts_on_uuid", unique: true, using: :btree
+
+  create_table "learner_pool_entries", id: false, force: :cascade do |t|
+    t.string "learner_uuid",      limit: 36, null: false
+    t.string "learner_pool_uuid", limit: 36, null: false
+  end
+
+  add_index "learner_pool_entries", ["learner_pool_uuid", "learner_uuid"], name: "index_lpe_lp_uuid_l_uuid_unique", unique: true, using: :btree
+  add_index "learner_pool_entries", ["learner_pool_uuid"], name: "index_learner_pool_entries_on_learner_pool_uuid", using: :btree
 
   create_table "learner_pools", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
@@ -46,15 +56,8 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",            null: false
   end
 
+  add_index "learner_pools", ["created_at"], name: "index_learner_pools_on_created_at", using: :btree
   add_index "learner_pools", ["uuid"], name: "index_learner_pools_on_uuid", unique: true, using: :btree
-
-  create_table "learner_pools_learners", id: false, force: :cascade do |t|
-    t.integer "learner_id",      null: false
-    t.integer "learner_pool_id", null: false
-  end
-
-  add_index "learner_pools_learners", ["learner_id"], name: "index_learner_pools_learners_on_learner_id", using: :btree
-  add_index "learner_pools_learners", ["learner_pool_id"], name: "index_learner_pools_learners_on_learner_pool_id", using: :btree
 
   create_table "learners", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
@@ -62,31 +65,43 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",            null: false
   end
 
+  add_index "learners", ["created_at"], name: "index_learners_on_created_at", using: :btree
   add_index "learners", ["uuid"], name: "index_learners_on_uuid", unique: true, using: :btree
 
   create_table "precomputed_clues", force: :cascade do |t|
-    t.string   "uuid",             limit: 36, null: false
-    t.integer  "learner_pool_id",             null: false
-    t.integer  "question_pool_id",            null: false
-    t.integer  "clue_id",                     null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.string   "uuid",               limit: 36, null: false
+    t.string   "learner_pool_uuid",  limit: 36, null: false
+    t.string   "question_pool_uuid", limit: 36, null: false
+    t.string   "clue_uuid",          limit: 36, null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
-  add_index "precomputed_clues", ["clue_id"], name: "index_precomputed_clues_on_clue_id", unique: true, using: :btree
-  add_index "precomputed_clues", ["learner_pool_id"], name: "index_precomputed_clues_on_learner_pool_id", using: :btree
-  add_index "precomputed_clues", ["question_pool_id"], name: "index_precomputed_clues_on_question_pool_id", using: :btree
+  add_index "precomputed_clues", ["clue_uuid"], name: "index_precomputed_clues_on_clue_uuid", unique: true, using: :btree
+  add_index "precomputed_clues", ["created_at"], name: "index_precomputed_clues_on_created_at", using: :btree
+  add_index "precomputed_clues", ["learner_pool_uuid"], name: "index_precomputed_clues_on_learner_pool_uuid", using: :btree
+  add_index "precomputed_clues", ["question_pool_uuid"], name: "index_precomputed_clues_on_question_pool_uuid", using: :btree
+  add_index "precomputed_clues", ["uuid"], name: "index_precomputed_clues_on_uuid", unique: true, using: :btree
 
   create_table "question_concept_hints", force: :cascade do |t|
-    t.string   "uuid",        limit: 36, null: false
-    t.integer  "question_id",            null: false
-    t.integer  "concept_id",             null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "uuid",          limit: 36, null: false
+    t.string   "question_uuid", limit: 36, null: false
+    t.string   "concept_uuid",  limit: 36, null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
-  add_index "question_concept_hints", ["question_id", "concept_id"], name: "index_question_concept_hints_on_question_id_and_concept_id", unique: true, using: :btree
+  add_index "question_concept_hints", ["created_at"], name: "index_question_concept_hints_on_created_at", using: :btree
+  add_index "question_concept_hints", ["question_uuid", "concept_uuid"], name: "qch_q_uuid_c_uuid_unique", unique: true, using: :btree
   add_index "question_concept_hints", ["uuid"], name: "index_question_concept_hints_on_uuid", unique: true, using: :btree
+
+  create_table "question_pool_entries", id: false, force: :cascade do |t|
+    t.string "question_uuid",      limit: 36, null: false
+    t.string "question_pool_uuid", limit: 36, null: false
+  end
+
+  add_index "question_pool_entries", ["question_pool_uuid", "question_uuid"], name: "index_qpe_qp_uuid_q_uuid_unique", unique: true, using: :btree
+  add_index "question_pool_entries", ["question_pool_uuid"], name: "index_question_pool_entries_on_question_pool_uuid", using: :btree
 
   create_table "question_pools", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
@@ -94,15 +109,8 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",            null: false
   end
 
+  add_index "question_pools", ["created_at"], name: "index_question_pools_on_created_at", using: :btree
   add_index "question_pools", ["uuid"], name: "index_question_pools_on_uuid", unique: true, using: :btree
-
-  create_table "question_pools_questions", id: false, force: :cascade do |t|
-    t.integer "question_id",      null: false
-    t.integer "question_pool_id", null: false
-  end
-
-  add_index "question_pools_questions", ["question_id"], name: "index_question_pools_questions_on_question_id", using: :btree
-  add_index "question_pools_questions", ["question_pool_id"], name: "index_question_pools_questions_on_question_pool_id", using: :btree
 
   create_table "questions", force: :cascade do |t|
     t.string   "uuid",       limit: 36, null: false
@@ -110,13 +118,7 @@ ActiveRecord::Schema.define(version: 20160519201712) do
     t.datetime "updated_at",            null: false
   end
 
+  add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
 
-  add_foreign_key "learner_pools_learners", "learner_pools"
-  add_foreign_key "learner_pools_learners", "learners"
-  add_foreign_key "precomputed_clues", "clues"
-  add_foreign_key "precomputed_clues", "learner_pools"
-  add_foreign_key "precomputed_clues", "question_pools"
-  add_foreign_key "question_concept_hints", "concepts"
-  add_foreign_key "question_concept_hints", "questions"
 end

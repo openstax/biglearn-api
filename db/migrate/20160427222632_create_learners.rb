@@ -3,8 +3,11 @@ class CreateLearners < ActiveRecord::Migration
     create_table :learners do |t|
       t.string     :uuid,  null: false,  limit: 36
       t.timestamps         null: false
-
-      t.index :uuid,  unique: true
     end
+
+    add_index :learners,  :uuid,
+                          unique: true
+
+    add_index :learners,  :created_at
   end
 end
