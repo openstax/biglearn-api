@@ -39,7 +39,7 @@ class QuestionConceptHintsController < JsonApiController
 
     num_created_hints = 0
 
-    QuestionConceptHint.transaction(requires_new: true) do
+    QuestionConceptHint.transaction(isolation: :serializable) do
       entries.each do |entry|
         question_uuid = entry['question_uuid']
         concept_uuids = entry['concept_uuids']

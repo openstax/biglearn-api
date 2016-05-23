@@ -15,7 +15,7 @@ class ConceptsController < JsonApiController
   def _process_count(count)
     concept_uuids = count.times.collect{ SecureRandom.uuid.to_s }
 
-    Concept.transaction(requires_new: true) do
+    Concept.transaction(isolation: :serializable) do
       concept_uuids.collect{ |uuid| Concept.create!(uuid: uuid) }
     end
 

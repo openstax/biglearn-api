@@ -56,7 +56,7 @@ class PrecomputedCluesController < JsonApiController
 
     precomputed_clue_uuids = precomputed_clue_defs.collect{ SecureRandom.uuid.to_s }
 
-    PrecomputedClue.transaction(requires_new: true) do
+    PrecomputedClue.transaction(isolation: :serializable) do
       precomputed_clue_uuids.zip(precomputed_clue_defs).each do |precomputed_clue_uuid, precomputed_clue_def|
         learner_pool_uuid  = precomputed_clue_def['learner_pool_uuid']
         question_pool_uuid = precomputed_clue_def['question_pool_uuid']

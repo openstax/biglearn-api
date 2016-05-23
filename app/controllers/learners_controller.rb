@@ -15,7 +15,7 @@ class LearnersController < JsonApiController
   def _process_count(count)
     learner_uuids = count.times.collect{ SecureRandom.uuid.to_s }
 
-    Learner.transaction(requires_new: true) do
+    Learner.transaction(isolation: :serializable) do
       learner_uuids.collect{ |uuid| Learner.create!(uuid: uuid) }
     end
 

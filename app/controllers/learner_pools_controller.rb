@@ -33,7 +33,7 @@ class LearnerPoolsController < JsonApiController
 
     learner_pool_uuids = learner_pool_defs.collect{ SecureRandom.uuid }
 
-    LearnerPool.transaction(requires_new: true) do
+    LearnerPool.transaction(isolation: :serializable) do
       learner_pool_defs.zip(learner_pool_uuids).each do |learner_pool_def, learner_pool_uuid|
         learner_pool = LearnerPool.create!(uuid: learner_pool_uuid)
 
