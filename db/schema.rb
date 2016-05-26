@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160519201712) do
+ActiveRecord::Schema.define(version: 20160526075502) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,23 @@ ActiveRecord::Schema.define(version: 20160519201712) do
 
   add_index "concepts", ["created_at"], name: "index_concepts_on_created_at", using: :btree
   add_index "concepts", ["uuid"], name: "index_concepts_on_uuid", unique: true, using: :btree
+
+  create_table "learner_batch_entries", force: :cascade do |t|
+    t.string "learner_batch_uuid", limit: 36, null: false
+    t.string "learner_uuid",       limit: 36, null: false
+  end
+
+  add_index "learner_batch_entries", ["learner_batch_uuid", "learner_uuid"], name: "index_lbe_lb_uuid_l_uuid_unique", unique: true, using: :btree
+  add_index "learner_batch_entries", ["learner_batch_uuid"], name: "index_learner_batch_entries_on_learner_batch_uuid", using: :btree
+
+  create_table "learner_batches", force: :cascade do |t|
+    t.string   "uuid",        limit: 36, null: false
+    t.integer  "num_entries",            null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "learner_batches", ["uuid"], name: "index_learner_batches_on_uuid", unique: true, using: :btree
 
   create_table "learner_pool_entries", id: false, force: :cascade do |t|
     t.string "learner_uuid",      limit: 36, null: false
