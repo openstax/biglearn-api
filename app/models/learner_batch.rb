@@ -3,7 +3,7 @@ class LearnerBatch < ActiveRecord::Base
     learner_batches = LearnerBatch.transaction(isolation: :serializable) do
       unbatched_learner_uuids = ActiveRecord::Base.connection.execute(
         'SELECT uuid FROM ' +
-        'learners NATURAL FULL JOIN learner_batch_entries ' +
+        'learners NATURAL LEFT JOIN learner_batch_entries ' +
         'WHERE learner_batch_uuid IS NULL '
       ).collect{|hash| hash["uuid"]}
 
