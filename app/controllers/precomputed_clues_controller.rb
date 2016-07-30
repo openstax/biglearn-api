@@ -1,46 +1,122 @@
-class PrecomputedCluesController < ApplicationController
+class PrecomputedCluesController < JsonApiController
 
-  def retrieve
-    with_json_apis(input_schema:      _retrieve_request_payload_schema,
-                   output_schema_map: { 200 => _retrieve_response_200_payload_schema,
-                                        422 => _generic_error_schema }) do
-      errors, precomputed_clues = _process_precomputed_clue_uuids(
-        json_parsed_request_payload['precomputed_clue_uuids']
+  def create
+    with_json_apis(input_schema:  _create_request_payload_schema,
+                   output_schema: _create_response_payload_schema) do
+      precomputed_clue_uuids = _process_precomputed_clue_defs(
+        json_parsed_request_payload['precomputed_clue_defs']
       )
 
-      response_status, response_payload =
-        if errors.any?
-          [422, { 'errors': errors }]
-        else
-          [200, { 'precomputed_clues': precomputed_clues }]
-        end
-
-      render json: response_payload.to_json, status: response_status
+      response_payload = { 'precomputed_clue_uuids': precomputed_clue_uuids }
+      render json: response_payload.to_json, status: 200
     end
   end
 
 
-  def _process_precomputed_clue_uuids(precomputed_clue_uuids)
-    errors            = []
-    precomputed_clues = []
+  def retrieve
+    with_json_apis(input_schema:  _retrieve_request_payload_schema,
+                   output_schema: _retrieve_response_payload_schema) do
+      clues = _process_precomputed_clue_uuids(
+        json_parsed_request_payload['precomputed_clue_uuids']
+      )
 
-    valid_precomputed_clue_uuids = [
-      "50fa8fc6-0974-4448-a730-880165a702fe",
-      "5913c263-f91d-4c83-af62-19d4619117f5",
-      "38a89013-57da-4189-8534-d68db933776b",
-      "7d2e17bd-50ff-4f80-a62b-a1f4e1dd6990",
-      "5c04044c-f546-477a-8341-4f32cdc28618"
-    ]
+      response_payload = { 'precomputed_clues': clues }
+      render json: response_payload.to_json, status: 200
+    end
+  end
 
-    precomputed_clue_uuids.each_with_index do |uuid, idx|
-      if valid_precomputed_clue_uuids.include? uuid
-        precomputed_clues << _create_random_clue
-      else
-        errors << "invalid precomputed_clue_uuid: #{uuid}"
+
+  def _process_precomputed_clue_defs(precomputed_clue_defs)
+    ##
+    ## validate all learner pool and question pool uuids
+    ##
+
+    pc_learner_pool_uuids = precomputed_clue_defs.collect{ |pcd| pcd['learner_pool_uuid'] }
+                                                 .flatten.uniq
+    db_learner_pool_uuids = LearnerPool.where{uuid.in pc_learner_pool_uuids}.collect(&:uuid)
+    invalid_learner_pool_uuids = pc_learner_pool_uuids - db_learner_pool_uuids
+    learner_pool_errors = invalid_learner_pool_uuids.collect{ |uuid|
+      "invalid learner pool uuid: #{uuid}"
+    }
+
+    pc_question_pool_uuids = precomputed_clue_defs.collect{ |pcd| pcd['question_pool_uuid'] }
+                                                  .flatten.uniq
+    db_question_pool_uuids = QuestionPool.where{uuid.in pc_question_pool_uuids}.collect(&:uuid)
+    invalid_question_pool_uuids = pc_question_pool_uuids - db_question_pool_uuids
+    question_pool_errors = invalid_question_pool_uuids.collect{ |uuid|
+      "invalid question pool uuid: #{uuid}"
+    }
+
+    errors = learner_pool_errors + question_pool_errors
+    fail Errors::AppUnprocessableError.new(errors) if errors.any?
+
+    ##
+    ## create new precomputed clues
+    ##
+
+    precomputed_clue_uuids = precomputed_clue_defs.collect{ SecureRandom.uuid.to_s }
+
+    PrecomputedClue.transaction(isolation: :serializable) do
+      precomputed_clue_uuids.zip(precomputed_clue_defs).each do |precomputed_clue_uuid, precomputed_clue_def|
+        learner_pool_uuid  = precomputed_clue_def['learner_pool_uuid']
+        question_pool_uuid = precomputed_clue_def['question_pool_uuid']
+
+        unique_learner_count = LearnerPool.where{uuid == learner_pool_uuid}.count
+
+        clue = Clue.create!(
+          uuid:                 SecureRandom.uuid.to_s,
+          aggregate:            0.5,
+          left:                 0.0,
+          right:                1.0,
+          sample_size:            0,
+          unique_learner_count: unique_learner_count,
+          confidence:           'bad',
+          level:                'low',
+          threshold:            'below'
+        )
+
+        precomputed_clue = PrecomputedClue.create!(
+          uuid:               precomputed_clue_uuid,
+          learner_pool_uuid:  learner_pool_uuid,
+          question_pool_uuid: question_pool_uuid,
+          clue_uuid:          clue.uuid
+        )
       end
     end
 
-    [errors, precomputed_clues]
+    precomputed_clue_uuids
+  rescue StandardError => ex
+    raise Errors::AppUnprocessableError.new('could not create precomputed_clues')
+  end
+
+
+  def _process_precomputed_clue_uuids(precomputed_clue_uuids)
+    precomputed_clues = PrecomputedClue.where{uuid.in precomputed_clue_uuids}
+
+    invalid_precomputed_clue_uuids = precomputed_clue_uuids - precomputed_clues.collect(&:uuid)
+    fail Errors::AppUnprocessableError.new("invalid precomputed_clue_uuids: #{invalid_precomputed_clue_uuids}") \
+      if invalid_precomputed_clue_uuids.any?
+
+    clues = precomputed_clues.collect{ |precomputed_clue|
+      clue = Clue.where{uuid == precomputed_clue.clue_uuid}.take!
+
+      {
+        'aggregate': clue.aggregate,
+        'confidence': {
+          'left': clue.left,
+          'right': clue.right,
+          'sample_size': clue.sample_size,
+          'unique_learner_count': clue.unique_learner_count
+        },
+        'interpretation': {
+          'confidence': clue.confidence,
+          'level': clue.level,
+          'threshold': clue.threshold,
+        },
+      }
+    }
+
+    clues
   end
 
 
@@ -60,6 +136,60 @@ class PrecomputedCluesController < ApplicationController
         'level': ['low', 'medium', 'high'].sample,
         'threshold': ['above', 'below'].sample,
       },
+    }
+  end
+
+
+  def _create_request_payload_schema
+    {
+      '$schema': 'http://json-schema.org/draft-04/schema#',
+      'id': 'http://openstax.org/schemas/precomputed_clues/create/request_payload',
+
+      'type': 'object',
+      'properties': {
+        'precomputed_clue_defs': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/precomputed_clue_def'},
+          'uniqueItems': true,
+        },
+      },
+      'required': ['precomputed_clue_defs'],
+      'additionProperties': false,
+
+      'standard_definitions': _standard_definitions,
+
+      'definitions': {
+        'precomputed_clue_def': {
+          'type': 'object',
+          'properties': {
+            'learner_pool_uuid':  {'$ref': '#standard_definitions/uuid'},
+            'question_pool_uuid': {'$ref': '#standard_definitions/uuid'},
+          },
+          'required': ['learner_pool_uuid', 'question_pool_uuid'],
+          'additionProperties': false,
+        },
+      },
+    }
+  end
+
+
+  def _create_response_payload_schema
+    {
+      '$schema': 'http://json-schema.org/draft-04/schema#',
+      'id': 'http://openstax.org/schemas/precomputed_clues/create/response_payload',
+
+      'type': 'object',
+      'properties': {
+        'precomputed_clue_uuids': {
+          'type': 'array',
+          'items': {'$ref': '#standard_definitions/uuid'},
+          'uniqueItems': true,
+        },
+      },
+      'required': ['precomputed_clue_uuids'],
+      'additionProperties': false,
+
+      'standard_definitions': _standard_definitions,
     }
   end
 
@@ -84,7 +214,7 @@ class PrecomputedCluesController < ApplicationController
   end
 
 
-  def _retrieve_response_200_payload_schema
+  def _retrieve_response_payload_schema
     {
       '$schema': 'http://json-schema.org/draft-04/schema#',
 

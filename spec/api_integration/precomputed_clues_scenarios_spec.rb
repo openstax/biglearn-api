@@ -17,22 +17,116 @@ describe 'precomputed CLUEs scenarios' do
 
   context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)' do
     it 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
-      ## these are drawn from the currently hard-coded
-      ## valid uuids in the controller
-      target_valid_uuids = [
-        "5913c263-f91d-4c83-af62-19d4619117f5",
-        "38a89013-57da-4189-8534-d68db933776b",
-        "7d2e17bd-50ff-4f80-a62b-a1f4e1dd6990"
-      ]
+      ##
+      ## Create learner uuids
+      ##
 
-      response_status, response_payload = request_precomputed_clues(target_valid_uuids)
-
+      response_status, response_payload = create_learner_uuids(10)
       expect(response_status).to eq(200)
-      expect(response_payload['precomputed_clues'].count).to eq(target_valid_uuids.count)
+      expect(response_payload['learner_uuids'].count).to eq(10)
+
+      learner_uuids = response_payload['learner_uuids']
+
+      ##
+      ## Create learner pool uuids
+      ##
+
+      learner_pool_defs = [ { 'learner_uuids': learner_uuids[0..5]  },
+                            { 'learner_uuids': learner_uuids[6..-1] }, ]
+      response_status, response_payload = create_learner_pools(learner_pool_defs)
+      expect(response_status).to eq(200)
+      expect(response_payload['learner_pool_uuids'].count).to eq(2)
+
+      learner_pool_uuids = response_payload['learner_pool_uuids']
+
+      ##
+      ## Create question uuids
+      ##
+
+      response_status, response_payload = create_question_uuids(20)
+      expect(response_status).to eq(200)
+      expect(response_payload['question_uuids'].count).to eq(20)
+
+      question_uuids = response_payload['question_uuids']
+
+      ##
+      ## Create question pool uuids
+      ##
+
+      question_pool_defs = [ { 'question_uuids': question_uuids[0..5]   },
+                             { 'question_uuids': question_uuids[6..15]  },
+                             { 'question_uuids': question_uuids[17..-1] }, ]
+      response_status, response_payload = create_question_pools(question_pool_defs)
+      expect(response_status).to eq(200)
+      expect(response_payload['question_pool_uuids'].count).to eq(3)
+
+      question_pool_uuids = response_payload['question_pool_uuids']
+
+      ##
+      ## Create precompute CLUE uuids
+      ##
+
+      precomputed_clue_defs = [ {'learner_pool_uuid':  learner_pool_uuids[0],
+                                 'question_pool_uuid': question_pool_uuids[0] },
+                                {'learner_pool_uuid':  learner_pool_uuids[0],
+                                 'question_pool_uuid': question_pool_uuids[1] },
+                                {'learner_pool_uuid':  learner_pool_uuids[0],
+                                 'question_pool_uuid': question_pool_uuids[2] },
+                                {'learner_pool_uuid':  learner_pool_uuids[1],
+                                 'question_pool_uuid': question_pool_uuids[0] },
+                                {'learner_pool_uuid':  learner_pool_uuids[1],
+                                 'question_pool_uuid': question_pool_uuids[1] },
+                                {'learner_pool_uuid':  learner_pool_uuids[1],
+                                 'question_pool_uuid': question_pool_uuids[2] }, ]
+      response_status, response_payload = create_precomputed_clues(precomputed_clue_defs)
+      expect(response_status).to eq(200)
+      expect(response_payload['precomputed_clue_uuids'].count).to eq(6)
+
+      precomputed_clue_uuids = response_payload['precomputed_clue_uuids']
+
+      ##
+      ## Retrieve the precomputed CLUEs
+      ##
+
+      target_precomputed_clue_uuids = precomputed_clue_uuids.values_at(1,4,5)
+      response_status, response_payload = request_precomputed_clues(target_precomputed_clue_uuids)
+      expect(response_status).to eq(200)
+      expect(response_payload['precomputed_clues'].count).to eq(target_precomputed_clue_uuids.count)
     end
   end
 
 end
+
+
+def create_learner_uuids(count)
+  request_payload = { 'count': count }
+
+  make_post_request(
+    route: '/create_learners',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_learner_pools(learner_pool_defs)
+  request_payload = { 'learner_pool_defs': learner_pool_defs }
+
+  make_post_request(
+    route: '/create_learner_pools',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
 
 def request_precomputed_clues(precomputed_clue_uuids)
   request_payload = { 'precomputed_clue_uuids': precomputed_clue_uuids }
@@ -41,6 +135,51 @@ def request_precomputed_clues(precomputed_clue_uuids)
     route: '/retrieve_precomputed_clues',
     headers: { 'Content-Type' => 'application/json' },
     body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_question_uuids(count)
+  request_payload = { 'count': count }
+
+  make_post_request(
+    route: '/create_questions',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_question_pools(question_pool_defs)
+  request_payload = { 'question_pool_defs': question_pool_defs }
+
+  make_post_request(
+    route: '/create_question_pools',
+    headers: { 'Content-Type' => 'application/json' },
+    body:  request_payload.to_json
+  )
+  response_payload = JSON.parse(response.body)
+  response_status = response.status
+
+  [response_status, response_payload]
+end
+
+
+def create_precomputed_clues(precomputed_clue_defs)
+  request_payload = { 'precomputed_clue_defs': precomputed_clue_defs }
+
+  make_post_request(
+    route: '/create_precomputed_clues',
+    headers: { 'Content-Type' => 'application/json' },
+    body: request_payload.to_json
   )
   response_payload = JSON.parse(response.body)
   response_status = response.status

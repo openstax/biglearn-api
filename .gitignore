@@ -14,3 +14,6 @@
 
 # Ignore debugger history
 .byebug_history
+
+# Ignore ERD diagram
+erd.pdf

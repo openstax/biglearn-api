@@ -29,7 +29,7 @@ development:
   # To create additional roles in postgres see `$ createuser --help`.
   # When left blank, postgres will use the default role. This is
   # the same name as the operating system user that initialized the database.
-  #username: biglearn-api-rails
+  #username: biglearn-api
 
   # The password associated with the postgres role (username).
   #password:
@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: biglearn-api-rails_production
-  username: biglearn-api-rails
-  password: <%= ENV['BIGLEARN-API-RAILS_DATABASE_PASSWORD'] %>
+  database: biglearn-api_production
+  username: biglearn-api
+  password: <%= ENV['BIGLEARN-API_DATABASE_PASSWORD'] %>
