@@ -2,21 +2,27 @@ require 'rails_helper'
 
 describe 'precomputed CLUEs scenarios' do
 
-  context 'retrieve precomputed CLUEs with invalid precompute CLUE uuid(s)' do
-    it 'returns 422 (unprocessable entity) with appropriate error message(s)', type: :request do
-      target_invalid_uuids = [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ]
+  context 'retrieve precomputed CLUEs with invalid precompute CLUE uuid(s)', type: :request do
+    before(:each) do
+      @target_invalid_uuids = [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ]
+      @response_status, @response_payload = request_precomputed_clues(@target_invalid_uuids)
+    end
+    let(:target_invalid_uuids) { @target_invalid_uuids }
+    let(:response_status)      { @response_status }
+    let(:response_payload)     { @response_payload }
 
-      response_status, response_payload = request_precomputed_clues(target_invalid_uuids)
-
+    it 'returns status 422 (unprocessable entity)' do
       expect(response_status).to eq(422)
+    end
+    it 'returns appropriate error message(s)' do
       target_invalid_uuids.each do |target_invalid_uuid|
         expect(response_payload['errors'].grep(/#{target_invalid_uuid}/)).to_not be_empty
       end
     end
   end
 
-  context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)' do
-    it 'returns 200 (success) with appropriate number of precomputed CLUEs', type: :request do
+  context 'retrieve precomputed CLUEs with with valid precoputed CLUE uuid(s)', type: :request do
+    before(:each) do
       ##
       ## Create learner uuids
       ##
@@ -88,9 +94,18 @@ describe 'precomputed CLUEs scenarios' do
       ## Retrieve the precomputed CLUEs
       ##
 
-      target_precomputed_clue_uuids = precomputed_clue_uuids.values_at(1,4,5)
-      response_status, response_payload = request_precomputed_clues(target_precomputed_clue_uuids)
+      @target_precomputed_clue_uuids = precomputed_clue_uuids.values_at(1,4,5)
+      @response_status, @response_payload = request_precomputed_clues(@target_precomputed_clue_uuids)
+    end
+    let(:target_precomputed_clue_uuids) { @target_precomputed_clue_uuids}
+    let(:response_status)               { @response_status }
+    let(:response_payload)              { @response_payload }
+
+    it 'returns status 200 (success)' do
       expect(response_status).to eq(200)
+    end
+
+    it 'returns the appropriate number of precomputed CLUEs' do
       expect(response_payload['precomputed_clues'].count).to eq(target_precomputed_clue_uuids.count)
     end
   end
