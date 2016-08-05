@@ -2,13 +2,13 @@ require 'rails_helper'
 
 describe 'learner-question response scenarios' do
 
-  context 'creating learner-question responses using invalid learner,question uuids' do
-    it 'returns 422 (unprocessable entity) with appropriate error message(s)', type: :request do
-      invalid_learner_uuids  = 5.times.collect{ SecureRandom.uuid.to_s }
-      invalid_question_uuids = 3.times.collect{ SecureRandom.uuid.to_s }
+  context 'creating learner-question responses using invalid learner,question uuids', type: :request do
+    before(:each) do
+      @invalid_learner_uuids  = 5.times.collect{ SecureRandom.uuid.to_s }
+      @invalid_question_uuids = 3.times.collect{ SecureRandom.uuid.to_s }
 
-      learner_question_response_defs = invalid_learner_uuids.collect{ |invalid_learner_uuid|
-        invalid_question_uuids.collect{ |invalid_question_uuid|
+      learner_question_response_defs = @invalid_learner_uuids.collect{ |invalid_learner_uuid|
+        @invalid_question_uuids.collect{ |invalid_question_uuid|
           {
             learner_uuid:  invalid_learner_uuid,
             question_uuid: invalid_question_uuid,
@@ -17,9 +17,17 @@ describe 'learner-question response scenarios' do
         }
       }.flatten
 
-      response_status, response_payload = create_learner_question_responses(learner_question_response_defs)
+      @response_status, @response_payload = create_learner_question_responses(learner_question_response_defs)
+    end
+    let(:invalid_learner_uuids)  { @invalid_learner_uuids }
+    let(:invalid_question_uuids) { @invalid_question_uuids }
+    let(:response_status)        { @response_status }
+    let(:response_payload)       { @response_payload }
 
+    it 'returns status 422 (unprocessable entity)' do
       expect(response_status).to eq(422)
+    end
+    it 'returns appropriate error message(s)' do
       invalid_question_uuids.each do |uuid|
         expect(response_payload['errors'].grep(/#{uuid}/)).to_not be_empty
       end
@@ -30,8 +38,8 @@ describe 'learner-question response scenarios' do
   end
 
 
-  context 'creating learner-question responses using valid learner,question uuids' do
-    it 'returns 200 (success) and returns the number of created responses', type: :request do
+  context 'creating learner-question responses using valid learner,question uuids', type: :request do
+    before(:each) do
       ##
       ## create learner uuids
       ##
@@ -67,9 +75,15 @@ describe 'learner-question response scenarios' do
         }
       }.flatten
 
-      response_status, response_payload = create_learner_question_responses(learner_question_response_defs)
+      @response_status, @response_payload = create_learner_question_responses(learner_question_response_defs)
+    end
+    let(:response_status)  { @response_status }
+    let(:response_payload) { @response_payload }
 
+    it 'returns status 200 (success)' do
       expect(response_status).to eq(200)
+    end
+    it 'returns the number of created responses' do
       expect(response_payload['num_created_responses']).to eq(15)
     end
   end
