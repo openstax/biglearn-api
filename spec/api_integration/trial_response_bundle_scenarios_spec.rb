@@ -1,23 +1,26 @@
 require 'rails_helper'
 
-RSpec.describe 'learner response bundle scenarios' do
+RSpec.describe 'trial response bundle scenarios' do
   context 'malformed request' do
     context 'number of requested bundles exceeds maximum' do
       xit 'returns status 400 (bad request)'
       xit 'returns appropriate error message(s)'
     end
   end
-  context 'no learner response bundles exist' do
+  context 'no trial response bundles exist' do
     context 'request does not confirm any bundles' do
       xit 'returns status 200 (success)'
       xit 'returns no bundles'
+      xit 'returns a list of confirmed bundle uuids (none)'
+      xit 'returns a list of ignored bundle uuids (none)'
     end
     context 'request confirms bundles' do
       xit 'returns status 200 (success)'
-      xit 'returns no confirmed bundle uuids'
+      xit 'returns a list of confirmed bundle uuids (none)'
+      xit 'returns a list of ignored bundle uuids'
     end
   end
-  context 'learner response bundles exist' do
+  context 'trial response bundles exist' do
     ## sent/unsent
     ## confirmed/unconfirmed
     ## open/closed
@@ -32,7 +35,8 @@ RSpec.describe 'learner response bundle scenarios' do
       xit 'prioritizes sending of closed bundles over open bundles'
       xit 'does not return previously confirmed, closed bundles'
       xit 'returns only bundles with appropriate reader modulo'
-      xit 'returns no confirmed bundle uuids'
+      xit 'returns a list of confirmed bundle uuids (none)'
+      xit 'returns a list of ignored bundle uuids (none)'
     end
     context 'request does confirm bundles' do
       xit 'returns status 200 (success)'
@@ -47,7 +51,8 @@ RSpec.describe 'learner response bundle scenarios' do
       xit 'does not return newly confirmed, closed bundles'
       xit 'returns only bundles with appropriate reader modulo'
       xit 'returns confirmed bundle uuids'
-      xit 'returns re-confirmed bundle uuids (bundle confirmation is idempotent)'
+      xit 'returns a list of confirmed bundle uuids'
+      xit 'returns a list of ignored bundle uuids'
     end
   end
 end
