@@ -10,31 +10,15 @@ RSpec.describe 'new learner response scenarios' do
   context 'no learner responses' do
     xit 'does not save any learner responses'
     xit 'returns status 200 (success)'
-    xit 'returns a count of saved learner responses (zero)'
+    xit 'returns a list saved learner response uuids (none)'
   end
-  context 'invalid learner responses' do
-    context 'inconsistent trial definition' do
-      xit 'saves consistent learner responses'
-      xit 'does not save inconsistent learner responses'
-      xit 'returns status 207 (multi-status)'
-      xit 'returns appropriate error message(s)'
-    end
-  end
-  context 'valid learner responses' do
-    context 'with no repeats' do
-      xit 'saves the new learner responses'
-      xit 'returns status 200 (success)'
-      xit 'returns the count of saved learner responses'
-    end
-    context 'with only repeats' do
-      xit 'does not save any learner responses'
-      xit 'returns status 200 (success)'
-      xit 'returns a count of saved learner responses (zero)'
-    end
-    context 'with some repeats' do
-      xit 'saves only non-repeat learner responses'
-      xit 'returns status 200 (success)'
-      xit 'returns a count of saved learner responses'
-    end
+  context 'learner responses' do
+    ## previously saved/unsaved
+    ## valud/invalid
+    xit 'saves the new learner responses'
+    xit 'returns status 200 (success)'
+    xit 'returns a list of saved learner response uuids'
+    xit 'returns a list of not-saved learner response uuids'
+    xit 'returns re-saved learner response uuids (saves are idempotent)'
   end
 end

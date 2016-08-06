@@ -13,8 +13,8 @@ RSpec.describe 'learner response bundle scenarios' do
       xit 'returns no bundles'
     end
     context 'request confirms bundles' do
-      xit 'returns status 422 (unprocessable entity)'
-      xit 'returns appropriate error message(s)'
+      xit 'returns status 200 (success)'
+      xit 'returns no confirmed bundle uuids'
     end
   end
   context 'learner response bundles exist' do
@@ -47,6 +47,7 @@ RSpec.describe 'learner response bundle scenarios' do
       xit 'does not return newly confirmed, closed bundles'
       xit 'returns only bundles with appropriate reader modulo'
       xit 'returns confirmed bundle uuids'
+      xit 'returns re-confirmed bundle uuids (bundle confirmation is idempotent)'
     end
   end
 end
