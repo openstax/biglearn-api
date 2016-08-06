@@ -11,5 +11,6 @@ class CreateTrialResponses < ActiveRecord::Migration
     end
 
     add_index :trial_responses,  :response_uuid,  unique: true
+    add_index :trial_responses,  :trial_uuid
   end
 end

@@ -160,5 +160,6 @@ ActiveRecord::Schema.define(version: 20160806023907) do
   end
 
   add_index "trial_responses", ["response_uuid"], name: "index_trial_responses_on_response_uuid", unique: true, using: :btree
+  add_index "trial_responses", ["trial_uuid"], name: "index_trial_responses_on_trial_uuid", using: :btree
 
 end
