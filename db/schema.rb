@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160527040641) do
+ActiveRecord::Schema.define(version: 20160806023907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,5 +148,17 @@ ActiveRecord::Schema.define(version: 20160527040641) do
 
   add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
+
+  create_table "trial_responses", force: :cascade do |t|
+    t.uuid     "response_uuid", null: false
+    t.uuid     "trial_uuid",    null: false
+    t.uuid     "learner_uuid",  null: false
+    t.uuid     "question_uuid", null: false
+    t.boolean  "is_correct",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "trial_responses", ["response_uuid"], name: "index_trial_responses_on_response_uuid", unique: true, using: :btree
 
 end

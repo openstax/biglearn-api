@@ -71,4 +71,6 @@ Rails.application.routes.draw do
   post '/create_precomputed_clues' => 'precomputed_clues#create'
 
   post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
+
+  post '/record_trial_responses' => 'trials#record_responses'
 end
