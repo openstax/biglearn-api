@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160806023907) do
+ActiveRecord::Schema.define(version: 20160807051413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,37 @@ ActiveRecord::Schema.define(version: 20160806023907) do
 
   add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
+
+  create_table "trial_response_bundle_receipts", force: :cascade do |t|
+    t.uuid     "trial_response_bundle_uuid", null: false
+    t.uuid     "receiver_uuid",              null: false
+    t.boolean  "is_confirmed",               null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "trial_response_bundle_receipts", ["trial_response_bundle_uuid", "receiver_uuid"], name: "index_trbr_r_uuid_scope_unique", unique: true, using: :btree
+  add_index "trial_response_bundle_receipts", ["trial_response_bundle_uuid"], name: "index_trbr_trb_uuid", using: :btree
+
+  create_table "trial_response_bundles", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.boolean  "is_open",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "trial_response_bundles", ["is_open"], name: "index_trial_response_bundles_on_is_open", using: :btree
+  add_index "trial_response_bundles", ["uuid"], name: "index_trial_response_bundles_on_uuid", unique: true, using: :btree
+
+  create_table "trial_response_trial_response_bundles", force: :cascade do |t|
+    t.uuid     "trial_response_uuid",        null: false
+    t.uuid     "trial_response_bundle_uuid", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "trial_response_trial_response_bundles", ["trial_response_bundle_uuid"], name: "index_trtrb_trb_uuid", using: :btree
+  add_index "trial_response_trial_response_bundles", ["trial_response_uuid"], name: "index_trtrb_tr_uuid_unique", unique: true, using: :btree
 
   create_table "trial_responses", force: :cascade do |t|
     t.uuid     "response_uuid", null: false

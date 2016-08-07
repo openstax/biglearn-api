@@ -4,14 +4,47 @@ class TrialResponseBundlesController < JsonApiController
                    output_schema: _fetch_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
+      results = _fetch_bundles(
+        receiver_uuid:          request_payload['receiver_uuid'],
+        receiver_modulo:        request_payload['receiver_modulo'],
+        receiver_count:         request_payload['receiver_count'],
+        max_bundle_count:       request_payload['max_bundle_count'],
+        confirmed_bundle_uuids: request_payload['confirmed_bundle_uuids'],
+      )
+
       response_payload = {
-        'bundles':                      [],
-        'confirmed_bundle_uuids':       [],
-        'newly_confirmed_bundle_uuids': [],
-        'ignored_bundle_uuids':         request_payload['confirmed_bundle_uuids'],
+        'bundles':                      results[:bundles],
+        'confirmed_bundle_uuids':       results[:confirmed_bundle_uuids],
+        'newly_confirmed_bundle_uuids': results[:newly_confirmed_bundle_uuids],
+        'ignored_bundle_uuids':         results[:ignored_bundle_uuids],
       }
       render json: response_payload.to_json, status: 200
     end
+  end
+
+
+  def _fetch_bundles(receiver_uuid:,
+                     receiver_modulo:,
+                     receiver_count:,
+                     max_bundle_count:,
+                     confirmed_bundle_uuids:)
+    # unsent_or_unconf_trial_response_bundle_uuids = TrialResponseBundle.connection.execute(
+    #   'SELECT uuid FROM ' +
+    #   'trial_response_bundles FULL JOIN trial_response_bundle_receipts ' +
+    #   'ON trial_response_bundles.uuid = trial_response_bundle_receipts.trial_response_bundle_uuid ' +
+    #   'WHERE trial_response_bundle_receipts.trial_response_bundle_uuid IS NULL ' +
+    #   'OR trial_response_bundles.is_open IS TRUE ' +
+    #   'OR trial_response_bundle_receipts.is_confirmed IS FALSE '
+    # ).map{|hash| hash['uuid']}
+
+    results = {
+      bundles:                      [],
+      confirmed_bundle_uuids:       [],
+      newly_confirmed_bundle_uuids: [],
+      ignored_bundle_uuids:         confirmed_bundle_uuids,
+    }
+
+    results
   end
 
   def _fetch_request_payload_schema
@@ -20,9 +53,10 @@ class TrialResponseBundlesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'reader_number': {'$ref': '#standard_definitions/non_negative_integer'},
-        'reader_modulo': {'$ref': '#standard_definitions/non_negative_integer'},
-        'max_count': {
+        'receiver_uuid':   {'$ref': '#standard_definitions/uuid'},
+        'receiver_modulo': {'$ref': '#standard_definitions/non_negative_integer'},
+        'receiver_count':  {'$ref': '#standard_definitions/non_negative_integer'},
+        'max_bundle_count': {
           'type': 'integer',
           'minimum':   0,
           'maximum': 100,
@@ -35,9 +69,10 @@ class TrialResponseBundlesController < JsonApiController
         },
       },
       'required': [
-        'reader_number',
-        'reader_modulo',
-        'max_count',
+        'receiver_uuid',
+        'receiver_modulo',
+        'receiver_count',
+        'max_bundle_count',
         'confirmed_bundle_uuids'
       ],
       'additionalProperties': false,
