@@ -2,11 +2,13 @@ class TrialResponseBundlesController < JsonApiController
   def fetch
     with_json_apis(input_schema:  _fetch_request_payload_schema,
                    output_schema: _fetch_response_payload_schema) do
+      request_payload = json_parsed_request_payload
+
       response_payload = {
         'bundles':                      [],
         'confirmed_bundle_uuids':       [],
-        'ignored_bundle_uuids':         [],
         'newly_confirmed_bundle_uuids': [],
+        'ignored_bundle_uuids':         request_payload['confirmed_bundle_uuids'],
       }
       render json: response_payload.to_json, status: 200
     end
@@ -27,7 +29,7 @@ class TrialResponseBundlesController < JsonApiController
         },
         'confirmed_bundle_uuids': {
           'type': 'array',
-          'items': {'$ref': '#definitions/response_def'},
+          'items': {'$ref': '#standard_definitions/uuid'},
           'minItems': 0,
           'maxItems': 100,
         },
