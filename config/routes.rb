@@ -73,4 +73,6 @@ Rails.application.routes.draw do
   post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
 
   post '/record_trial_responses' => 'trials#record_responses'
+
+  post '/fetch_trial_response_bundles' => 'trial_response_bundles#fetch'
 end
