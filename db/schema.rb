@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160527040641) do
+ActiveRecord::Schema.define(version: 20160808014609) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,5 +148,22 @@ ActiveRecord::Schema.define(version: 20160527040641) do
 
   add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
+
+  create_table "receiver_protocols", force: :cascade do |t|
+    t.uuid     "receiver_uuid",       null: false
+    t.uuid     "instance_uuid",       null: false
+    t.uuid     "boss_uuid",           null: false
+    t.string   "boss_command",        null: false
+    t.integer  "boss_instance_count", null: false
+    t.string   "instance_command",    null: false
+    t.string   "instance_status",     null: false
+    t.integer  "instance_modulo",     null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "receiver_protocols", ["instance_uuid"], name: "index_receiver_protocols_on_instance_uuid", unique: true, using: :btree
+  add_index "receiver_protocols", ["receiver_uuid", "instance_modulo"], name: "index_receiver_protocols_on_receiver_uuid_and_instance_modulo", unique: true, using: :btree
+  add_index "receiver_protocols", ["receiver_uuid"], name: "index_receiver_protocols_on_receiver_uuid", using: :btree
 
 end
