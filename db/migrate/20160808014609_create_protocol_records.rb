@@ -1,7 +1,9 @@
-class CreateReceiverProtocols < ActiveRecord::Migration
+class CreateProtocolRecords < ActiveRecord::Migration
   def change
-    create_table :receiver_protocols do |t|
-      t.uuid     :receiver_uuid,        null: false
+    create_table :protocol_records do |t|
+      t.string   :protocol_name,        null: false
+
+      t.uuid     :group_uuid,           null: false
       t.uuid     :instance_uuid,        null: false
 
       t.uuid     :boss_uuid,            null: false
@@ -16,12 +18,12 @@ class CreateReceiverProtocols < ActiveRecord::Migration
       t.timestamps                      null: false
     end
 
-    add_index  :receiver_protocols,  :receiver_uuid
+    add_index  :protocol_records,  :group_uuid
 
-    add_index  :receiver_protocols,  :instance_uuid,
+    add_index  :protocol_records,  :instance_uuid,
                                      unique: true
 
-    add_index  :receiver_protocols,  [:receiver_uuid, :instance_modulo],
+    add_index  :protocol_records,  [:group_uuid, :instance_modulo],
                                      unique: true
   end
 end

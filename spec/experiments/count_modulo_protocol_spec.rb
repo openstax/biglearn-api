@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 class Protocol
+  PROTOCOL_NAME = 'protocol_name_here'
+
   attr_reader   :receiver_uuid
   attr_reader   :instance_uuid
   attr_accessor :modulo
@@ -17,7 +19,8 @@ class Protocol
         @modulo = -1000 - rand(1_000)
 
         ActiveRecord::Base.connection_pool.with_connection do
-          ReceiverProtocol.create!(
+          ProtocolRecord.create!(
+            protocol_name:       PROTOCOL_NAME,
             receiver_uuid:       @receiver_uuid,
             instance_uuid:       @instance_uuid,
             boss_uuid:           @instance_uuid,
@@ -39,14 +42,14 @@ class Protocol
 
   def _get_records
     records = ActiveRecord::Base.connection_pool.with_connection do
-      ReceiverProtocol.where{receiver_uuid == my{@receiver_uuid}}.to_a
+      ProtocolRecord.where{receiver_uuid == my{@receiver_uuid}}.to_a
     end
     records
   end
 
   def _get_instance_record
     instance_record = ActiveRecord::Base.connection_pool.with_connection do
-      ReceiverProtocol.where{instance_uuid == my{@instance_uuid}}.to_a.first
+      ProtocolRecord.where{instance_uuid == my{@instance_uuid}}.to_a.first
     end
     instance_record
   end
@@ -146,7 +149,7 @@ class Protocol
     #   receivers_to_wait_on = ActiveRecord::Base.connection_pool.with_connection do
     #     self.receiver_protocol_record.touch
 
-    #     ReceiverProtocol.where{receiver_uuid == my{receiver_uuid}}
+    #     ProtocolRecord.where{receiver_uuid == my{receiver_uuid}}
     #                     .where{receiver_state != 'request_negotiation'}
     #                     .where{updated_at > Time.now - 10.seconds}
     #   end
@@ -170,7 +173,7 @@ end
 RSpec.describe 'count-modulo protocol' do
   context 'multiple threads' do
     it 'negotiates modulo value correctly' do
-      expect(ReceiverProtocol.count).to eq(0)
+      expect(ProtocolRecord.count).to eq(0)
       ActiveRecord::Base.clear_active_connections!
 
       num_threads = 10
@@ -196,7 +199,7 @@ RSpec.describe 'count-modulo protocol' do
 
       threads.map(&:join)
 
-      ReceiverProtocol.find_each{|rec| puts rec.inspect}
+      ProtocolRecord.find_each{|rec| puts rec.inspect}
       puts "modulos: #{modulos}"
     end
   end
