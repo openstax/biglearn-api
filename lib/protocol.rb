@@ -1,13 +1,16 @@
 class Protocol
-  def initialize(protocol_name:, group_uuid:, &block)
-    @protocol_name = protocol_name
-    @group_uuid    = group_uuid
-    @work_block    = block
-    @instance_uuid = SecureRandom.uuid.to_s
+  def initialize(protocol_name:, min_work_interval:, group_uuid:, &block)
+    @protocol_name      = protocol_name
+    @min_work_interval  = min_work_interval
+    @group_uuid         = group_uuid
+    @work_block         = block
+    @instance_uuid      = SecureRandom.uuid.to_s
   end
 
   def run
     ActiveRecord::Base.clear_active_connections!
+
+    last_work_time = Time.now - 1.year
 
     loop do
       my_record, group_records = _read_records
@@ -57,8 +60,20 @@ class Protocol
         puts 'allocate_modulos!'
         _allocate_modulos
       when 'work'
-        puts "#{my_record.instance_uuid} #{my_record.instance_modulo} #{am_boss} #{boss_record.instance_uuid} - WORK"
-        sleep(1)
+        curent_time = Time.now
+        if my_record.instance_modulo < 0
+          sleep(0.5)
+        elsif curent_time - last_work_time >= @min_work_interval
+          last_work_time = curent_time
+          # puts "#{my_record.instance_uuid} #{my_record.instance_modulo} #{am_boss} #{boss_record.instance_uuid} - WORK"
+          # sleep(0.1)
+          @work_block.call(
+            instance_count:  boss_record.boss_instance_count,
+            instance_modulo: my_record.instance_modulo,
+          )
+        else
+          sleep([0.5, (last_work_time + @min_work_interval - curent_time)].min)
+        end
       else
         puts "#{my_record.instance_uuid} #{my_record.instance_modulo} #{am_boss} #{boss_record.instance_uuid} ..."
         sleep(1)
@@ -177,14 +192,12 @@ class Protocol
   end
 
   def _allocate_modulos
-    my_record, group_records = _read_records
-    am_boss, boss_record = _get_boss_situation(group_records)
-    return if !boss_record
-
-    boss_instance_count = boss_record.boss_instance_count
-
     loop do
       start_time ||= Time.now
+
+      my_record, group_records = _read_records
+      am_boss, boss_record = _get_boss_situation(group_records)
+      return if !boss_record
 
       begin
         my_record.instance_command = 'allocate_modulos'
@@ -195,6 +208,12 @@ class Protocol
         sleep(0.1)
         next
       end
+
+      my_record, group_records = _read_records
+      am_boss, boss_record = _get_boss_situation(group_records)
+      return if !boss_record
+
+      boss_instance_count = boss_record.boss_instance_count
 
       success = false
       boss_instance_count.times do |target_modulo|
