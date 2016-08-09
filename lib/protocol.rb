@@ -1,9 +1,8 @@
-class ExperProtocol
-  PROTOCOL_NAME = 'experimental'
-
-  def initialize(group_uuid:, &block)
-    @group_uuid = group_uuid
-    @work_block = block
+class Protocol
+  def initialize(protocol_name:, group_uuid:, &block)
+    @protocol_name = protocol_name
+    @group_uuid    = group_uuid
+    @work_block    = block
     @instance_uuid = SecureRandom.uuid.to_s
   end
 
@@ -82,7 +81,7 @@ class ExperProtocol
 
         ActiveRecord::Base.connection_pool.with_connection do
           ProtocolRecord.create!(
-            protocol_name:       PROTOCOL_NAME,
+            protocol_name:       @protocol_name,
             group_uuid:          @group_uuid,
             instance_uuid:       @instance_uuid,
             boss_uuid:           SecureRandom.uuid.to_s,
