@@ -4,12 +4,12 @@ class CreateProtocolRecords < ActiveRecord::Migration
       t.string   :protocol_name,        null: false
 
       t.uuid     :group_uuid,           null: false
+
       t.uuid     :instance_uuid,        null: false
+      t.integer  :instance_count,       null: false
+      t.integer  :instance_modulo,      null: false
 
       t.uuid     :boss_uuid,            null: false
-      t.integer  :boss_instance_count,  null: false
-
-      t.integer  :instance_modulo,      null: false
 
       t.timestamps                      null: false
     end

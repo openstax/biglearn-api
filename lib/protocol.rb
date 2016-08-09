@@ -29,12 +29,8 @@ class Protocol
         next
       end
 
-      my_record.boss_uuid = boss_record.instance_uuid
-      if am_boss
-        my_record.boss_instance_count = group_records.count
-      else
-        my_record.boss_instance_count = -1
-      end
+      my_record.boss_uuid      = boss_record.instance_uuid
+      my_record.instance_count = group_records.count
       _save_record(my_record)
 
       if am_boss && dead_records.any?
@@ -44,10 +40,10 @@ class Protocol
       end
 
       actual_modulos = group_records.map(&:instance_modulo).sort
-      target_modulos = (0..boss_record.boss_instance_count-1).to_a
+      target_modulos = (0..boss_record.instance_count-1).to_a
       if actual_modulos != target_modulos
         puts "allocate needed!"
-        if (my_record.instance_modulo < 0) || (my_record.instance_modulo >= boss_record.boss_instance_count)
+        if (my_record.instance_modulo < 0) || (my_record.instance_modulo >= boss_record.instance_count)
           puts "allocate myself!"
           _allocate_modulo(my_record, group_records)
         end
@@ -55,15 +51,15 @@ class Protocol
         next
       end
 
-      if (my_record.instance_modulo < 0) || (my_record.instance_modulo >= boss_record.boss_instance_count)
-        raise "instance_modulo error (#{my_record.instance_modulo} / #{boss_record.boss_instance_count})"
+      if (my_record.instance_modulo < 0) || (my_record.instance_modulo >= boss_record.instance_count)
+        raise "instance_modulo error (#{my_record.instance_modulo} / #{boss_record.instance_count})"
       end
 
       curent_time = Time.now
       if curent_time - last_work_time >= @min_work_interval
         last_work_time = curent_time
         @work_block.call(
-          instance_count:  boss_record.boss_instance_count,
+          instance_count:  boss_record.instance_count,
           instance_modulo: my_record.instance_modulo,
         )
       else
@@ -93,9 +89,9 @@ class Protocol
             protocol_name:       @protocol_name,
             group_uuid:          @group_uuid,
             instance_uuid:       @instance_uuid,
-            boss_uuid:           @instance_uuid,
-            boss_instance_count:  -1,
+            instance_count:      1,
             instance_modulo:     modulo,
+            boss_uuid:           @instance_uuid,
           )
         end
 
@@ -158,8 +154,8 @@ class Protocol
   def _elect_new_boss(my_record, group_records)
     lowest_uuid = group_records.map(&:instance_uuid).sort.first
 
-    my_record.boss_uuid           = lowest_uuid
-    my_record.boss_instance_count = group_records.count
+    my_record.boss_uuid      = lowest_uuid
+    my_record.instance_count = group_records.count
 
     _save_record(my_record)
     sleep(0.1)
@@ -170,7 +166,7 @@ class Protocol
     am_boss, boss_record = _get_boss_situation(group_records)
     return if !boss_record
 
-    boss_instance_count = boss_record.boss_instance_count
+    boss_instance_count = boss_record.instance_count
 
     all_modulos = (0..boss_instance_count-1).to_a
     taken_modulos = group_records.select{ |rec|
@@ -182,7 +178,7 @@ class Protocol
     available_modulos.each do |target_modulo|
       begin
         my_record.instance_modulo = target_modulo
-
+        my_record.instance_count  = group_records.count
         _save_record(my_record)
         break
       rescue ActiveRecord::WrappedDatabaseException

@@ -112,14 +112,14 @@ ActiveRecord::Schema.define(version: 20160808014609) do
   add_index "precomputed_clues", ["uuid"], name: "index_precomputed_clues_on_uuid", unique: true, using: :btree
 
   create_table "protocol_records", force: :cascade do |t|
-    t.string   "protocol_name",       null: false
-    t.uuid     "group_uuid",          null: false
-    t.uuid     "instance_uuid",       null: false
-    t.uuid     "boss_uuid",           null: false
-    t.integer  "boss_instance_count", null: false
-    t.integer  "instance_modulo",     null: false
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.string   "protocol_name",   null: false
+    t.uuid     "group_uuid",      null: false
+    t.uuid     "instance_uuid",   null: false
+    t.integer  "instance_count",  null: false
+    t.integer  "instance_modulo", null: false
+    t.uuid     "boss_uuid",       null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   add_index "protocol_records", ["group_uuid", "instance_modulo"], name: "index_protocol_records_on_group_uuid_and_instance_modulo", unique: true, using: :btree
