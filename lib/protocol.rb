@@ -59,7 +59,6 @@ class Protocol
         raise "instance_modulo error (#{my_record.instance_modulo} / #{boss_record.boss_instance_count})"
       end
 
-      # puts "work!"
       curent_time = Time.now
       if curent_time - last_work_time >= @min_work_interval
         last_work_time = curent_time
@@ -95,10 +94,7 @@ class Protocol
             group_uuid:          @group_uuid,
             instance_uuid:       @instance_uuid,
             boss_uuid:           @instance_uuid,
-            boss_command:        'none',
             boss_instance_count:  -1,
-            instance_command:    'none',
-            instance_status:     'none',
             instance_modulo:     modulo,
           )
         end
@@ -149,8 +145,6 @@ class Protocol
                                }.sort_by{|uuid, size| size}
                                .last
 
-    # puts "uuid: #{uuid} votes: #{votes} count: #{group_records.count}"
-
     boss_uuid = (votes > group_records.count/2.0) ? uuid : nil
     boss_uuid = nil unless group_records.detect{|rec| rec.instance_uuid == boss_uuid}
 
@@ -165,9 +159,7 @@ class Protocol
     lowest_uuid = group_records.map(&:instance_uuid).sort.first
 
     my_record.boss_uuid           = lowest_uuid
-    my_record.boss_command        = 'none'
     my_record.boss_instance_count = group_records.count
-    my_record.instance_command    = 'elect'
 
     _save_record(my_record)
     sleep(0.1)
@@ -187,16 +179,9 @@ class Protocol
 
     available_modulos = all_modulos - taken_modulos
 
-    puts "boss_instance_count = #{boss_instance_count}"
-    puts "all_modulos:       #{all_modulos}"
-    puts "taken_modulos:     #{taken_modulos}"
-    puts "available_modulos: #{available_modulos}"
-
     available_modulos.each do |target_modulo|
-      puts "target_modulo = #{target_modulo}"
       begin
-        my_record.instance_command = 'allocate_modulos'
-        my_record.instance_modulo  = target_modulo
+        my_record.instance_modulo = target_modulo
 
         _save_record(my_record)
         break

@@ -116,10 +116,7 @@ ActiveRecord::Schema.define(version: 20160808014609) do
     t.uuid     "group_uuid",          null: false
     t.uuid     "instance_uuid",       null: false
     t.uuid     "boss_uuid",           null: false
-    t.string   "boss_command",        null: false
     t.integer  "boss_instance_count", null: false
-    t.string   "instance_command",    null: false
-    t.string   "instance_status",     null: false
     t.integer  "instance_modulo",     null: false
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false

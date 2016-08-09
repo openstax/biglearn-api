@@ -7,11 +7,7 @@ class CreateProtocolRecords < ActiveRecord::Migration
       t.uuid     :instance_uuid,        null: false
 
       t.uuid     :boss_uuid,            null: false
-      t.string   :boss_command,         null: false
       t.integer  :boss_instance_count,  null: false
-
-      t.string   :instance_command,     null: false
-      t.string   :instance_status,      null: false
 
       t.integer  :instance_modulo,      null: false
 
