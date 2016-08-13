@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808014609) do
+ActiveRecord::Schema.define(version: 20160811071910) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,13 @@ ActiveRecord::Schema.define(version: 20160808014609) do
 
   add_index "concepts", ["created_at"], name: "index_concepts_on_created_at", using: :btree
   add_index "concepts", ["uuid"], name: "index_concepts_on_uuid", unique: true, using: :btree
+
+  create_table "exper_increasing_counters", force: :cascade do |t|
+    t.uuid    "uuid",    null: false
+    t.integer "counter", null: false
+  end
+
+  add_index "exper_increasing_counters", ["uuid", "counter"], name: "index_exper_increasing_counters_on_uuid_and_counter", unique: true, using: :btree
 
   create_table "learner_batch_entries", force: :cascade do |t|
     t.string "learner_batch_uuid", limit: 36, null: false
