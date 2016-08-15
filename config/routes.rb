@@ -54,6 +54,8 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
+  post '/record_responses' => 'responses#record'
+
   post '/create_learners' => 'learners#create'
 
   post '/create_questions' => 'questions#create'

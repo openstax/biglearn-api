@@ -116,6 +116,10 @@ class JsonApiController < ApplicationController
         'type': 'integer',
         'minumum': 0,
       },
+      'datetime': {
+        'type': 'string',
+        'format': 'date-time',
+      },
     }
   end
 
