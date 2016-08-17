@@ -38,6 +38,9 @@ gem 'json-schema'
 ## database query DSL
 gem 'squeel'
 
+## datetime string parsing
+gem 'chronic'
+
 ## entity-relationship disagram gem
 gem 'rails-erd'
 
