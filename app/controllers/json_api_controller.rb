@@ -104,7 +104,7 @@ class JsonApiController < ApplicationController
       'uuid': {
         'type': 'string',
         'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
-                   '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-'  +
+                   '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
                    '[a-fA-F0-9]{12}$',
       },
       'number_between_0_and_1': {
@@ -119,6 +119,24 @@ class JsonApiController < ApplicationController
       'datetime': {
         'type': 'string',
         'format': 'date-time',
+      },
+      'receiver_info': {
+        'type': 'object',
+        'properties': {
+          'receiver_uuid': {'$ref': '#standard_definitions/uuid'},
+          'partition_count': {
+            'type': 'integer',
+            'minumum': 0,
+            'maximum': 10000,
+          },
+          'partition_modulo': {
+            'type': 'integer',
+            'minumum': 0,
+            'maximum': 9999,
+          },
+        },
+        'required': ['receiver_uuid', 'partition_count', 'partition_modulo'],
+        'additionalProperties': false,
       },
     }
   end

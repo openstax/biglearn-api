@@ -56,6 +56,8 @@ Rails.application.routes.draw do
 
   post '/record_responses' => 'responses#record'
 
+  post '/fetch_response_bundles' => 'response_bundles#fetch'
+
   post '/create_learners' => 'learners#create'
 
   post '/create_questions' => 'questions#create'

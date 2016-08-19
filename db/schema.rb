@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160815175514) do
+ActiveRecord::Schema.define(version: 20160817194653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,49 @@ ActiveRecord::Schema.define(version: 20160815175514) do
 
   add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
   add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
+
+  create_table "response_bundle_confirmations", force: :cascade do |t|
+    t.uuid     "response_bundle_uuid", null: false
+    t.uuid     "receiver_uuid",        null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "response_bundle_confirmations", ["receiver_uuid"], name: "index_response_bundle_confirmations_on_receiver_uuid", using: :btree
+  add_index "response_bundle_confirmations", ["response_bundle_uuid", "receiver_uuid"], name: "index_rbc_rb_uuid_r_uuid_unique", unique: true, using: :btree
+  add_index "response_bundle_confirmations", ["response_bundle_uuid"], name: "index_response_bundle_confirmations_on_response_bundle_uuid", using: :btree
+
+  create_table "response_bundle_entries", force: :cascade do |t|
+    t.uuid     "response_bundle_uuid", null: false
+    t.uuid     "response_uuid",        null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "response_bundle_entries", ["response_bundle_uuid", "response_uuid"], name: "index_rbe_rb_uuid_r_uuid_unique", unique: true, using: :btree
+  add_index "response_bundle_entries", ["response_bundle_uuid"], name: "index_response_bundle_entries_on_response_bundle_uuid", using: :btree
+  add_index "response_bundle_entries", ["response_uuid"], name: "index_response_bundle_entries_on_response_uuid", using: :btree
+
+  create_table "response_bundle_receipts", force: :cascade do |t|
+    t.uuid     "response_bundle_uuid", null: false
+    t.uuid     "receiver_uuid",        null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "response_bundle_receipts", ["receiver_uuid"], name: "index_response_bundle_receipts_on_receiver_uuid", using: :btree
+  add_index "response_bundle_receipts", ["response_bundle_uuid", "receiver_uuid"], name: "index_rbr_rb_uuid_r_uuid_unique", unique: true, using: :btree
+  add_index "response_bundle_receipts", ["response_bundle_uuid"], name: "index_response_bundle_receipts_on_response_bundle_uuid", using: :btree
+
+  create_table "response_bundles", force: :cascade do |t|
+    t.uuid     "response_bundle_uuid", null: false
+    t.boolean  "is_open",              null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "response_bundles", ["is_open"], name: "index_response_bundles_on_is_open", using: :btree
+  add_index "response_bundles", ["response_bundle_uuid"], name: "index_response_bundles_on_response_bundle_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
     t.uuid     "response_uuid",  null: false
