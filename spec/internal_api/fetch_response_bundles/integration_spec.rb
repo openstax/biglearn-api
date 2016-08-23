@@ -36,81 +36,6 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
   end
   let(:response_bundle_uuids) { @response_bundle_uuids }
 
-  let(:target_closed_sent_unconfirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:is_open) &&
-      !params.fetch(:sent_to).empty? &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_confirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:is_open) &&
-      params.fetch(:sent_to).include?(target_receiver_uuid) &&
-      params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_unconfirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_closed_unconfirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:is_open) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_unsent_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:sent_to).include?(target_receiver_uuid) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_open_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      params.fetch(:is_open) &&
-      !params.fetch(:sent_to).include?(target_receiver_uuid) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_closed_unsent_unconfirmed_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:is_open) &&
-      !params.fetch(:sent_to).include?(target_receiver_uuid) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_closed_unconfirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      !params.fetch(:is_open) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
-  let(:target_sent_unconfirmed_bundle_uuids) {
-    response_bundle_uuids.zip(bundle_params).select{ |bundle_uuid, params|
-      (params.fetch(:partition) == target_partition) &&
-      params.fetch(:sent_to).include?(target_receiver_uuid) &&
-      !params.fetch(:confirmed_by).include?(target_receiver_uuid)
-    }.map(&:first)
-  }
-
 
   context 'when the request is malformed', type: :request do
 
@@ -179,7 +104,8 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       }
 
       context 'when the request contains newly-confirmed response bundle uuids' do
-        let(:confirmed_bundle_uuids) { target_closed_sent_unconfirmed_bundle_uuids * 2 }
+        let(:target_bundle_uuids)    { response_bundle_uuids.values_at(1) }
+        let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
         it 'new ResponseBundleConfirmation records are created' do
           split_time = Time.now
@@ -188,23 +114,24 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
           aggregate_failures 'checks' do
             expect{
               fetch_response_bundles(request_payload: request_payload)
-            }.to change{ ResponseBundleConfirmation.count }.by(target_closed_sent_unconfirmed_bundle_uuids.count)
+            }.to change{ ResponseBundleConfirmation.count}.by(target_bundle_uuids.count)
 
             newly_confirmed_bundle_uuids = ResponseBundleConfirmation.where{created_at > split_time}
                                                                      .to_a
                                                                      .map{|rbc| rbc.response_bundle_uuid}
 
-            expect(newly_confirmed_bundle_uuids.sort).to eq(target_closed_sent_unconfirmed_bundle_uuids.sort)
+            expect(newly_confirmed_bundle_uuids).to match_array(target_bundle_uuids)
           end
         end
         it 'the response contains the newly-confirmed response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['confirmed_bundle_uuids'].sort).to eq(target_closed_sent_unconfirmed_bundle_uuids.sort)
+          expect(response_payload['confirmed_bundle_uuids']).to match_array(target_bundle_uuids)
         end
       end
 
       context 'when the request contains previously-confirmed response bundle uuids' do
-        let(:confirmed_bundle_uuids) { target_confirmed_bundle_uuids * 2 }
+        let(:target_bundle_uuids)    { response_bundle_uuids.values_at(2) }
+        let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
@@ -213,7 +140,7 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         end
         it 'the response contains the previously-confirmed response bundle uuids (idempotence)' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['confirmed_bundle_uuids'].sort).to eq(target_confirmed_bundle_uuids.sort)
+          expect(response_payload['confirmed_bundle_uuids']).to match_array(target_bundle_uuids)
         end
       end
 
@@ -232,7 +159,8 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       end
 
       context 'when the request contains unsent response bundle uuids' do
-        let(:confirmed_bundle_uuids) { target_unsent_bundle_uuids * 2 }
+        let(:target_bundle_uuids)    { response_bundle_uuids.values_at(0,3) }
+        let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
@@ -246,7 +174,8 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       end
 
       context 'when the request contains open response bundle uuids' do
-        let(:confirmed_bundle_uuids) { target_open_bundle_uuids * 2 }
+        let(:target_bundle_uuids)    { response_bundle_uuids.values_at(3) }
+        let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
@@ -300,10 +229,11 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         }
 
         let(:max_bundles_to_return) { 10 }
+        let(:target_bundle_uuids)   { response_bundle_uuids.values_at(1) }
 
         it 'the response contains the returnable response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['bundle_uuids']).to match_array(target_unconfirmed_bundle_uuids)
+          expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
         end
       end
 
@@ -339,10 +269,11 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         }
 
         let(:max_bundles_to_return) { 2 }
+        let(:target_bundle_uuids)   { response_bundle_uuids.values_at(2,3) }
 
         it 'all closed bundle uuids are returned before any open bundle uuid' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['bundle_uuids']).to match_array(target_closed_unconfirmed_bundle_uuids)
+          expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
         end
       end
 
@@ -358,10 +289,11 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         }
 
         let(:max_bundles_to_return) { 2 }
+        let(:target_bundle_uuids)   { response_bundle_uuids.values_at(1,3) }
 
         it 'the response contains the previously-sent, unconfirmed bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['bundle_uuids']).to match_array(target_sent_unconfirmed_bundle_uuids)
+          expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
         end
       end
 
@@ -395,11 +327,13 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
           ]
         }
 
-        let(:max_bundles_to_return) { 10 }
+        let(:max_bundles_to_return)         { 10 }
+        let(:target_returned_bundle_uuids)  { response_bundle_uuids.values_at(1,2,4) }
+        let(:target_receipt_bundle_uuids)   { response_bundle_uuids.values_at(1) }
 
         it 'all bundle uuids match the partition count/modulo' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-          expect(response_payload['bundle_uuids']).to match_array(target_unconfirmed_bundle_uuids)
+          expect(response_payload['bundle_uuids']).to match_array(target_returned_bundle_uuids)
         end
 
         it 'new ResponseBundleReceipt records are created for ONLY newly-sent, closed response bundles' do
@@ -412,7 +346,7 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
             }.to change{ ResponseBundleReceipt.count }.by(1)
 
             expect(ResponseBundleReceipt.where{created_at > split_time}.map(&:response_bundle_uuid))
-              .to match_array(target_closed_unsent_unconfirmed_uuids)
+              .to match_array(target_receipt_bundle_uuids)
           end
         end
       end
