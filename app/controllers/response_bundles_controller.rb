@@ -147,17 +147,21 @@ class ResponseBundlesController < JsonApiController
 
     ##
     ## Find all bundle uuids that have not yet been confirmed
-    ## by this receiver.
+    ## by this receiver that also belong to the partition.
     ##
 
     sql_bundle_uuids = %Q{
-      SELECT response_bundle_uuid FROM response_bundles rb
-      WHERE NOT EXISTS (
-        SELECT response_bundle_uuid FROM response_bundle_confirmations rbc
-        WHERE rbc.receiver_uuid = '#{receiver_uuid}'
-        AND rb.response_bundle_uuid = rbc.response_bundle_uuid
-      )
-      ORDER BY is_open ASC
+      SELECT response_bundle_uuid FROM (
+        SELECT * FROM response_bundles rb
+        WHERE NOT EXISTS (
+          SELECT response_bundle_uuid FROM response_bundle_confirmations rbc
+          WHERE rbc.receiver_uuid = '#{receiver_uuid}'
+          AND rb.response_bundle_uuid = rbc.response_bundle_uuid
+        )
+      ) AS unconfirmed
+      WHERE unconfirmed.partition_value % #{partition_count} = #{partition_modulo}
+      ORDER BY unconfirmed.is_open ASC, unconfirmed.updated_at ASC
+      LIMIT #{max_bundles_to_return}
     }.gsub(/\n\s*/, ' ')
 
     bundle_uuids =
@@ -165,18 +169,10 @@ class ResponseBundlesController < JsonApiController
                     .map{|hash| hash.fetch('response_bundle_uuid')}
 
     ##
-    ## Limit the bundle uuids to those matching the work partition.
-    ##
-
-    partition_bundle_uuids = bundle_uuids.select{ |bundle_uuid|
-      bundle_uuid.split('-').last.hex % partition_count == partition_modulo
-    }.take(max_bundles_to_return)
-
-    ##
     ## Get the response data for the partition bundles.
     ##
 
-    response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in partition_bundle_uuids}
+    response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in bundle_uuids}
                                         .map(&:response_uuid)
 
     response_data = Response.where{response_uuid.in response_uuids}
@@ -192,7 +188,7 @@ class ResponseBundlesController < JsonApiController
                               }
                             }
 
-    [ partition_bundle_uuids, response_data ]
+    [ bundle_uuids, response_data ]
   end
 
 

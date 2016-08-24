@@ -21,13 +21,19 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
   let(:partition_count)            { 5 }
   let(:target_partition_modulo)    { 3 }
   let(:nontarget_partition_modulo) { 2 }
-  let(:target_partition)           { [partition_count, target_partition_modulo]    }
-  let(:nontarget_partition)        { [partition_count, nontarget_partition_modulo] }
 
-  let(:tr) { target_receiver_uuid }
-  let(:nr) { nontarget_receiver_uuid }
-  let(:tp) { target_partition }
-  let(:np) { nontarget_partition }
+  let(:target_partition_value)    {
+    begin
+      value = rand(1000)
+    end while value % partition_count != target_partition_modulo
+    value
+  }
+  let(:nontarget_partition_value) { target_partition_value + 1 }
+
+  let(:tr)  { target_receiver_uuid }
+  let(:nr)  { nontarget_receiver_uuid }
+  let(:tpv) { target_partition_value }
+  let(:npv) { nontarget_partition_value }
 
   let(:bundle_params) { [] }
 
@@ -86,20 +92,13 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
 
   context 'when the request is valid', type: :request do
 
-    context 'response status:' do
-      it 'the response has status 200 (success)' do
-        response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
-        expect(response_status).to eq(200)
-      end
-    end
-
     context 'returned bundle confirmations:' do
       let(:bundle_params) {
         [
-          { partition: np, is_open: false, sent_to: [],    confirmed_by: [],    num_responses: 1 },
-          { partition: np, is_open: false, sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
-          { partition: np, is_open: false, sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
-          { partition: np, is_open: true,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+          { partition_value: npv, is_open: false, sent_to: [],    confirmed_by: [],    num_responses: 1 },
+          { partition_value: npv, is_open: false, sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+          { partition_value: npv, is_open: false, sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
+          { partition_value: npv, is_open: true,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
         ]
       }
 
@@ -107,6 +106,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         let(:target_bundle_uuids)    { response_bundle_uuids.values_at(1) }
         let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'new ResponseBundleConfirmation records are created' do
           split_time = Time.now
           sleep(0.002)
@@ -133,6 +136,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         let(:target_bundle_uuids)    { response_bundle_uuids.values_at(2) }
         let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
             fetch_response_bundles(request_payload: request_payload)
@@ -147,6 +154,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the request contains invalid response bundle uuids' do
         let(:confirmed_bundle_uuids) { 3.times.map{ SecureRandom.uuid.to_s } }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
             fetch_response_bundles(request_payload: request_payload)
@@ -162,6 +173,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         let(:target_bundle_uuids)    { response_bundle_uuids.values_at(0,3) }
         let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
             fetch_response_bundles(request_payload: request_payload)
@@ -177,6 +192,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         let(:target_bundle_uuids)    { response_bundle_uuids.values_at(3) }
         let(:confirmed_bundle_uuids) { target_bundle_uuids * 2 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'new ResponseBundleConfirmation records are NOT created' do
           expect{
             fetch_response_bundles(request_payload: request_payload)
@@ -197,6 +216,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
 
         let(:max_bundles_to_return) { 5 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains no response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to be_empty
@@ -206,13 +229,17 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the request asks for at most zero response bundles' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 0 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains no response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to be_empty
@@ -222,15 +249,19 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the request asks for more response bundles than can be returned' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 10 }
         let(:target_bundle_uuids)   { response_bundle_uuids.values_at(1) }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains the returnable response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
@@ -240,16 +271,20 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the request asks for fewer response bundles than can be returned' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 2 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains the requested number of response bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids'].count).to eq(max_bundles_to_return)
@@ -259,18 +294,22 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when both open and closed bundle uuids can be returned' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: true,   sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: tp,  is_open: true,   sent_to: [],  confirmed_by: [],  num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: true,   sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: tpv,  is_open: true,   sent_to: [],  confirmed_by: [],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],  confirmed_by: [],  num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 2 }
         let(:target_bundle_uuids)   { response_bundle_uuids.values_at(2,3) }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'all closed bundle uuids are returned before any open bundle uuid' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
@@ -280,17 +319,21 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when there previously-sent, unconfirmed bundles' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 2 }
         let(:target_bundle_uuids)   { response_bundle_uuids.values_at(1,3) }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains the previously-sent, unconfirmed bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
@@ -300,15 +343,19 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when there are no unconfirmed bundles' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
           ]
         }
 
         let(:max_bundles_to_return) { 3 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains no bundle uuids' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to be_empty
@@ -318,12 +365,12 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the response contains bundle uuids' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
-            { partition: tp,  is_open: true,   sent_to: [],    confirmed_by: [],    num_responses: 1 },
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses: 1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses: 1 },
+            { partition_value: tpv,  is_open: true,   sent_to: [],    confirmed_by: [],    num_responses: 1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 1 },
           ]
         }
 
@@ -331,6 +378,10 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
         let(:target_returned_bundle_uuids)  { response_bundle_uuids.values_at(1,2,4) }
         let(:target_receipt_bundle_uuids)   { response_bundle_uuids.values_at(1) }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'all bundle uuids match the partition count/modulo' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids']).to match_array(target_returned_bundle_uuids)
@@ -358,14 +409,18 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the response contains no bundle uuids' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses:  1 },
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses:  1 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
           ]
         }
 
         let(:max_bundles_to_return) { 10 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains no response data' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['responses']).to be_empty
@@ -375,17 +430,21 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
       context 'when the response contains bundle uuids' do
         let(:bundle_params) {
           [
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
-            { partition: tp,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  2 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses:  4 },
-            { partition: tp,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses:  8 },
-            { partition: tp,  is_open: true,   sent_to: [],    confirmed_by: [],    num_responses: 16 },
-            { partition: np,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 32 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  1 },
+            { partition_value: tpv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses:  2 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [],    num_responses:  4 },
+            { partition_value: tpv,  is_open: false,  sent_to: [tr],  confirmed_by: [tr],  num_responses:  8 },
+            { partition_value: tpv,  is_open: true,   sent_to: [],    confirmed_by: [],    num_responses: 16 },
+            { partition_value: npv,  is_open: false,  sent_to: [],    confirmed_by: [],    num_responses: 32 },
           ]
         }
 
         let(:max_bundles_to_return) { 10 }
 
+        it 'the response has status 200 (success)' do
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_status).to eq(200)
+        end
         it 'the response contains ONLY response data from those bundles' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['responses'].count).to eq(22)
@@ -435,32 +494,16 @@ def fetch_response_bundles(request_payload:)
 end
 
 
-def create_modulo_uuid(partition_count:,
-                       partition_modulo:)
-  begin
-    uuid = SecureRandom.uuid.to_s
-  end while (uuid_as_number(uuid) % partition_count != partition_modulo)
-  uuid
-end
-
-
-def uuid_as_number(uuid)
-  uuid.split('-').last.hex
-end
-
-
 def create_bundles(bundle_params:)
   response_bundle_uuids = bundle_params.map do |params|
     response_uuids = create_responses(count: params.fetch(:num_responses))
 
-    response_bundle_uuid = create_modulo_uuid(
-      partition_count:  params.fetch(:partition)[0],
-      partition_modulo: params.fetch(:partition)[1],
-    )
+    response_bundle_uuid = SecureRandom.uuid.to_s
 
     ResponseBundle.create!(
       response_bundle_uuid: response_bundle_uuid,
-      is_open: params.fetch(:is_open)
+      is_open:              params.fetch(:is_open),
+      partition_value:      params.fetch(:partition_value),
     )
 
     response_uuids.map do |response_uuid|
@@ -497,13 +540,14 @@ def create_responses(count:)
     response_uuid = SecureRandom.uuid.to_s
 
     Response.create!(
-      response_uuid:  response_uuid,
-      trial_uuid:     SecureRandom.uuid.to_s,
-      trial_sequence: (counter += 1),
-      learner_uuid:   SecureRandom.uuid.to_s,
-      question_uuid:  SecureRandom.uuid.to_s,
-      is_correct:     [true, false].sample,
-      responded_at:   Time.now,
+      response_uuid:    response_uuid,
+      trial_uuid:       SecureRandom.uuid.to_s,
+      trial_sequence:   (counter += 1),
+      learner_uuid:     SecureRandom.uuid.to_s,
+      question_uuid:    SecureRandom.uuid.to_s,
+      is_correct:       [true, false].sample,
+      responded_at:     Time.now,
+      partition_value:  rand(1000),
     )
 
     response_uuid

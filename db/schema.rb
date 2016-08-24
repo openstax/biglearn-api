@@ -185,6 +185,7 @@ ActiveRecord::Schema.define(version: 20160817194653) do
   create_table "response_bundles", force: :cascade do |t|
     t.uuid     "response_bundle_uuid", null: false
     t.boolean  "is_open",              null: false
+    t.integer  "partition_value",      null: false
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -193,13 +194,14 @@ ActiveRecord::Schema.define(version: 20160817194653) do
   add_index "response_bundles", ["response_bundle_uuid"], name: "index_response_bundles_on_response_bundle_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
-    t.uuid     "response_uuid",  null: false
-    t.uuid     "trial_uuid",     null: false
-    t.integer  "trial_sequence", null: false
-    t.uuid     "learner_uuid",   null: false
-    t.uuid     "question_uuid",  null: false
-    t.boolean  "is_correct",     null: false
-    t.datetime "responded_at",   null: false
+    t.uuid     "response_uuid",   null: false
+    t.uuid     "trial_uuid",      null: false
+    t.integer  "trial_sequence",  null: false
+    t.uuid     "learner_uuid",    null: false
+    t.uuid     "question_uuid",   null: false
+    t.boolean  "is_correct",      null: false
+    t.datetime "responded_at",    null: false
+    t.integer  "partition_value", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
