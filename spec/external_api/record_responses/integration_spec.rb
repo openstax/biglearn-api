@@ -145,7 +145,7 @@ RSpec.describe 'external API: /record_responses endpoint' do
 
       let!(:previously_recorded_response_uuids) {
         responses.sample(10).map do |data|
-          Response.create!(data)
+          Response.create!(data.merge(partition_value: rand(1000)))
           data[:response_uuid]
         end
       }
@@ -162,7 +162,7 @@ RSpec.describe 'external API: /record_responses endpoint' do
       end
       it 'creates Response records for only the new responses' do
         split_time = Time.now
-        sleep(0.01)
+        sleep(0.002)
 
         expect {
           record_responses(request_payload: request_payload)
@@ -173,7 +173,7 @@ RSpec.describe 'external API: /record_responses endpoint' do
       end
       it 'does not alter previously-recorded Response records' do
         split_time = Time.now
-        sleep(0.01)
+        sleep(0.02)
 
         record_responses(request_payload: request_payload)
         target_response_updated_times = Response.where{created_at < split_time}.map(&:updated_at).to_a
