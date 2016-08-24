@@ -289,6 +289,11 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
           response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
           expect(response_payload['bundle_uuids'].count).to eq(max_bundles_to_return)
         end
+        it 'older bundles are preferred' do
+          target_bundle_uuids = response_bundle_uuids.values_at(1,2)
+          response_status, response_payload = fetch_response_bundles(request_payload: request_payload)
+          expect(response_payload['bundle_uuids']).to match_array(target_bundle_uuids)
+        end
       end
 
       context 'when both open and closed bundle uuids can be returned' do
