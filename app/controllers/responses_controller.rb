@@ -14,52 +14,54 @@ class ResponsesController < JsonApiController
 
 
   def _record_responses(response_data:)
+    return [] if response_data.empty?
+
     start_time     = Time.now
     start_time_str = start_time.utc.iso8601(6)
 
-    return [] if response_data.empty?
-
     values = response_data.map{ |data|
       {
-        response_uuid:  data[:response_uuid],
-        trial_uuid:     data[:trial_uuid],
-        trial_sequence: data[:trial_sequence],
-        learner_uuid:   data[:learner_uuid],
-        question_uuid:  data[:question_uuid],
-        is_correct:     data[:is_correct],
-        responded_at:   data[:responded_at],
-        created_at:     start_time_str,
-        updated_at:     start_time_str,
+        response_uuid:   data[:response_uuid],
+        trial_uuid:      data[:trial_uuid],
+        trial_sequence:  data[:trial_sequence],
+        learner_uuid:    data[:learner_uuid],
+        question_uuid:   data[:question_uuid],
+        is_correct:      data[:is_correct],
+        responded_at:    data[:responded_at],
+        partition_value: rand(1000),
+        created_at:      start_time_str,
+        updated_at:      start_time_str,
       }
     }.uniq{|value| value[:response_uuid]}.sort_by{|value| value[:response_uuid]}
 
     target_response_uuids = values.map{|value| value[:response_uuid]}
 
     values_str = values.map{ |value|
-      "(" +
-      [ %Q('#{value[:response_uuid]}'),
-        %Q('#{value[:trial_uuid]}'),
-        %Q(#{value[:trial_sequence]}),
-        %Q('#{value[:learner_uuid]}'),
-        %Q('#{value[:question_uuid]}'),
-        (value[:is_correct] ? 'TRUE' : 'FALSE'),
-        %Q(TIMESTAMP WITH TIME ZONE '#{value[:responded_at]}'),
-        %Q(TIMESTAMP WITH TIME ZONE '#{value[:created_at]}'),
-        %Q(TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}'),
-        ].join(',') +
-      ")"
+      %Q{
+        ( '#{value[:response_uuid]}',
+          '#{value[:trial_uuid]}',
+          #{value[:trial_sequence]},
+          '#{value[:learner_uuid]}',
+          '#{value[:question_uuid]}',
+          #{value[:is_correct] ? 'TRUE' : 'FALSE'},
+          TIMESTAMP WITH TIME ZONE '#{value[:responded_at]}',
+          #{value[:partition_value]},
+          TIMESTAMP WITH TIME ZONE '#{value[:created_at]}',
+          TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}' )
+      }.gsub(/\n\s*/, ' ')
     }.join(',')
 
     recorded_response_uuids = Response.transaction(isolation: :serializable) do
-      inserted_response_uuids = Response.connection.execute(
-        [
-          %Q!INSERT INTO responses!,
-          %Q!(response_uuid,trial_uuid,trial_sequence,learner_uuid,question_uuid,is_correct,responded_at,created_at,updated_at)!,
-          %Q!VALUES #{values_str}!,
-          %Q!ON CONFLICT DO NOTHING!,
-          %Q!RETURNING response_uuid!,
-        ].join(' ')
-      ).collect{|hash| hash[:response_uuid]}
+      sql_inserted_response_uuids = %Q{
+        INSERT INTO responses
+        (response_uuid,trial_uuid,trial_sequence,learner_uuid,question_uuid,is_correct,responded_at,partition_value,created_at,updated_at)
+        VALUES #{values_str}
+        ON CONFLICT DO NOTHING
+        RETURNING response_uuid
+      }.gsub(/\n\s*/, ' ')
+
+      inserted_response_uuids = Response.connection.execute(sql_inserted_response_uuids)
+                                        .collect{|hash| hash[:response_uuid]}
 
       recorded_response_uuids = Response.distinct
                                         .where{response_uuid.in target_response_uuids}

@@ -4,6 +4,8 @@ class CreateResponseBundles < ActiveRecord::Migration
       t.uuid     :response_bundle_uuid,  null: false
       t.boolean  :is_open,               null: false
 
+      t.integer  :partition_value,       null: false
+
       t.timestamps                       null: false
     end
 

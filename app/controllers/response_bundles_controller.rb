@@ -73,14 +73,16 @@ class ResponseBundlesController < JsonApiController
     uuid_str = confirmed_bundle_uuids.map{|uuid| "'#{uuid}'"}
                                      .join(',')
 
-    valid_confirmed_bundle_uuids = ResponseBundle.connection.execute(
-      [
-        %Q!SELECT response_bundle_uuid FROM response_bundles!,
-        %Q!INNER JOIN response_bundle_receipts USING (response_bundle_uuid)!,
-        %Q!WHERE response_bundles.is_open IS FALSE!,
-        %Q!AND response_bundle_uuid IN (#{uuid_str})!,
-      ].join(' ')
-    ).map{|hash| hash['response_bundle_uuid']}
+    sql_valid_confirmed_bundle_uuids = %Q{
+      SELECT response_bundle_uuid FROM response_bundles
+      INNER JOIN response_bundle_receipts USING (response_bundle_uuid)
+      WHERE response_bundles.is_open IS FALSE
+      AND response_bundle_uuid IN (#{uuid_str})
+    }.gsub(/\n\s*/, ' ')
+
+    valid_confirmed_bundle_uuids =
+      ResponseBundle.connection.execute(sql_valid_confirmed_bundle_uuids)
+                    .map{|hash| hash['response_bundle_uuid']}
 
     return [] if valid_confirmed_bundle_uuids.empty?
 
@@ -103,29 +105,28 @@ class ResponseBundlesController < JsonApiController
     target_response_bundle_uuids = values.map{|value| value[:response_bundle_uuid]}
 
     values_str = values.map{ |value|
-      "(" +
-      [
-        %Q!'#{value[:response_bundle_uuid]}'!,
-        %Q!'#{value[:receiver_uuid]}'!,
-        %Q!TIMESTAMP WITH TIME ZONE '#{value[:created_at]}'!,
-        %Q!TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}'!,
-      ].join(',') +
-      ")"
+      %Q{ ( '#{value[:response_bundle_uuid]}',
+            '#{value[:receiver_uuid]}',
+            TIMESTAMP WITH TIME ZONE '#{value[:created_at]}',
+            TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}' )
+      }.gsub(/\n\s*/, ' ')
     }.join(',')
 
     ##
     ## Perform an UPSERT, ignoring conflicts.
     ##
 
-    newly_confirmed_bundle_uuids = ResponseBundleConfirmation.connection.execute(
-      [
-        %Q!INSERT INTO response_bundle_confirmations!,
-        %Q!(response_bundle_uuid,receiver_uuid,created_at,updated_at)!,
-        %Q!VALUES #{values_str}!,
-        %Q!ON CONFLICT DO NOTHING!,
-        %Q!RETURNING response_bundle_uuid!,
-      ].join(' ')
-    ).collect{|hash| hash['response_bundle_uuid']}
+    sql_newly_confirmed_bundle_uuids = %Q{
+      INSERT INTO response_bundle_confirmations
+        (response_bundle_uuid,receiver_uuid,created_at,updated_at)
+      VALUES #{values_str}
+      ON CONFLICT DO NOTHING
+      RETURNING response_bundle_uuid
+    }.gsub(/\n\s*/, ' ')
+
+    newly_confirmed_bundle_uuids =
+      ResponseBundleConfirmation.connection.execute(sql_newly_confirmed_bundle_uuids)
+                                .collect{|hash| hash['response_bundle_uuid']}
 
     ##
     ## Collect now-confirmed ResponseBundle uuids.
@@ -146,34 +147,32 @@ class ResponseBundlesController < JsonApiController
 
     ##
     ## Find all bundle uuids that have not yet been confirmed
-    ## by this receiver.
+    ## by this receiver that also belong to the partition.
     ##
 
-    bundle_uuids = ResponseBundle.connection.execute(
-      [
-        %Q!SELECT response_bundle_uuid FROM response_bundles rb!,
-        %Q!WHERE NOT EXISTS (!,
-        %Q!  SELECT response_bundle_uuid FROM response_bundle_confirmations rbc!,
-        %Q!  WHERE rbc.receiver_uuid = '#{receiver_uuid}'!,
-        %Q!  AND rb.response_bundle_uuid = rbc.response_bundle_uuid!,
-        %Q!)!,
-        %Q!ORDER BY is_open ASC!,
-      ].join(' ')
-    ).map{|hash| hash.fetch('response_bundle_uuid')}
+    sql_bundle_uuids = %Q{
+      SELECT response_bundle_uuid FROM (
+        SELECT * FROM response_bundles rb
+        WHERE NOT EXISTS (
+          SELECT response_bundle_uuid FROM response_bundle_confirmations rbc
+          WHERE rbc.receiver_uuid = '#{receiver_uuid}'
+          AND rb.response_bundle_uuid = rbc.response_bundle_uuid
+        )
+      ) AS unconfirmed
+      WHERE unconfirmed.partition_value % #{partition_count} = #{partition_modulo}
+      ORDER BY unconfirmed.is_open ASC, unconfirmed.updated_at ASC
+      LIMIT #{max_bundles_to_return}
+    }.gsub(/\n\s*/, ' ')
 
-    ##
-    ## Limit the bundle uuids to those matching the work partition.
-    ##
-
-    partition_bundle_uuids = bundle_uuids.select{ |bundle_uuid|
-      bundle_uuid.split('-').last.hex % partition_count == partition_modulo
-    }.take(max_bundles_to_return)
+    bundle_uuids =
+      ResponseBundle.connection.execute(sql_bundle_uuids)
+                    .map{|hash| hash.fetch('response_bundle_uuid')}
 
     ##
     ## Get the response data for the partition bundles.
     ##
 
-    response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in partition_bundle_uuids}
+    response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in bundle_uuids}
                                         .map(&:response_uuid)
 
     response_data = Response.where{response_uuid.in response_uuids}
@@ -189,7 +188,7 @@ class ResponseBundlesController < JsonApiController
                               }
                             }
 
-    [ partition_bundle_uuids, response_data ]
+    [ bundle_uuids, response_data ]
   end
 
 
@@ -217,29 +216,27 @@ class ResponseBundlesController < JsonApiController
     }.sort_by{|value| value[:response_bundle_uuid]}
 
     values_str = values.map{ |value|
-      "(" +
-      [
-        %Q!'#{value[:response_bundle_uuid]}'!,
-        %Q!'#{value[:receiver_uuid]}'!,
-        %Q!TIMESTAMP WITH TIME ZONE '#{value[:created_at]}'!,
-        %Q!TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}'!,
-      ].join(',') +
-      ")"
+      %Q{
+        ( '#{value[:response_bundle_uuid]}',
+          '#{value[:receiver_uuid]}',
+          TIMESTAMP WITH TIME ZONE '#{value[:created_at]}',
+          TIMESTAMP WITH TIME ZONE '#{value[:updated_at]}' )
+      }.gsub(/\n\s*/, ' ')
     }.join(',')
 
     ##
     ## Perform an UPSERT, ignoring conflicts.
     ##
 
-    ResponseBundleReceipt.connection.execute(
-      [
-        %Q!INSERT INTO response_bundle_receipts!,
-        %Q!(response_bundle_uuid,receiver_uuid,created_at,updated_at)!,
-        %Q!VALUES #{values_str}!,
-        %Q!ON CONFLICT DO NOTHING!,
-        %Q!RETURNING response_bundle_uuid!,
-      ].join(' ')
-    ).collect{|hash| hash['response_bundle_uuid']}
+    sql_upsert_bundle_receipts = %Q{
+      INSERT INTO response_bundle_receipts
+        (response_bundle_uuid,receiver_uuid,created_at,updated_at)
+      VALUES #{values_str}
+      ON CONFLICT DO NOTHING
+      RETURNING response_bundle_uuid
+    }
+    ResponseBundleReceipt.connection.execute(sql_upsert_bundle_receipts)
+                         .collect{|hash| hash['response_bundle_uuid']}
   end
 
 

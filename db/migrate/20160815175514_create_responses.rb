@@ -9,6 +9,8 @@ class CreateResponses < ActiveRecord::Migration
       t.boolean   :is_correct,      null: false
       t.datetime  :responded_at,    null: false
 
+      t.integer   :partition_value, null: false
+
       t.timestamps
     end
 
