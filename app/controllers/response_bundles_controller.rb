@@ -160,7 +160,7 @@ class ResponseBundlesController < JsonApiController
         )
       ) AS unconfirmed
       WHERE unconfirmed.partition_value % #{partition_count} = #{partition_modulo}
-      ORDER BY unconfirmed.is_open ASC, unconfirmed.updated_at ASC
+      ORDER BY unconfirmed.is_open ASC, unconfirmed.created_at ASC
       LIMIT #{max_bundles_to_return}
     }.gsub(/\n\s*/, ' ')
 
@@ -193,11 +193,11 @@ class ResponseBundlesController < JsonApiController
 
 
   def _create_receipts(bundle_uuids:, receiver_uuid:)
-    return if bundle_uuids.none?
-
     closed_bundle_uuids = ResponseBundle.where{response_bundle_uuid.in bundle_uuids}
                                         .where{is_open == false}
                                         .map(&:response_bundle_uuid)
+
+    return if closed_bundle_uuids.none?
 
     ##
     ## Create the SQL value string.
