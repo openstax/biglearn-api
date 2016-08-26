@@ -21,7 +21,7 @@ class ResponsesController < JsonApiController
 
     values = response_data.map{ |data|
       {
-        response_uuid:   data[:response_uuid],
+        uuid:            data[:response_uuid],
         trial_uuid:      data[:trial_uuid],
         trial_sequence:  data[:trial_sequence],
         learner_uuid:    data[:learner_uuid],
@@ -32,13 +32,13 @@ class ResponsesController < JsonApiController
         created_at:      start_time_str,
         updated_at:      start_time_str,
       }
-    }.uniq{|value| value[:response_uuid]}.sort_by{|value| value[:response_uuid]}
+    }.uniq{|value| value[:uuid]}.sort_by{|value| value[:uuid]}
 
-    target_response_uuids = values.map{|value| value[:response_uuid]}
+    target_response_uuids = values.map{|value| value[:uuid]}
 
     values_str = values.map{ |value|
       %Q{
-        ( '#{value[:response_uuid]}',
+        ( '#{value[:uuid]}',
           '#{value[:trial_uuid]}',
           #{value[:trial_sequence]},
           '#{value[:learner_uuid]}',
@@ -54,18 +54,18 @@ class ResponsesController < JsonApiController
     recorded_response_uuids = Response.transaction(isolation: :serializable) do
       sql_inserted_response_uuids = %Q{
         INSERT INTO responses
-        (response_uuid,trial_uuid,trial_sequence,learner_uuid,question_uuid,is_correct,responded_at,partition_value,created_at,updated_at)
+        (uuid,trial_uuid,trial_sequence,learner_uuid,question_uuid,is_correct,responded_at,partition_value,created_at,updated_at)
         VALUES #{values_str}
         ON CONFLICT DO NOTHING
-        RETURNING response_uuid
+        RETURNING uuid
       }.gsub(/\n\s*/, ' ')
 
       inserted_response_uuids = Response.connection.execute(sql_inserted_response_uuids)
-                                        .collect{|hash| hash[:response_uuid]}
+                                        .collect{|hash| hash[:uuid]}
 
       recorded_response_uuids = Response.distinct
-                                        .where{response_uuid.in target_response_uuids}
-                                        .pluck(:response_uuid).to_a
+                                        .where{uuid.in target_response_uuids}
+                                        .pluck(:uuid).to_a
 
       recorded_response_uuids
     end

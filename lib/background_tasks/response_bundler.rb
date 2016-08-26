@@ -22,7 +22,7 @@ class BackgroundTasks::ResponseBundler
           SELECT * FROM responses
           WHERE NOT EXISTS (
             SELECT response_uuid FROM response_bundle_entries rbe
-            WHERE rbe.response_uuid = responses.response_uuid
+            WHERE rbe.response_uuid = responses.uuid
           )
         ) AS target_response_uuids
         WHERE target_response_uuids.partition_value % #{partition_count} = #{partition_modulo}
@@ -46,7 +46,7 @@ class BackgroundTasks::ResponseBundler
       open_response_bundles = ResponseBundle.find_by_sql(sql_open_response_bundles)
 
       open_response_bundles.each do |response_bundle|
-        num_bundle_responses = ResponseBundleEntry.where{response_bundle_uuid == response_bundle.response_bundle_uuid}
+        num_bundle_responses = ResponseBundleEntry.where{response_bundle_uuid == response_bundle.uuid}
                                                   .count
 
         num_open_slots   = bundle_response_limit - num_bundle_responses
@@ -54,8 +54,8 @@ class BackgroundTasks::ResponseBundler
 
         responses_to_add.each do |response|
           ResponseBundleEntry.create!(
-            response_bundle_uuid: response_bundle.response_bundle_uuid,
-            response_uuid:        response.response_uuid,
+            response_bundle_uuid: response_bundle.uuid,
+            response_uuid:        response.uuid,
           )
         end
 
@@ -73,15 +73,15 @@ class BackgroundTasks::ResponseBundler
         is_open = (responses.count < bundle_response_limit)
 
         response_bundle = ResponseBundle.create!(
-          response_bundle_uuid: SecureRandom.uuid.to_s,
-          is_open:              is_open,
-          partition_value:      rand(1000),
+          uuid:            SecureRandom.uuid.to_s,
+          is_open:         is_open,
+          partition_value: rand(1000),
         )
 
         responses.each do |response|
           ResponseBundleEntry.create!(
-            response_bundle_uuid: response_bundle.response_bundle_uuid,
-            response_uuid:        response.response_uuid,
+            response_bundle_uuid: response_bundle.uuid,
+            response_uuid:        response.uuid,
           )
         end
       end

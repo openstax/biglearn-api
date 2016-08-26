@@ -74,15 +74,15 @@ class ResponseBundlesController < JsonApiController
                                      .join(',')
 
     sql_valid_confirmed_bundle_uuids = %Q{
-      SELECT response_bundle_uuid FROM response_bundles
-      INNER JOIN response_bundle_receipts USING (response_bundle_uuid)
+      SELECT uuid FROM response_bundles
+      INNER JOIN response_bundle_receipts ON response_bundles.uuid = response_bundle_receipts.response_bundle_uuid
       WHERE response_bundles.is_open IS FALSE
-      AND response_bundle_uuid IN (#{uuid_str})
+      AND uuid IN (#{uuid_str})
     }.gsub(/\n\s*/, ' ')
 
     valid_confirmed_bundle_uuids =
       ResponseBundle.connection.execute(sql_valid_confirmed_bundle_uuids)
-                    .map{|hash| hash['response_bundle_uuid']}
+                    .map{|hash| hash['uuid']}
 
     return [] if valid_confirmed_bundle_uuids.empty?
 
@@ -151,12 +151,12 @@ class ResponseBundlesController < JsonApiController
     ##
 
     sql_bundle_uuids = %Q{
-      SELECT response_bundle_uuid FROM (
+      SELECT uuid FROM (
         SELECT * FROM response_bundles rb
         WHERE NOT EXISTS (
           SELECT response_bundle_uuid FROM response_bundle_confirmations rbc
           WHERE rbc.receiver_uuid = '#{receiver_uuid}'
-          AND rb.response_bundle_uuid = rbc.response_bundle_uuid
+          AND rb.uuid = rbc.response_bundle_uuid
         )
       ) AS unconfirmed
       WHERE unconfirmed.partition_value % #{partition_count} = #{partition_modulo}
@@ -166,7 +166,7 @@ class ResponseBundlesController < JsonApiController
 
     bundle_uuids =
       ResponseBundle.connection.execute(sql_bundle_uuids)
-                    .map{|hash| hash.fetch('response_bundle_uuid')}
+                    .map{|hash| hash.fetch('uuid')}
 
     ##
     ## Get the response data for the partition bundles.
@@ -175,10 +175,10 @@ class ResponseBundlesController < JsonApiController
     response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in bundle_uuids}
                                         .map(&:response_uuid)
 
-    response_data = Response.where{response_uuid.in response_uuids}
+    response_data = Response.where{uuid.in response_uuids}
                             .map{ |response|
                               {
-                                response_uuid:  response.response_uuid,
+                                response_uuid:  response.uuid,
                                 trial_uuid:     response.trial_uuid,
                                 trial_sequence: response.trial_sequence,
                                 learner_uuid:   response.learner_uuid,
@@ -193,9 +193,9 @@ class ResponseBundlesController < JsonApiController
 
 
   def _create_receipts(bundle_uuids:, receiver_uuid:)
-    closed_bundle_uuids = ResponseBundle.where{response_bundle_uuid.in bundle_uuids}
+    closed_bundle_uuids = ResponseBundle.where{uuid.in bundle_uuids}
                                         .where{is_open == false}
-                                        .map(&:response_bundle_uuid)
+                                        .map(&:uuid)
 
     return if closed_bundle_uuids.none?
 

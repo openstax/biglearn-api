@@ -460,14 +460,14 @@ RSpec.describe 'internal API: /fetch_response_bundles endpoint' do
           target_response_uuids = ResponseBundleEntry.where{response_bundle_uuid.in response_payload['bundle_uuids']}
                                                      .map(&:response_uuid)
 
-          target_responses = Response.where{response_uuid.in target_response_uuids}.to_a
+          target_responses = Response.where{uuid.in target_response_uuids}.to_a
 
           aggregate_failures 'response data check' do
             target_responses.each { |target_response|
               target_response_data = response_payload['responses'].detect{ |response_data|
-                response_data['response_uuid'] == target_response.response_uuid
+                response_data['response_uuid'] == target_response.uuid
               }
-              expect(target_response_data['response_uuid']).to  eq(target_response.response_uuid)
+              expect(target_response_data['response_uuid']).to  eq(target_response.uuid)
               expect(target_response_data['trial_uuid']).to     eq(target_response.trial_uuid)
               expect(target_response_data['trial_sequence']).to eq(target_response.trial_sequence)
               expect(target_response_data['learner_uuid']).to   eq(target_response.learner_uuid)
@@ -501,18 +501,21 @@ end
 
 def create_bundles(bundle_params:)
   response_bundle_uuids = bundle_params.map do |params|
-    response_uuids = create_responses(count: params.fetch(:num_responses))
+    responses = params.fetch(:num_responses).times.map do
+      create(:response)
+    end
+    response_uuids = responses.map(&:uuid)
 
     response_bundle_uuid = SecureRandom.uuid.to_s
 
-    ResponseBundle.create!(
-      response_bundle_uuid: response_bundle_uuid,
-      is_open:              params.fetch(:is_open),
-      partition_value:      params.fetch(:partition_value),
+    create(:response_bundle,
+      uuid:            response_bundle_uuid,
+      is_open:         params.fetch(:is_open),
+      partition_value: params.fetch(:partition_value),
     )
 
     response_uuids.map do |response_uuid|
-      ResponseBundleEntry.create!(
+      create(:response_bundle_entry,
         response_bundle_uuid: response_bundle_uuid,
         response_uuid:        response_uuid,
       )
@@ -536,27 +539,3 @@ def create_bundles(bundle_params:)
   end
   response_bundle_uuids
 end
-
-
-def create_responses(count:)
-  counter = Response.count + 1
-
-  response_uuids = count.times.map do
-    response_uuid = SecureRandom.uuid.to_s
-
-    Response.create!(
-      response_uuid:    response_uuid,
-      trial_uuid:       SecureRandom.uuid.to_s,
-      trial_sequence:   (counter += 1),
-      learner_uuid:     SecureRandom.uuid.to_s,
-      question_uuid:    SecureRandom.uuid.to_s,
-      is_correct:       [true, false].sample,
-      responded_at:     Time.now,
-      partition_value:  rand(1000),
-    )
-
-    response_uuid
-  end
-  response_uuids
-end
-
