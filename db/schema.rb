@@ -50,18 +50,18 @@ ActiveRecord::Schema.define(version: 20160817194653) do
   add_index "response_bundle_receipts", ["response_bundle_uuid"], name: "index_response_bundle_receipts_on_response_bundle_uuid", using: :btree
 
   create_table "response_bundles", force: :cascade do |t|
-    t.uuid     "response_bundle_uuid", null: false
-    t.boolean  "is_open",              null: false
-    t.integer  "partition_value",      null: false
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.uuid     "uuid",            null: false
+    t.boolean  "is_open",         null: false
+    t.integer  "partition_value", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   add_index "response_bundles", ["is_open"], name: "index_response_bundles_on_is_open", using: :btree
-  add_index "response_bundles", ["response_bundle_uuid"], name: "index_response_bundles_on_response_bundle_uuid", unique: true, using: :btree
+  add_index "response_bundles", ["uuid"], name: "index_response_bundles_on_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
-    t.uuid     "response_uuid",   null: false
+    t.uuid     "uuid",            null: false
     t.uuid     "trial_uuid",      null: false
     t.integer  "trial_sequence",  null: false
     t.uuid     "learner_uuid",    null: false
@@ -73,7 +73,7 @@ ActiveRecord::Schema.define(version: 20160817194653) do
     t.datetime "updated_at"
   end
 
-  add_index "responses", ["response_uuid"], name: "index_responses_on_response_uuid", unique: true, using: :btree
   add_index "responses", ["trial_uuid", "trial_sequence"], name: "index_responses_on_trial_uuid_and_trial_sequence", unique: true, using: :btree
+  add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
 end
