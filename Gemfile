@@ -47,7 +47,15 @@ gem 'rails-erd'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
+
+  ## RSpec test framework
   gem 'rspec-rails'
+
+  ## fixture creation
+  gem 'factory_girl_rails', '~> 4.0'
+
+  ## ability to manipulate the passage of time
+  gem 'timecop'
 end
 
 group :test do
