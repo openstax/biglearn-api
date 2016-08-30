@@ -7,6 +7,5 @@ FactoryGirl.define do
     question_uuid   { SecureRandom.uuid.to_s }
     is_correct      { [true,false].sample }
     responded_at    { Time.now }
-    partition_value { Kernel::rand(1000) }
   end
 end
