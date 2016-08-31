@@ -90,7 +90,7 @@ RSpec.describe Services::InternalApi::FetchResponseBundles do
           expect(target_response.learner_uuid).to   eq(response_data.fetch(:learner_uuid))
           expect(target_response.question_uuid).to  eq(response_data.fetch(:question_uuid))
           expect(target_response.is_correct).to     eq(response_data.fetch(:is_correct))
-          expect(target_response.responded_at).to   eq(Chronic.parse(response_data.fetch(:responded_at)))
+          expect(target_response.responded_at).to   be_within(1e-6).of(Chronic.parse(response_data.fetch(:responded_at)))
         end
       end
     end
