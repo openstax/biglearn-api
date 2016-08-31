@@ -1,15 +1,46 @@
-sudo: false
-language: ruby
-rvm:
-  - "2.3.0"
-cache: bundler
-bundler_args: --without production --retry=6
+sudo: required
+services:
+  - postgresql
 addons:
+  apt:
+    sources:
+    - precise-pgdg-9.5
+    packages:
+    - postgresql-9.5
+    - postgresql-contrib-9.5
  postgresql: "9.5"
+before_script:
+  - sudo cp /etc/postgresql/9.4/main/pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
+  - bundle exec rake --trace db:create db:migate
 script:
   - bundle exec rake spec
 branches:
   only:
     - master
-before_script:
-  - bundle exec rake --trace db:create db:migate
+language: ruby
+rvm:
+  - "2.3.0"
+cache: bundler
+bundler_args: --without production --retry=6
+
+# sudo: required
+# env:
+#   global:
+#     - PGPORT=5433
+#     - PGHOST=localhost
+#     - DATABASE_URL=postgres://localhost:5433/your_db
+# services:
+#   - postgresql
+# addons:
+#   apt:
+#     sources:
+#     - precise-pgdg-9.5
+#     packages:
+#     - postgresql-9.5
+#     - postgresql-contrib-9.5
+#   postgresql: 9.5
+# before_script:
+#   - sudo cp /etc/postgresql/9.4/main/pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
+#   - sudo /etc/init.d/postgresql restart
+#   - psql -U postgres -c 'CREATE DATABASE your_db;'
