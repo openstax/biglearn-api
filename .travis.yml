@@ -15,6 +15,6 @@ branches:
     - master
 language: ruby
 rvm:
-  - "2.3.0"
+  - "2.3.1"
 cache: bundler
 bundler_args: --without production --retry=6
