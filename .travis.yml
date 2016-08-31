@@ -2,10 +2,6 @@
 
 sudo: required
 dist: trusty
-env:
-  global:
-    - PG_PORT=5433
-    - PG_HOST=localhost
 services:
   - postgresql
 addons:

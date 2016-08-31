@@ -88,7 +88,7 @@ RSpec.describe Services::ExternalApi::RecordResponses do
           expect(newly_created_response.learner_uuid).to   eq(given_response_data[:learner_uuid])
           expect(newly_created_response.question_uuid).to  eq(given_response_data[:question_uuid])
           expect(newly_created_response.is_correct).to     eq(given_response_data[:is_correct])
-          expect(newly_created_response.responded_at).to   eq(Chronic.parse(given_response_data[:responded_at]))
+          expect(newly_created_response.responded_at).to   be_within(0.01).of(Chronic.parse(given_response_data[:responded_at]))
         end
       end
     end
