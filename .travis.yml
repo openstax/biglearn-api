@@ -1,7 +1,7 @@
 sudo: false
 language: ruby
 rvm:
-  - "2.3"
+  - "2.3.0"
 cache: bundler
 bundler_args: --without production --retry=6
 addons:
@@ -11,3 +11,5 @@ script:
 branches:
   only:
     - master
+before_script:
+  - bundle exec rake --trace db:create db:migate
