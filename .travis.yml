@@ -1,4 +1,10 @@
+## postgres 9.5 setup adapted from: https://github.com/travis-ci/travis-ci/issues/4264
+
 sudo: required
+env:
+  global:
+    - PG_PORT=5433
+    - PG_HOST=localhost
 services:
   - postgresql
 addons:
