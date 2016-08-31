@@ -1,6 +1,7 @@
 ## postgres 9.5 setup adapted from: https://github.com/travis-ci/travis-ci/issues/4264
 
 sudo: required
+dist: trusty
 env:
   global:
     - PG_PORT=5433
@@ -8,17 +9,9 @@ env:
 services:
   - postgresql
 addons:
-  apt:
-    sources:
-      - precise-pgdg-9.5
-    packages:
-      - postgresql-9.5
-      - postgresql-contrib-9.5
   postgresql: "9.5"
 before_script:
-  - sudo cp /etc/postgresql/9.4/main/pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
-  - sudo /etc/init.d/postgresql restart
-  - bundle exec rake --trace db:create db:migate
+  - bundle exec rake --trace db:create db:schema:load db:seed
 script:
   - bundle exec rake spec
 branches:
