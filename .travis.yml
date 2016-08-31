@@ -1,0 +1,13 @@
+sudo: false
+language: ruby
+rvm:
+  - "2.3"
+cache: bundler
+bundler_args: --without production --retry=6
+addons:
+ postgresql: "9.5"
+script:
+  - bundle exec rake spec
+branches:
+  only:
+    - master
