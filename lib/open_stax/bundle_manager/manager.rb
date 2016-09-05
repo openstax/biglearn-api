@@ -29,7 +29,7 @@ class OpenStax::BundleManager::Manager
       ) AS target_models
       ORDER BY target_models.created_at ASC
       LIMIT #{max_records_to_process}
-    }
+    }.gsub(/\n\s*/, ' ')
     target_records = model.find_by_sql(sql_target_records)
 
     ##
@@ -37,11 +37,15 @@ class OpenStax::BundleManager::Manager
     ##
 
     bundle_records = target_records.map{ |record|
-      bundle_model.create!(
+      bundle_model.new(
         uuid:            record.uuid,
         partition_value: Kernel::rand(10000),
       )
     }
+
+    bundle_model.import bundle_records, on_duplicate_key_ignore: true
+
+    self
   end
 
 
