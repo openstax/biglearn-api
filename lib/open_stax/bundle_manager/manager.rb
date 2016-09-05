@@ -63,6 +63,8 @@ class OpenStax::BundleManager::Manager
         record.partition_value % partition_count == partition_modulo
       }.select{ |record|
         bundle_entry_model.where{uuid == record.uuid}.none?
+      }.sort_by{ |record|
+        record.created_at
       }.take([max_records_per_bundle, max_records_to_process - num_processed_records].min)
 
       break if target_records.none?

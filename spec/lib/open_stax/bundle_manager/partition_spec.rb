@@ -38,7 +38,7 @@ RSpec.describe "OpenStax::BundleManager::Manager: partitioning" do
       expect{action}.to change{Bundle::XTest1.count}.by(given_max_records_to_process)
     end
 
-    it "unpartitioned Records are processed in chronological order" do
+    it "unpartitioned Records are processed in creation order" do
       action
 
       target_records = unpartitioned_records.values_at(2,3,1)
