@@ -84,17 +84,59 @@ class OpenStax::BundleManager::Manager
 
   def confirm(receiver_uuid:,
               bundle_uuids_to_confirm:)
-    confirmed_bundle_uuids = bundle_uuids_to_confirm.map do |target_bundle_uuid|
-      bundle_bundle_model.where{uuid == target_bundle_uuid}.map do |bundle|
-        if bundle_confirmation_model.where{bundle_uuid == target_bundle_uuid}.none?
-          bundle_confirmation_model.create!(
-            bundle_uuid:   target_bundle_uuid,
-            receiver_uuid: receiver_uuid,
-          )
-        end
-        target_bundle_uuid
-      end
-    end.flatten.compact
+    return [] if bundle_uuids_to_confirm.empty?
+
+    ##
+    ## Find all Bundles in bundle_uuids_to_confirm that:
+    ##   - actually exist
+    ##   - don't already have Confirmation records.
+    ##
+
+    bundle_uuid_str = bundle_uuids_to_confirm.map{ |uuid|
+      "'#{uuid}'"
+    }.join(',')
+
+    sql_newly_confirmed_bundle_uuids = %Q{
+      SELECT uuid FROM (
+        SELECT * FROM #{bundle_bundle_model_table} bbmt
+        WHERE NOT EXISTS (
+          SELECT bundle_uuid FROM #{bundle_confirmation_model_table} bcmt
+          WHERE bcmt.receiver_uuid = '#{receiver_uuid}'
+          AND bbmt.uuid = bcmt.bundle_uuid
+        )
+      ) AS unconfirmed
+      WHERE unconfirmed.uuid IN (#{bundle_uuid_str})
+    }.gsub(/\n\s*/, ' ')
+
+    newly_confirmed_bundle_uuids = bundle_model.connection.execute(sql_newly_confirmed_bundle_uuids)
+                                               .map{|hash| hash.fetch('uuid')}
+
+    ##
+    ## Create the new Confirmations and UPSERT them.
+    ##
+
+    new_confirmations = newly_confirmed_bundle_uuids.map do |bundle_uuid|
+      bundle_confirmation_model.new(
+        bundle_uuid:   bundle_uuid,
+        receiver_uuid: receiver_uuid,
+      )
+    end
+
+    bundle_confirmation_model.import new_confirmations, on_duplicate_key_ignore: true
+
+    ##
+    ## Retrieve a list of Bundle uuids with Confirmations
+    ## matching uuids in bundle_uuids_to_confirm.
+    ##
+
+    sql_confirmed_bundle_uuids = %Q{
+      SELECT bundle_uuid FROM #{bundle_confirmation_model_table}
+      WHERE receiver_uuid = '#{receiver_uuid}'
+      AND bundle_uuid IN (#{bundle_uuid_str})
+    }.gsub(/\n\s*/, ' ')
+
+    confirmed_bundle_uuids = bundle_model.connection.execute(sql_confirmed_bundle_uuids)
+                                         .map{|hash| hash.fetch('bundle_uuid')}
 
     confirmed_bundle_uuids
   end
