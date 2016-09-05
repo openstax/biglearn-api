@@ -11,7 +11,7 @@ class ResponseBundlesController < JsonApiController
       partition_count         = request_payload.fetch('receiver_info').fetch('partition_count')
       partition_modulo        = request_payload.fetch('receiver_info').fetch('partition_modulo')
 
-      service = Services::InternalApi::FetchResponseBundles.new
+      service = Services::FetchResponseBundles::Service.new
 
       results = service.process(
         max_bundles_to_return:   max_bundles_to_return,

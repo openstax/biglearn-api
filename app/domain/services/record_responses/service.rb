@@ -1,4 +1,4 @@
-class Services::ExternalApi::RecordResponses
+class Services::RecordResponses::Service
   def process(response_data:)
     return [] if response_data.empty?
 

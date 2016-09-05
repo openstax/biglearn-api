@@ -49,7 +49,7 @@ RSpec.describe ResponseBundlesController, type: :request do
   }
 
   let(:service_double) {
-    dbl = object_double(Services::InternalApi::FetchResponseBundles.new)
+    dbl = object_double(Services::FetchResponseBundles::Service.new)
     allow(dbl).to receive(:process)
               .with(
                 max_bundles_to_return:   max_bundles_to_return,
@@ -62,7 +62,7 @@ RSpec.describe ResponseBundlesController, type: :request do
   }
 
   before(:each) do
-    allow(Services::InternalApi::FetchResponseBundles).to receive(:new).and_return(service_double)
+    allow(Services::FetchResponseBundles::Service).to receive(:new).and_return(service_double)
   end
 
   context "when a request is made" do

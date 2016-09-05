@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Services::InternalApi::FetchResponseBundles do
-  let(:service) { Services::InternalApi::FetchResponseBundles.new }
+RSpec.describe Services::FetchResponseBundles::Service do
+  let(:service) { Services::FetchResponseBundles::Service.new }
 
   let(:action) {
     service.process(

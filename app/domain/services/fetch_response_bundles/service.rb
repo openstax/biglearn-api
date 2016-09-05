@@ -1,4 +1,4 @@
-class Services::InternalApi::FetchResponseBundles
+class Services::FetchResponseBundles::Service
   def initialize
     @bundle_manager = OpenStax::BundleManager::Manager.new(model: Response)
   end

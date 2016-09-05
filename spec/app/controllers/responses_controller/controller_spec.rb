@@ -28,7 +28,7 @@ RSpec.describe ResponsesController, type: :request do
   let(:target_results) { [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ] }
 
   let(:service_double) {
-    dbl = object_double(Services::ExternalApi::RecordResponses.new)
+    dbl = object_double(Services::RecordResponses::Service.new)
     allow(dbl).to receive(:process)
               .with(response_data: response_data)
               .and_return(target_results)
@@ -36,7 +36,7 @@ RSpec.describe ResponsesController, type: :request do
   }
 
   before(:each) do
-    allow(Services::ExternalApi::RecordResponses).to receive(:new).and_return(service_double)
+    allow(Services::RecordResponses::Service).to receive(:new).and_return(service_double)
   end
 
   context "when a request is made" do
