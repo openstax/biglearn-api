@@ -19,10 +19,11 @@ class Services::FetchResponseBundles::Service
 
     fetched_data = Response.transaction(isolation: :serializable) do
       fetched_data = bundle_manager.fetch(
-        max_bundles_to_return: max_bundles_to_return,
-        receiver_uuid:         receiver_uuid,
-        partition_count:       partition_count,
-        partition_modulo:      partition_modulo,
+        goal_records_to_return: 1000,
+        max_bundles_to_process: max_bundles_to_return,
+        receiver_uuid:          receiver_uuid,
+        partition_count:        partition_count,
+        partition_modulo:       partition_modulo,
       )
       fetched_data
     end

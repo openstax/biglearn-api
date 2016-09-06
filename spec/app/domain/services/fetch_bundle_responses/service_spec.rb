@@ -39,7 +39,8 @@ RSpec.describe Services::FetchResponseBundles::Service do
               .and_return(target_confirmed_bundle_uuids)
     allow(dbl).to receive(:fetch)
               .with(
-                max_bundles_to_return:  given_max_bundles_to_return,
+                goal_records_to_return: anything,
+                max_bundles_to_process: given_max_bundles_to_return,
                 receiver_uuid:          given_receiver_uuid,
                 partition_count:        given_partition_count,
                 partition_modulo:       given_partition_modulo
@@ -71,7 +72,8 @@ RSpec.describe Services::FetchResponseBundles::Service do
     it "it delegates to its BundleManager with the correct parameters" do
       action
       expect(bundle_manager).to have_received(:fetch).with(
-        max_bundles_to_return:   given_max_bundles_to_return,
+        goal_records_to_return:  anything,
+        max_bundles_to_process:  given_max_bundles_to_return,
         receiver_uuid:           given_receiver_uuid,
         partition_count:         given_partition_count,
         partition_modulo:        given_partition_modulo,
