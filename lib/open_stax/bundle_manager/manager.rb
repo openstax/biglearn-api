@@ -147,7 +147,8 @@ class OpenStax::BundleManager::Manager
     confirmed_bundle_uuids
   end
 
-  def fetch(max_bundles_to_return:,
+  def fetch(goal_records_to_return:,
+            max_bundles_to_process:,
             receiver_uuid:,
             partition_count:,
             partition_modulo:)
@@ -167,7 +168,7 @@ class OpenStax::BundleManager::Manager
       ) AS unconfirmed
       WHERE unconfirmed.partition_value % #{partition_count} = #{partition_modulo}
       ORDER BY unconfirmed.created_at ASC
-      LIMIT #{max_bundles_to_return}
+      LIMIT #{max_bundles_to_process}
     }.gsub(/\n\s*/, ' ')
 
     bundle_uuids = bundle_model.connection.execute(sql_bundle_uuids)
@@ -179,6 +180,32 @@ class OpenStax::BundleManager::Manager
 
     model_uuids = bundle_entry_model.where{bundle_uuid.in bundle_uuids}
                                     .map(&:uuid)
+
+    ##
+    ## If the number of Model uuids is less than the goal and
+    ## we haven't reached our processing limit, return additional
+    ## unbundled Model uuids in creation order.
+    ##
+
+    if (bundle_uuids.count < max_bundles_to_process) && (model_uuids.count < goal_records_to_return)
+      sql_unbundled_model_uuids = %Q{
+        SELECT uuid FROM (
+          SELECT * FROM #{bundle_model_table} bmt
+          WHERE NOT EXISTS (
+            SELECT uuid FROM #{bundle_entry_model_table} bemt
+            WHERE bemt.uuid = bmt.uuid
+          )
+        ) AS unbundled
+        WHERE unbundled.partition_value % #{partition_count} = #{partition_modulo}
+        ORDER BY unbundled.created_at ASC
+        LIMIT #{goal_records_to_return - model_uuids.count}
+      }.gsub(/\n\s*/, ' ')
+
+      extra_model_uuids = bundle_model.connection.execute(sql_unbundled_model_uuids)
+                                      .map{|hash| hash.fetch('uuid')}
+
+      model_uuids += extra_model_uuids
+    end
 
     { bundle_uuids: bundle_uuids,
       model_uuids:  model_uuids,  }
