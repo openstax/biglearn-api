@@ -62,9 +62,8 @@ RSpec.describe OpenStax::BundleManager::Manager do
         end
       end
 
-      modulos = [0,1]
-
-      bundle_threads = modulos.map do |modulo|
+      bundle_modulos = [0,1]
+      bundle_threads = bundle_modulos.map do |modulo|
         Thread.new do
           ActiveRecord::Base.clear_active_connections!
 
@@ -90,7 +89,7 @@ RSpec.describe OpenStax::BundleManager::Manager do
                   max_records_to_process: 200,
                   max_records_per_bundle: 50,
                   max_age_per_bundle:     (0.01).seconds,
-                  partition_count:        modulos.count,
+                  partition_count:        bundle_modulos.count,
                   partition_modulo:       modulo,
                 )
                 # puts "bundle modulo: #{modulo} #{Time.now - t1}"
@@ -135,20 +134,23 @@ RSpec.describe OpenStax::BundleManager::Manager do
           ActiveRecord::Base.connection_pool.with_connection do
             ActiveRecord::Base.transaction(isolation: :repeatable_read) do
               # puts "fetch"
-              results = manager.fetch(
-                goal_records_to_return: 100,
-                max_bundles_to_process: 10,
-                receiver_uuid:          receiver_uuid,
-                partition_count:        1,
-                partition_modulo:       0,
-              )
+              fetch_modulos = [0,1,2]
+              fetch_modulos.each do |modulo|
+                results = manager.fetch(
+                  goal_records_to_return: 100,
+                  max_bundles_to_process: 10,
+                  receiver_uuid:          receiver_uuid,
+                  partition_count:        fetch_modulos.count,
+                  partition_modulo:       modulo,
+                )
 
-              results.fetch(:model_uuids).each do |uuid|
-                received_model_uuids[uuid] = true
-              end
+                results.fetch(:model_uuids).each do |uuid|
+                  received_model_uuids[uuid] = true
+                end
 
-              results.fetch(:bundle_uuids).each do |uuid|
-                unconfirmed_bundle_uuids[uuid] = true
+                results.fetch(:bundle_uuids).each do |uuid|
+                  unconfirmed_bundle_uuids[uuid] = true
+                end
               end
             end
           end
