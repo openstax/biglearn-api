@@ -36,14 +36,14 @@ class OpenStax::BundleManager::Manager
     ## Upsert a Bundle::Model record for each target Model record.
     ##
 
-    bundle_records = target_records.map{ |record|
+    bundle_models = target_records.map{ |record|
       bundle_model.new(
         uuid:            record.uuid,
         partition_value: Kernel::rand(10000),
       )
-    }
+    }.sort_by{|bundle_model| bundle_model.uuid}
 
-    bundle_model.import bundle_records, on_duplicate_key_ignore: true
+    bundle_model.import bundle_models, on_duplicate_key_ignore: true
 
     self
   end
@@ -54,38 +54,82 @@ class OpenStax::BundleManager::Manager
              max_age_per_bundle:,
              partition_count:,
              partition_modulo:)
-    num_processed_records = 0
 
-    loop do
-      break if num_processed_records >= max_records_to_process
-
-      target_records = bundle_model.find_each.select{ |record|
-        record.partition_value % partition_count == partition_modulo
-      }.select{ |record|
-        bundle_entry_model.where{uuid == record.uuid}.none?
-      }.sort_by{ |record|
-        record.created_at
-      }.take([max_records_per_bundle, max_records_to_process - num_processed_records].min)
-
-      break if target_records.none?
-
-      break if (target_records.count < max_records_per_bundle) &&
-               (Time.now - target_records.map(&:created_at).min < max_age_per_bundle)
-
-      bundle = bundle_bundle_model.create!(
-        uuid:             SecureRandom.uuid.to_s,
-        partition_value:  Kernel::rand(10000)
-      )
-
-      target_records.map do |record|
-        bundle_entry_model.create!(
-          uuid:        record.uuid,
-          bundle_uuid: bundle.uuid,
+    if true
+      sql_bundle_records_to_process = %Q{
+        SELECT * FROM #{bundle_model_table} bmt
+        WHERE NOT EXISTS (
+          SELECT * FROM #{bundle_entry_model_table} bemt
+          WHERE bemt.uuid = bmt.uuid
         )
+        AND partition_value % #{partition_count} = #{partition_modulo}
+        ORDER BY created_at ASC
+        LIMIT #{max_records_to_process}
+      }.gsub(/\n\s*/, ' ')
+
+      bundle_records = bundle_model.find_by_sql(sql_bundle_records_to_process)
+
+      bundle_infos = bundle_records.each_slice(max_records_per_bundle).inject([]) do |result, records|
+        if (records.count == max_records_per_bundle) || (Time.now - records.first.created_at >= max_age_per_bundle)
+          bundle_bundle = bundle_bundle_model.new(
+            uuid:            SecureRandom.uuid.to_s,
+            partition_value: Kernel::rand(10000),
+          )
+
+          bundle_entries = records.map{ |record|
+            bundle_entry_model.new(
+              uuid:        record.uuid,
+              bundle_uuid: bundle_bundle.uuid,
+            )
+          }
+
+          result << [bundle_bundle, bundle_entries]
+        end
+        result
       end
 
-      num_processed_records += target_records.count
+      bundle_bundles = bundle_infos.map{|bundle_info| bundle_info.fetch(0)}
+      bundle_entries = bundle_infos.map{|bundle_info| bundle_info.fetch(1)}.flatten
+
+      if bundle_bundles.any?
+        bundle_bundle_model.import bundle_bundles
+        bundle_entry_model.import  bundle_entries
+      end
+    else
+      num_processed_records = 0
+
+      loop do
+        break if num_processed_records >= max_records_to_process
+
+        target_records = bundle_model.find_each.select{ |record|
+          record.partition_value % partition_count == partition_modulo
+        }.select{ |record|
+          bundle_entry_model.where{uuid == record.uuid}.none?
+        }.sort_by{ |record|
+          record.created_at
+        }.take([max_records_per_bundle, max_records_to_process - num_processed_records].min)
+
+        break if target_records.none?
+
+        break if (target_records.count < max_records_per_bundle) &&
+                 (Time.now - target_records.map(&:created_at).min < max_age_per_bundle)
+
+        bundle = bundle_bundle_model.create!(
+          uuid:             SecureRandom.uuid.to_s,
+          partition_value:  Kernel::rand(10000)
+        )
+
+        target_records.map do |record|
+          bundle_entry_model.create!(
+            uuid:        record.uuid,
+            bundle_uuid: bundle.uuid,
+          )
+        end
+
+        num_processed_records += target_records.count
+      end
     end
+    self
   end
 
   def confirm(receiver_uuid:,
