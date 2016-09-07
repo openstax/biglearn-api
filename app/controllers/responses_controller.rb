@@ -6,7 +6,7 @@ class ResponsesController < JsonApiController
       request_payload = json_parsed_request_payload
       response_data = request_payload.fetch('responses').map(&:deep_symbolize_keys)
 
-      service = Services::ExternalApi::RecordResponses.new
+      service = Services::RecordResponses::Service.new
       recorded_response_uuids = service.process(response_data: response_data)
 
       render json: {'recorded_response_uuids': recorded_response_uuids}.to_json, status: 200

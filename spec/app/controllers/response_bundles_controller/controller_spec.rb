@@ -3,22 +3,26 @@ require 'rails_helper'
 RSpec.describe ResponseBundlesController, type: :request do
   let(:request_payload) {
     {
-      max_bundles_to_return:  max_bundles_to_return,
-      confirmed_bundle_uuids: bundle_uuids_to_confirm,
+      goal_max_responses_to_return: given_goal_max_responses_to_return,
+      bundle_uuids_to_confirm:      given_bundle_uuids_to_confirm,
       receiver_info: {
-        receiver_uuid:    target_receiver_uuid,
-        partition_count:  partition_count,
-        partition_modulo: target_partition_modulo,
+        receiver_uuid:    given_receiver_uuid,
+        partition_count:  given_partition_count,
+        partition_modulo: given_partition_modulo,
       },
     }
   }
 
-  let(:max_bundles_to_return)   { 0 }
-  let(:bundle_uuids_to_confirm) { [] }
-  let(:target_receiver_uuid)    { SecureRandom.uuid.to_s }
+  let(:given_goal_max_responses_to_return) { 0 }
+  let(:given_bundle_uuids_to_confirm)      { [] }
+  let(:given_receiver_uuid)                { target_receiver_uuid }
+  let(:given_partition_count)              { partition_count }
+  let(:given_partition_modulo)             { target_partition_modulo }
 
-  let(:partition_count)            { 5 }
-  let(:target_partition_modulo)    { 3 }
+  let(:target_receiver_uuid) { SecureRandom.uuid.to_s }
+
+  let(:partition_count)         { 5 }
+  let(:target_partition_modulo) { 3 }
 
   let(:responses) { [ build(:response), build(:response) ] }
 
@@ -49,23 +53,24 @@ RSpec.describe ResponseBundlesController, type: :request do
   }
 
   let(:service_double) {
-    dbl = object_double(Services::InternalApi::FetchResponseBundles.new)
+    dbl = object_double(Services::FetchResponseBundles::Service.new)
     allow(dbl).to receive(:process)
               .with(
-                max_bundles_to_return:   max_bundles_to_return,
-                bundle_uuids_to_confirm: bundle_uuids_to_confirm,
-                receiver_uuid:           target_receiver_uuid,
-                partition_count:         partition_count,
-                partition_modulo:        target_partition_modulo,
+                goal_max_responses_to_return: given_goal_max_responses_to_return,
+                max_bundles_to_process:       anything,
+                bundle_uuids_to_confirm:      given_bundle_uuids_to_confirm,
+                receiver_uuid:                given_receiver_uuid,
+                partition_count:              given_partition_count,
+                partition_modulo:             given_partition_modulo,
               ).and_return(target_results)
     dbl
   }
 
   before(:each) do
-    allow(Services::InternalApi::FetchResponseBundles).to receive(:new).and_return(service_double)
+    allow(Services::FetchResponseBundles::Service).to receive(:new).and_return(service_double)
   end
 
-  context "when a request is made" do
+  context "when a valid request is made" do
     it "the request and response payloads are validated against their schemas" do
       expect_any_instance_of(ResponseBundlesController).to receive(:with_json_apis).and_call_original
       response_status, response_body = fetch_response_bundles(request_payload: request_payload)

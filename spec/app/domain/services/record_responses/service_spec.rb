@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Services::ExternalApi::RecordResponses do
-  let(:service) { Services::ExternalApi::RecordResponses.new }
+RSpec.describe Services::RecordResponses::Service do
+  let(:service) { Services::RecordResponses::Service.new }
 
   let(:action) { service.process(response_data: given_response_data) }
 

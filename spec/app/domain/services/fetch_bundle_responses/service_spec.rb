@@ -1,23 +1,25 @@
 require 'rails_helper'
 
-RSpec.describe Services::InternalApi::FetchResponseBundles do
-  let(:service) { Services::InternalApi::FetchResponseBundles.new }
+RSpec.describe Services::FetchResponseBundles::Service do
+  let(:service) { Services::FetchResponseBundles::Service.new }
 
   let(:action) {
     service.process(
-      max_bundles_to_return:   given_max_bundles_to_return,
-      bundle_uuids_to_confirm: given_bundle_uuids_to_confirm,
-      receiver_uuid:           given_receiver_uuid,
-      partition_count:         given_partition_count,
-      partition_modulo:        given_partition_modulo,
+      goal_max_responses_to_return: given_goal_max_responses_to_return,
+      max_bundles_to_process:       given_max_bundles_to_process,
+      bundle_uuids_to_confirm:      given_bundle_uuids_to_confirm,
+      receiver_uuid:                given_receiver_uuid,
+      partition_count:              given_partition_count,
+      partition_modulo:             given_partition_modulo,
     )
   }
 
-  let(:given_max_bundles_to_return)   { 10 }
-  let(:given_bundle_uuids_to_confirm) { [] }
-  let(:given_receiver_uuid)           { SecureRandom.uuid.to_s }
-  let(:given_partition_count)         { 6 }
-  let(:given_partition_modulo)        { 1 }
+  let(:given_goal_max_responses_to_return) { 10 }
+  let(:given_max_bundles_to_process)       { 10 }
+  let(:given_bundle_uuids_to_confirm)      { [] }
+  let(:given_receiver_uuid)                { SecureRandom.uuid.to_s }
+  let(:given_partition_count)              { 6 }
+  let(:given_partition_modulo)             { 1 }
 
   let(:responses) {
     10.times.map do
@@ -31,7 +33,7 @@ RSpec.describe Services::InternalApi::FetchResponseBundles do
   let(:target_bundle_uuids)           { [ SecureRandom.uuid.to_s ] }
 
   let(:bundle_manager) {
-    dbl = object_double(OpenStax::BundleManager::Manager.new(model: Response))
+    dbl = object_double(Openstax::BundleManager::Manager.new(model: Response))
     allow(dbl).to receive(:confirm)
               .with(
                 receiver_uuid:           given_receiver_uuid,
@@ -39,7 +41,8 @@ RSpec.describe Services::InternalApi::FetchResponseBundles do
               .and_return(target_confirmed_bundle_uuids)
     allow(dbl).to receive(:fetch)
               .with(
-                max_bundles_to_return:  given_max_bundles_to_return,
+                goal_records_to_return: given_goal_max_responses_to_return,
+                max_bundles_to_process: given_max_bundles_to_process,
                 receiver_uuid:          given_receiver_uuid,
                 partition_count:        given_partition_count,
                 partition_modulo:       given_partition_modulo
@@ -51,7 +54,7 @@ RSpec.describe Services::InternalApi::FetchResponseBundles do
   }
 
   before(:each) do
-    allow(OpenStax::BundleManager::Manager).to receive(:new).and_return(bundle_manager)
+    allow(Openstax::BundleManager::Manager).to receive(:new).and_return(bundle_manager)
   end
 
   context "bundle confirmation:" do
@@ -71,7 +74,8 @@ RSpec.describe Services::InternalApi::FetchResponseBundles do
     it "it delegates to its BundleManager with the correct parameters" do
       action
       expect(bundle_manager).to have_received(:fetch).with(
-        max_bundles_to_return:   given_max_bundles_to_return,
+        goal_records_to_return:  given_goal_max_responses_to_return,
+        max_bundles_to_process:  given_max_bundles_to_process,
         receiver_uuid:           given_receiver_uuid,
         partition_count:         given_partition_count,
         partition_modulo:        given_partition_modulo,
