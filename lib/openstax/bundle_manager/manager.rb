@@ -1,4 +1,4 @@
-class OpenStax::BundleManager::Manager
+class Openstax::BundleManager::Manager
 
   def initialize(model:)
     @model                            = model

@@ -33,7 +33,7 @@ RSpec.describe Services::FetchResponseBundles::Service do
   let(:target_bundle_uuids)           { [ SecureRandom.uuid.to_s ] }
 
   let(:bundle_manager) {
-    dbl = object_double(OpenStax::BundleManager::Manager.new(model: Response))
+    dbl = object_double(Openstax::BundleManager::Manager.new(model: Response))
     allow(dbl).to receive(:confirm)
               .with(
                 receiver_uuid:           given_receiver_uuid,
@@ -54,7 +54,7 @@ RSpec.describe Services::FetchResponseBundles::Service do
   }
 
   before(:each) do
-    allow(OpenStax::BundleManager::Manager).to receive(:new).and_return(bundle_manager)
+    allow(Openstax::BundleManager::Manager).to receive(:new).and_return(bundle_manager)
   end
 
   context "bundle confirmation:" do

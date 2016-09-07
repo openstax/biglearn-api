@@ -1,6 +1,6 @@
 class Services::FetchResponseBundles::Service
   def initialize
-    @bundle_manager = OpenStax::BundleManager::Manager.new(model: Response)
+    @bundle_manager = Openstax::BundleManager::Manager.new(model: Response)
   end
 
   def process(goal_max_responses_to_return:,

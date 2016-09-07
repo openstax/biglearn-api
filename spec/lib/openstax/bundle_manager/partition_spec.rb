@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "OpenStax::BundleManager::Manager: partitioning" do
-  let(:manager) { OpenStax::BundleManager::Manager.new(model: XTest1) }
+RSpec.describe "Openstax::BundleManager::Manager: partitioning" do
+  let(:manager) { Openstax::BundleManager::Manager.new(model: XTest1) }
 
   let(:action) { manager.partition(max_records_to_process: given_max_records_to_process) }
 

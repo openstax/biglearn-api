@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "OpenStax::BundleManager::Manager: confirmation" do
-  let(:manager) { OpenStax::BundleManager::Manager.new(model: XTest1) }
+RSpec.describe "Openstax::BundleManager::Manager: confirmation" do
+  let(:manager) { Openstax::BundleManager::Manager.new(model: XTest1) }
 
   let(:action) {
     manager.confirm(
