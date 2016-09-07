@@ -4,7 +4,7 @@ class Services::PartitionResponses::Service
   end
 
   def process(max_responses_to_process:)
-    confirmed_bundle_uuids = Response.transaction(isolation: :serializable) do
+    Response.transaction(isolation: :serializable) do
       bundle_manager.partition(max_records_to_process: max_responses_to_process)
     end
     self
