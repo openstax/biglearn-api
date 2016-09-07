@@ -4,7 +4,7 @@ class Services::PartitionResponses::Service
   end
 
   def process(max_responses_to_process:)
-    Response.transaction(isolation: :serializable) do
+    Response.transaction(isolation: :repeatable_read) do
       bundle_manager.partition(max_records_to_process: max_responses_to_process)
     end
     self

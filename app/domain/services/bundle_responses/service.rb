@@ -8,7 +8,7 @@ class Services::BundleResponses::Service
               max_age_per_bundle:,
               partition_count:,
               partition_modulo:)
-    Response.transaction(isolation: :serializable) do
+    Response.transaction(isolation: :repeatable_read) do
       bundle_manager.bundle(
         max_records_to_process: max_responses_to_process,
         max_records_per_bundle: max_responses_per_bundle,

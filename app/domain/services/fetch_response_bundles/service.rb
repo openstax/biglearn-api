@@ -10,7 +10,7 @@ class Services::FetchResponseBundles::Service
               partition_count:,
               partition_modulo:)
 
-    confirmed_bundle_uuids = Response.transaction(isolation: :serializable) do
+    confirmed_bundle_uuids = Response.transaction(isolation: :repeatable_read) do
       confirmed_bundle_uuids = bundle_manager.confirm(
         receiver_uuid:           receiver_uuid,
         bundle_uuids_to_confirm: bundle_uuids_to_confirm,
@@ -18,7 +18,7 @@ class Services::FetchResponseBundles::Service
       confirmed_bundle_uuids
     end
 
-    fetched_data = Response.transaction(isolation: :serializable) do
+    fetched_data = Response.transaction(isolation: :repeatable_read) do
       fetched_data = bundle_manager.fetch(
         goal_records_to_return: goal_max_responses_to_return,
         max_bundles_to_process: max_bundles_to_process,
