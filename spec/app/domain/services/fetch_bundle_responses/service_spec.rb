@@ -82,12 +82,13 @@ RSpec.describe Services::FetchResponseBundles::Service do
       )
     end
     it "returns the Response data for the uuids returned by the BundleManager" do
-      returned_response_data = action.fetch(:response_data)
+      returned_response_data  = action.fetch(:response_data).sort_by{|data| data.fetch(:response_uuid)}
+      sorted_target_responses = target_responses.sort_by{|response| response.uuid}
 
       aggregate_failures "response data checks" do
         expect(target_responses).to_not be_empty
         expect(returned_response_data.count).to eq(target_responses.count)
-        returned_response_data.zip(target_responses).each do |response_data, target_response|
+        returned_response_data.zip(sorted_target_responses).each do |response_data, target_response|
           expect(target_response.uuid).to           eq(response_data.fetch(:response_uuid))
           expect(target_response.trial_uuid).to     eq(response_data.fetch(:trial_uuid))
           expect(target_response.trial_sequence).to eq(response_data.fetch(:trial_sequence))
