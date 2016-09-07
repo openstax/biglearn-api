@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe ResponsesController, type: :request do
-  let(:request_payload) { {responses: response_data} }
+  let(:request_payload) { {responses: given_response_data} }
 
-  let(:response_data) {
+  let(:given_response_data) {
     responses.map{ |response|
       {
         response_uuid:  response.uuid,
@@ -30,7 +30,7 @@ RSpec.describe ResponsesController, type: :request do
   let(:service_double) {
     dbl = object_double(Services::RecordResponses::Service.new)
     allow(dbl).to receive(:process)
-              .with(response_data: response_data)
+              .with(response_data: given_response_data)
               .and_return(target_results)
     dbl
   }
@@ -39,7 +39,7 @@ RSpec.describe ResponsesController, type: :request do
     allow(Services::RecordResponses::Service).to receive(:new).and_return(service_double)
   end
 
-  context "when a request is made" do
+  context "when a valid request is made" do
     it "the request and response payloads are validated against their schemas" do
       expect_any_instance_of(ResponsesController).to receive(:with_json_apis).and_call_original
       response_status, response_body = record_responses(request_payload: request_payload)
