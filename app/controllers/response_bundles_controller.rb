@@ -5,20 +5,21 @@ class ResponseBundlesController < JsonApiController
                    output_schema: _fetch_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
-      max_bundles_to_return   = request_payload.fetch('max_bundles_to_return')
-      bundle_uuids_to_confirm = request_payload.fetch('confirmed_bundle_uuids')
-      receiver_uuid           = request_payload.fetch('receiver_info').fetch('receiver_uuid')
-      partition_count         = request_payload.fetch('receiver_info').fetch('partition_count')
-      partition_modulo        = request_payload.fetch('receiver_info').fetch('partition_modulo')
+      goal_max_responses_to_return = request_payload.fetch('goal_max_responses_to_return')
+      bundle_uuids_to_confirm      = request_payload.fetch('bundle_uuids_to_confirm')
+      receiver_uuid                = request_payload.fetch('receiver_info').fetch('receiver_uuid')
+      partition_count              = request_payload.fetch('receiver_info').fetch('partition_count')
+      partition_modulo             = request_payload.fetch('receiver_info').fetch('partition_modulo')
 
       service = Services::FetchResponseBundles::Service.new
 
       results = service.process(
-        max_bundles_to_return:   max_bundles_to_return,
-        bundle_uuids_to_confirm: bundle_uuids_to_confirm,
-        receiver_uuid:           receiver_uuid,
-        partition_count:         partition_count,
-        partition_modulo:        partition_modulo,
+        goal_max_responses_to_return: goal_max_responses_to_return,
+        max_bundles_to_process:       1000,
+        bundle_uuids_to_confirm:      bundle_uuids_to_confirm,
+        receiver_uuid:                receiver_uuid,
+        partition_count:              partition_count,
+        partition_modulo:             partition_modulo,
       )
 
       response_payload = {
@@ -38,22 +39,22 @@ class ResponseBundlesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'max_bundles_to_return': {
+        'goal_max_responses_to_return': {
           'type': 'integer',
           'minimum': 0,
           'maximum': 1000,
         },
-        'confirmed_bundle_uuids': {
+        'bundle_uuids_to_confirm': {
           'type': 'array',
           'items': {'$ref': '#standard_definitions/uuid'},
           'minItems': 0,
-          'maxItems': 5000,
+          'maxItems': 1000,
         },
         'receiver_info': {'$ref': '#standard_definitions/receiver_info'},
       },
       'required': [
-        'max_bundles_to_return',
-        'confirmed_bundle_uuids',
+        'goal_max_responses_to_return',
+        'bundle_uuids_to_confirm',
         'receiver_info',
       ],
       'additionalProperties': false,
@@ -73,7 +74,7 @@ class ResponseBundlesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#standard_definitions/uuid'},
           'minItems': 0,
-          'maxItems': 5000,
+          'maxItems': 1000,
         },
         'bundle_uuids': {
           'type': 'array',

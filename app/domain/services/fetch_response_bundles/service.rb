@@ -3,7 +3,8 @@ class Services::FetchResponseBundles::Service
     @bundle_manager = OpenStax::BundleManager::Manager.new(model: Response)
   end
 
-  def process(max_bundles_to_return:,
+  def process(goal_max_responses_to_return:,
+              max_bundles_to_process:,
               bundle_uuids_to_confirm:,
               receiver_uuid:,
               partition_count:,
@@ -19,8 +20,8 @@ class Services::FetchResponseBundles::Service
 
     fetched_data = Response.transaction(isolation: :serializable) do
       fetched_data = bundle_manager.fetch(
-        goal_records_to_return: 1000,
-        max_bundles_to_process: max_bundles_to_return,
+        goal_records_to_return: goal_max_responses_to_return,
+        max_bundles_to_process: max_bundles_to_process,
         receiver_uuid:          receiver_uuid,
         partition_count:        partition_count,
         partition_modulo:       partition_modulo,
