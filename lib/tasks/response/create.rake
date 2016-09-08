@@ -25,10 +25,11 @@ namespace :response do
           learner_uuid:   SecureRandom.uuid.to_s,
           question_uuid:  SecureRandom.uuid.to_s,
           is_correct:     [true, false].sample,
-          responded_at:   Time.now,
+          responded_at:   Time.now.utc.iso8601(6),
         }
       }
-
+      # puts "#{Time.now.utc.iso8601(6)}: creating:"
+      # response_data.each{|data| puts "#{data.fetch(:response_uuid)} #{data.fetch(:responded_at)}"}
       service.process(response_data: response_data)
       puts "#{Time.now.utc.iso8601(6)}: created #{response_data.count} Responses"
     end

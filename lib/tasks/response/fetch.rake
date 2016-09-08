@@ -47,13 +47,14 @@ namespace :response do
       new_response_uuids = []
       results.fetch(:response_data).each do |data|
         unless seen_response_uuids[data.fetch(:response_uuid)]
+          # puts "#{Time.now.utc.iso8601(6)}: fetched #{data.fetch(:response_uuid)} #{data.fetch(:responded_at)}"
           new_response_uuids << data.fetch(:response_uuid)
           delays[data.fetch(:response_uuid)] = Time.now - Time.parse(data.fetch(:responded_at))
         end
         seen_response_uuids[data.fetch(:response_uuid)] = true
       end
 
-      puts "#{Time.now.utc.iso8601(6)} #{receiver_uuid} (#{modulo}/#{count}): fetched Responses (received: #{results.fetch(:response_data).count}, new: #{new_response_uuids.count}, confirmed: #{results.fetch(:confirmed_bundle_uuids).count})"
+      # puts "#{Time.now.utc.iso8601(6)} #{receiver_uuid} (#{modulo}/#{count}): fetched Responses (received: #{results.fetch(:response_data).count}, new: #{new_response_uuids.count}, confirmed: #{results.fetch(:confirmed_bundle_uuids).count})"
 
       if Time.now > next_delay_update_time
         next_delay_update_time = Time.now + (2.0).seconds
@@ -63,7 +64,7 @@ namespace :response do
         min_delay = delays.values.min || 0.0
 
         puts "delays: #{min_delay}, #{avg_delay}, #{max_delay}"
-        # delays = {}
+        delays = {}
       end
     end
   end
