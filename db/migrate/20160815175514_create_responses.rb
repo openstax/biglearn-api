@@ -17,5 +17,7 @@ class CreateResponses < ActiveRecord::Migration
 
     add_index  :responses,  [:trial_uuid, :trial_sequence],
                             unique: true
+
+    add_index  :responses,  :created_at
   end
 end

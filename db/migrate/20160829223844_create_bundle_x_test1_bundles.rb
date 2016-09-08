@@ -9,5 +9,7 @@ class CreateBundleXTest1Bundles < ActiveRecord::Migration
 
     add_index :bundle_x_test1_bundles, :uuid,
                                        unique: true
+
+    add_index :bundle_x_test1_bundles, :created_at
   end
 end
