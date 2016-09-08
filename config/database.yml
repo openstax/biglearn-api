@@ -80,6 +80,7 @@ test:
 #
 production:
   <<: *default
-  database: biglearn-api_production
-  username: biglearn-api
-  password: <%= ENV['BIGLEARN-API_DATABASE_PASSWORD'] %>
+  url: postgres://kb-rds.cl8wqujzulmc.us-west-2.rds.amazonaws.com
+  database: biglearn_api_production
+  username: master
+  password: <%= ENV['BIGLEARN-API_DATABASE_PASSWORD'] || 'password' %>
