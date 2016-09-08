@@ -11,5 +11,7 @@ class CreateBundleResponses < ActiveRecord::Migration
                                    unique: true
 
     add_index  :bundle_responses,  :partition_value
+
+    add_index  :bundle_responses,  :created_at
   end
 end

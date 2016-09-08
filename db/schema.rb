@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 20160829233953) do
     t.datetime "updated_at",      null: false
   end
 
+  add_index "bundle_response_bundles", ["created_at"], name: "index_bundle_response_bundles_on_created_at", using: :btree
   add_index "bundle_response_bundles", ["partition_value"], name: "index_bundle_response_bundles_on_partition_value", using: :btree
   add_index "bundle_response_bundles", ["uuid"], name: "index_bundle_response_bundles_on_uuid", unique: true, using: :btree
 
@@ -54,6 +55,7 @@ ActiveRecord::Schema.define(version: 20160829233953) do
     t.datetime "updated_at",      null: false
   end
 
+  add_index "bundle_responses", ["created_at"], name: "index_bundle_responses_on_created_at", using: :btree
   add_index "bundle_responses", ["partition_value"], name: "index_bundle_responses_on_partition_value", using: :btree
   add_index "bundle_responses", ["uuid"], name: "index_bundle_responses_on_uuid", unique: true, using: :btree
 
@@ -64,6 +66,7 @@ ActiveRecord::Schema.define(version: 20160829233953) do
     t.datetime "updated_at",      null: false
   end
 
+  add_index "bundle_x_test1_bundles", ["created_at"], name: "index_bundle_x_test1_bundles_on_created_at", using: :btree
   add_index "bundle_x_test1_bundles", ["uuid"], name: "index_bundle_x_test1_bundles_on_uuid", unique: true, using: :btree
 
   create_table "bundle_x_test1_confirmations", force: :cascade do |t|
@@ -110,6 +113,7 @@ ActiveRecord::Schema.define(version: 20160829233953) do
     t.datetime "updated_at"
   end
 
+  add_index "responses", ["created_at"], name: "index_responses_on_created_at", using: :btree
   add_index "responses", ["trial_uuid", "trial_sequence"], name: "index_responses_on_trial_uuid_and_trial_sequence", unique: true, using: :btree
   add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
