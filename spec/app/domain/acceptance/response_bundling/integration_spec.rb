@@ -10,7 +10,6 @@ RSpec.describe "Response bundling" do
   }
 
   let(:num_given_responses)  { 2_000 }
-  let(:given_responses) { num_given_responses.times.map{ build(:response) } }
 
   3.times do
     it "works" do
@@ -29,8 +28,9 @@ RSpec.describe "Response bundling" do
           sleep 0.001
         end
 
-        given_responses.each_slice(103) do |responses|
-          response_data = responses.map{ |response|
+        num_given_responses.times.each_slice(10) do |values|
+          response_data = values.map{ |value|
+            response = build(:response)
             {
               response_uuid:  response.uuid,
               trial_uuid:     response.trial_uuid,
@@ -123,6 +123,8 @@ RSpec.describe "Response bundling" do
         confirmed_bundle_uuids   = {}
         received_response_uuids  = {}
 
+        delays = {}
+
         loop do
           break if received_response_uuids.count == num_given_responses
           fail "out of time!" if Time.now > start_time + 10.seconds
@@ -131,8 +133,8 @@ RSpec.describe "Response bundling" do
             bundle_uuids_to_confirm = unconfirmed_bundle_uuids.keys.take(20)
 
             results = service.process(
-              goal_max_responses_to_return: 100,
-              max_bundles_to_process:       20,
+              goal_max_responses_to_return: 1000,
+              max_bundles_to_process:       100,
               bundle_uuids_to_confirm:      bundle_uuids_to_confirm,
               receiver_uuid:                receiver_uuid,
               partition_count:              1,
@@ -148,6 +150,9 @@ RSpec.describe "Response bundling" do
 
             results.fetch(:response_data).each do |data|
               received_response_uuids[data.fetch(:response_uuid)] = true
+              unless delays[data.fetch(:response_uuid)]
+                delays[data.fetch(:response_uuid)] = Time.now - Time.parse(data.fetch(:responded_at))
+              end
             end
 
             results.fetch(:bundle_uuids).each do |uuid|
@@ -156,6 +161,15 @@ RSpec.describe "Response bundling" do
           end
           sleep(0.001)
         end
+
+        avg_delay = delays.inject(0.0){|result, (k,v)| result += v; result} / delays.count
+        #puts "avg_delay = #{avg_delay}"
+
+        min_delay = delays.sort_by{|(k,v)| v}.first.last
+        #puts "min_delay = #{min_delay}"
+
+        max_delay = delays.sort_by{|(k,v)| v}.last.last
+        #puts "max_delay = #{max_delay}"
       end
 
       wait_for_it = false
