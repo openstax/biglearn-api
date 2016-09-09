@@ -9,7 +9,7 @@ class CreateResponses < ActiveRecord::Migration
       t.boolean   :is_correct,       null: false
       t.datetime  :responded_at,     null: false
 
-      t.timestamps
+      t.timestamps                   null: false
     end
 
     add_index  :responses,  :uuid,
