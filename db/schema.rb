@@ -109,8 +109,8 @@ ActiveRecord::Schema.define(version: 20160829233953) do
     t.uuid     "question_uuid",  null: false
     t.boolean  "is_correct",     null: false
     t.datetime "responded_at",   null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   add_index "responses", ["created_at"], name: "index_responses_on_created_at", using: :btree
