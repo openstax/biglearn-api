@@ -11,36 +11,95 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160811071910) do
+ActiveRecord::Schema.define(version: 20160829233953) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "clues", force: :cascade do |t|
-    t.string   "uuid",                 limit: 36, null: false
-    t.float    "aggregate",                       null: false
-    t.float    "left",                            null: false
-    t.float    "right",                           null: false
-    t.integer  "sample_size",                     null: false
-    t.integer  "unique_learner_count",            null: false
-    t.integer  "confidence",                      null: false
-    t.integer  "level",                           null: false
-    t.integer  "threshold",                       null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+  create_table "bundle_response_bundles", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.integer  "partition_value", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
-  add_index "clues", ["created_at"], name: "index_clues_on_created_at", using: :btree
-  add_index "clues", ["uuid"], name: "index_clues_on_uuid", unique: true, using: :btree
+  add_index "bundle_response_bundles", ["created_at"], name: "index_bundle_response_bundles_on_created_at", using: :btree
+  add_index "bundle_response_bundles", ["partition_value"], name: "index_bundle_response_bundles_on_partition_value", using: :btree
+  add_index "bundle_response_bundles", ["uuid"], name: "index_bundle_response_bundles_on_uuid", unique: true, using: :btree
 
-  create_table "concepts", force: :cascade do |t|
-    t.string   "uuid",       limit: 36, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+  create_table "bundle_response_confirmations", force: :cascade do |t|
+    t.uuid     "bundle_uuid",   null: false
+    t.uuid     "receiver_uuid", null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
-  add_index "concepts", ["created_at"], name: "index_concepts_on_created_at", using: :btree
-  add_index "concepts", ["uuid"], name: "index_concepts_on_uuid", unique: true, using: :btree
+  add_index "bundle_response_confirmations", ["bundle_uuid"], name: "index_brc_b_uuid_r_uuid_unique", unique: true, using: :btree
+  add_index "bundle_response_confirmations", ["bundle_uuid"], name: "index_bundle_response_confirmations_on_bundle_uuid", using: :btree
+  add_index "bundle_response_confirmations", ["receiver_uuid"], name: "index_bundle_response_confirmations_on_receiver_uuid", using: :btree
+
+  create_table "bundle_response_entries", force: :cascade do |t|
+    t.uuid     "uuid",        null: false
+    t.uuid     "bundle_uuid", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "bundle_response_entries", ["bundle_uuid"], name: "index_bre_b_uuid", using: :btree
+  add_index "bundle_response_entries", ["uuid"], name: "index_bre_uuid_unique", unique: true, using: :btree
+
+  create_table "bundle_responses", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.integer  "partition_value", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bundle_responses", ["created_at"], name: "index_bundle_responses_on_created_at", using: :btree
+  add_index "bundle_responses", ["partition_value"], name: "index_bundle_responses_on_partition_value", using: :btree
+  add_index "bundle_responses", ["uuid"], name: "index_bundle_responses_on_uuid", unique: true, using: :btree
+
+  create_table "bundle_x_test1_bundles", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.integer  "partition_value", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bundle_x_test1_bundles", ["created_at"], name: "index_bundle_x_test1_bundles_on_created_at", using: :btree
+  add_index "bundle_x_test1_bundles", ["uuid"], name: "index_bundle_x_test1_bundles_on_uuid", unique: true, using: :btree
+
+  create_table "bundle_x_test1_confirmations", force: :cascade do |t|
+    t.uuid     "bundle_uuid",   null: false
+    t.uuid     "receiver_uuid", null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "bundle_x_test1_confirmations", ["bundle_uuid", "receiver_uuid"], name: "index_bxt1c_b_uuid_r_uuid_uniq", unique: true, using: :btree
+  add_index "bundle_x_test1_confirmations", ["bundle_uuid"], name: "index_bundle_x_test1_confirmations_on_bundle_uuid", using: :btree
+  add_index "bundle_x_test1_confirmations", ["receiver_uuid"], name: "index_bundle_x_test1_confirmations_on_receiver_uuid", using: :btree
+
+  create_table "bundle_x_test1_entries", force: :cascade do |t|
+    t.uuid     "uuid",        null: false
+    t.uuid     "bundle_uuid", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "bundle_x_test1_entries", ["bundle_uuid"], name: "index_bundle_x_test1_entries_on_bundle_uuid", using: :btree
+  add_index "bundle_x_test1_entries", ["uuid"], name: "index_bxt1e_uuid_uniq", unique: true, using: :btree
+
+  create_table "bundle_x_test1s", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.integer  "partition_value", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bundle_x_test1s", ["created_at"], name: "index_bundle_x_test1s_on_created_at", using: :btree
+  add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
+  add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
   create_table "exper_increasing_counters", force: :cascade do |t|
     t.uuid    "uuid",    null: false
@@ -48,75 +107,6 @@ ActiveRecord::Schema.define(version: 20160811071910) do
   end
 
   add_index "exper_increasing_counters", ["uuid", "counter"], name: "index_exper_increasing_counters_on_uuid_and_counter", unique: true, using: :btree
-
-  create_table "learner_batch_entries", force: :cascade do |t|
-    t.string "learner_batch_uuid", limit: 36, null: false
-    t.string "learner_uuid",       limit: 36, null: false
-  end
-
-  add_index "learner_batch_entries", ["learner_batch_uuid", "learner_uuid"], name: "index_lbe_lb_uuid_l_uuid_unique", unique: true, using: :btree
-  add_index "learner_batch_entries", ["learner_batch_uuid"], name: "index_learner_batch_entries_on_learner_batch_uuid", using: :btree
-
-  create_table "learner_batches", force: :cascade do |t|
-    t.string   "uuid",        limit: 36, null: false
-    t.integer  "num_entries",            null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  add_index "learner_batches", ["uuid"], name: "index_learner_batches_on_uuid", unique: true, using: :btree
-
-  create_table "learner_pool_entries", id: false, force: :cascade do |t|
-    t.string "learner_uuid",      limit: 36, null: false
-    t.string "learner_pool_uuid", limit: 36, null: false
-  end
-
-  add_index "learner_pool_entries", ["learner_pool_uuid", "learner_uuid"], name: "index_lpe_lp_uuid_l_uuid_unique", unique: true, using: :btree
-  add_index "learner_pool_entries", ["learner_pool_uuid"], name: "index_learner_pool_entries_on_learner_pool_uuid", using: :btree
-
-  create_table "learner_pools", force: :cascade do |t|
-    t.string   "uuid",       limit: 36, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "learner_pools", ["created_at"], name: "index_learner_pools_on_created_at", using: :btree
-  add_index "learner_pools", ["uuid"], name: "index_learner_pools_on_uuid", unique: true, using: :btree
-
-  create_table "learner_question_responses", force: :cascade do |t|
-    t.string   "uuid",          limit: 36, null: false
-    t.string   "learner_uuid",  limit: 36, null: false
-    t.string   "question_uuid", limit: 36, null: false
-    t.boolean  "correct",                  null: false
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-  end
-
-  add_index "learner_question_responses", ["uuid"], name: "index_learner_question_responses_on_uuid", unique: true, using: :btree
-
-  create_table "learners", force: :cascade do |t|
-    t.string   "uuid",       limit: 36, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "learners", ["created_at"], name: "index_learners_on_created_at", using: :btree
-  add_index "learners", ["uuid"], name: "index_learners_on_uuid", unique: true, using: :btree
-
-  create_table "precomputed_clues", force: :cascade do |t|
-    t.string   "uuid",               limit: 36, null: false
-    t.string   "learner_pool_uuid",  limit: 36, null: false
-    t.string   "question_pool_uuid", limit: 36, null: false
-    t.string   "clue_uuid",          limit: 36, null: false
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-  end
-
-  add_index "precomputed_clues", ["clue_uuid"], name: "index_precomputed_clues_on_clue_uuid", unique: true, using: :btree
-  add_index "precomputed_clues", ["created_at"], name: "index_precomputed_clues_on_created_at", using: :btree
-  add_index "precomputed_clues", ["learner_pool_uuid"], name: "index_precomputed_clues_on_learner_pool_uuid", using: :btree
-  add_index "precomputed_clues", ["question_pool_uuid"], name: "index_precomputed_clues_on_question_pool_uuid", using: :btree
-  add_index "precomputed_clues", ["uuid"], name: "index_precomputed_clues_on_uuid", unique: true, using: :btree
 
   create_table "protocol_records", force: :cascade do |t|
     t.string   "protocol_name",   null: false
@@ -133,42 +123,29 @@ ActiveRecord::Schema.define(version: 20160811071910) do
   add_index "protocol_records", ["group_uuid"], name: "index_protocol_records_on_group_uuid", using: :btree
   add_index "protocol_records", ["instance_uuid"], name: "index_protocol_records_on_instance_uuid", unique: true, using: :btree
 
-  create_table "question_concept_hints", force: :cascade do |t|
-    t.string   "uuid",          limit: 36, null: false
-    t.string   "question_uuid", limit: 36, null: false
-    t.string   "concept_uuid",  limit: 36, null: false
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+  create_table "responses", force: :cascade do |t|
+    t.uuid     "uuid",           null: false
+    t.uuid     "trial_uuid",     null: false
+    t.integer  "trial_sequence", null: false
+    t.uuid     "learner_uuid",   null: false
+    t.uuid     "question_uuid",  null: false
+    t.boolean  "is_correct",     null: false
+    t.datetime "responded_at",   null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
-  add_index "question_concept_hints", ["created_at"], name: "index_question_concept_hints_on_created_at", using: :btree
-  add_index "question_concept_hints", ["question_uuid", "concept_uuid"], name: "qch_q_uuid_c_uuid_unique", unique: true, using: :btree
-  add_index "question_concept_hints", ["uuid"], name: "index_question_concept_hints_on_uuid", unique: true, using: :btree
+  add_index "responses", ["created_at"], name: "index_responses_on_created_at", using: :btree
+  add_index "responses", ["trial_uuid", "trial_sequence"], name: "index_responses_on_trial_uuid_and_trial_sequence", unique: true, using: :btree
+  add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
-  create_table "question_pool_entries", id: false, force: :cascade do |t|
-    t.string "question_uuid",      limit: 36, null: false
-    t.string "question_pool_uuid", limit: 36, null: false
+  create_table "x_test1s", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  add_index "question_pool_entries", ["question_pool_uuid", "question_uuid"], name: "index_qpe_qp_uuid_q_uuid_unique", unique: true, using: :btree
-  add_index "question_pool_entries", ["question_pool_uuid"], name: "index_question_pool_entries_on_question_pool_uuid", using: :btree
-
-  create_table "question_pools", force: :cascade do |t|
-    t.string   "uuid",       limit: 36, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "question_pools", ["created_at"], name: "index_question_pools_on_created_at", using: :btree
-  add_index "question_pools", ["uuid"], name: "index_question_pools_on_uuid", unique: true, using: :btree
-
-  create_table "questions", force: :cascade do |t|
-    t.string   "uuid",       limit: 36, null: false
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
-  end
-
-  add_index "questions", ["created_at"], name: "index_questions_on_created_at", using: :btree
-  add_index "questions", ["uuid"], name: "index_questions_on_uuid", unique: true, using: :btree
+  add_index "x_test1s", ["created_at"], name: "index_x_test1s_on_created_at", using: :btree
+  add_index "x_test1s", ["uuid"], name: "index_x_test1s_on_uuid", unique: true, using: :btree
 
 end

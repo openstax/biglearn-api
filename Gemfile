@@ -38,13 +38,27 @@ gem 'json-schema'
 ## database query DSL
 gem 'squeel'
 
+## datetime string parsing
+gem 'chronic'
+
 ## entity-relationship disagram gem
 gem 'rails-erd'
+
+## bulk import for ActiveRecord
+gem 'activerecord-import'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
+
+  ## RSpec test framework
   gem 'rspec-rails'
+
+  ## fixture creation
+  gem 'factory_girl_rails', '~> 4.0'
+
+  ## ability to manipulate the passage of time
+  gem 'timecop'
 end
 
 group :test do

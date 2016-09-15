@@ -1,0 +1,20 @@
+## postgres 9.5 setup adapted from: https://github.com/travis-ci/travis-ci/issues/4264
+
+sudo: required
+dist: trusty
+services:
+  - postgresql
+addons:
+  postgresql: "9.5"
+before_script:
+  - bundle exec rake --trace db:create db:schema:load db:seed
+script:
+  - bundle exec rake spec
+branches:
+  only:
+    - master
+language: ruby
+rvm:
+  - "2.3.1"
+cache: bundler
+bundler_args: --without production --retry=6

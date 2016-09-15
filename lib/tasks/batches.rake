@@ -9,18 +9,10 @@ def at_most_every(duration, &block)
 end
 
 namespace :batch do
-  desc "Continuously create Learner Batches"
-  task :learner => :environment do
+  desc "Continuously run a sample task"
+  task :sample => :environment do
     at_most_every(1.0.seconds) do
-      LearnerBatch.create_new_batches
-    end
-  end
-
-  desc "Continuously create Question-Concept Hint Batches"
-  task :qch => :environment do
-    at_most_every(1.5.seconds) do
-      #QchBatch.create_new_batches
-      puts 'creating QCH batches'
+      puts 'sample task run'
     end
   end
 end

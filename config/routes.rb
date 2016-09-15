@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  post '/record_responses' => 'responses#record'
+
+  post '/fetch_response_bundles' => 'response_bundles#fetch'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -53,22 +57,4 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
-
-  post '/create_learners' => 'learners#create'
-
-  post '/create_questions' => 'questions#create'
-
-  post '/create_concepts' => 'concepts#create'
-
-  post '/create_question_concept_hints' => 'question_concept_hints#create'
-
-  post '/create_learner_question_responses' => 'learner_question_responses#create'
-
-  post '/create_learner_pools' => 'learner_pools#create'
-
-  post '/create_question_pools' => 'question_pools#create'
-
-  post '/create_precomputed_clues' => 'precomputed_clues#create'
-
-  post '/retrieve_precomputed_clues' => 'precomputed_clues#retrieve'
 end
