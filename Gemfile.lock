@@ -71,6 +71,7 @@ GEM
     json (1.8.3)
     json-schema (2.6.2)
       addressable (~> 2.3.8)
+    libv8 (3.16.14.15)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.4)
@@ -123,6 +124,7 @@ GEM
     rake (11.2.2)
     rdoc (4.2.2)
       json (~> 1.4)
+    ref (2.0.0)
     rspec-core (3.5.2)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
@@ -163,6 +165,9 @@ GEM
       activerecord (>= 3.0)
       activesupport (>= 3.0)
       polyamorous (~> 1.1.0)
+    therubyracer (0.12.2)
+      libv8 (~> 3.16.14.0)
+      ref
     thin (1.7.0)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
@@ -201,10 +206,11 @@ DEPENDENCIES
   sdoc (~> 0.4.0)
   spring
   squeel
+  therubyracer
   thin
   turbolinks
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.10.6
+   1.12.5
