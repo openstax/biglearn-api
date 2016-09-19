@@ -118,7 +118,15 @@ class JsonApiController < ApplicationController
       },
       'datetime': {
         'type': 'string',
-        'format': 'date-time',
+        'pattern': '^\d{4}-'                       + ## year
+                   '(0[1-9]|1[0-2])-'              + ## month
+                   '(0[1-9]|1[0-9]|2[0-9]|3[0-1])' + ## day of month
+                   '(T|t)'                         + ## ISO8601 spacer
+                   '(0[0-9]|1[0-9]|2[0-3]):'       + ## hour
+                   '([0-5][0-9]):'                 + ## minute
+                   '([0-5][0-9]|60)'               + ## second
+                   '\.\d{6}'                       + ## fraction of second
+                   '(Z|z)$'                          ## Zulu timezone
       },
       'receiver_info': {
         'type': 'object',
