@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+
+  post '/create_course' => 'course#create'
+
   post '/record_responses' => 'responses#record'
 
   post '/fetch_response_bundles' => 'response_bundles#fetch'

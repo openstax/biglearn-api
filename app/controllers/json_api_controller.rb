@@ -8,8 +8,12 @@ class JsonApiController < ApplicationController
   rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error
   rescue_from Errors::AppUnprocessableError,      with: :_render_app_unprocessable_error
 
+  JSON_SCHEMA='http://json-schema.org/draft-04/schema#'
 
   def with_json_apis(input_schema:, output_schema:, &block)
+    input_schema['$schema'] = JSON_SCHEMA
+    output_schema['$schema'] = JSON_SCHEMA
+
     _validate_request(input_schema)
     block.call
     _validate_response(output_schema)
@@ -152,7 +156,7 @@ class JsonApiController < ApplicationController
 
   def _generic_error_schema
     {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
+      '$schema': JSON_SCHEMA,
 
       'type': 'object',
       'properties': {

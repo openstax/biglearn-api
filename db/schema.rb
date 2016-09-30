@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160829233953) do
+ActiveRecord::Schema.define(version: 20160930170819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,23 @@ ActiveRecord::Schema.define(version: 20160829233953) do
   add_index "bundle_x_test1s", ["created_at"], name: "index_bundle_x_test1s_on_created_at", using: :btree
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
+
+  create_table "courses", force: :cascade do |t|
+    t.uuid     "uuid",           null: false
+    t.uuid     "ecosystem_uuid", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "courses", ["uuid"], name: "index_courses_on_uuid", unique: true, using: :btree
+
+  create_table "ecosystems", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ecosystems", ["uuid"], name: "index_ecosystems_on_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
