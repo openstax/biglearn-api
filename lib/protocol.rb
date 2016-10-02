@@ -1,8 +1,13 @@
 class Protocol
 
-  def initialize(protocol_name:, min_work_interval:, group_uuid:, &block)
+  def initialize(protocol_name:,
+                 min_work_interval:,
+                 work_offset: 0.000001.seconds,
+                 group_uuid:,
+                 &block)
     @protocol_name      = protocol_name
     @min_work_interval  = min_work_interval
+    @work_offset        = work_offset
     @group_uuid         = group_uuid
     @work_block         = block
     @instance_uuid      = SecureRandom.uuid.to_s
@@ -12,7 +17,10 @@ class Protocol
   def run
     ActiveRecord::Base.clear_active_connections!
 
-    last_work_time = Time.now - 1.year
+    current_time = Time.now
+    next_work_time = current_time + @work_offset - (current_time.to_f % @work_offset)
+    puts "current_time:   #{current_time.utc.iso8601(6)}"
+    puts "next_work_time: #{next_work_time.utc.iso8601(6)}"
 
     loop do
       my_record, group_records, dead_records = _read_records
@@ -56,14 +64,18 @@ class Protocol
       end
 
       curent_time = Time.now
-      if curent_time - last_work_time >= @min_work_interval
-        last_work_time = curent_time
+      if curent_time >= next_work_time
+        last_work_time = next_work_time
+        puts "work_time:      #{last_work_time.utc.iso8601(6)}"
         @work_block.call(
           instance_count:  boss_record.instance_count,
           instance_modulo: my_record.instance_modulo,
         )
+        current_time = Time.now
+        next_work_time = last_work_time + ((current_time - last_work_time + @min_work_interval - 0.000001.seconds)/@min_work_interval).to_i*@min_work_interval
+        puts "next_work_time: #{next_work_time.utc.iso8601(6)}"
       else
-        sleep([0.5, (last_work_time + @min_work_interval - curent_time)].min)
+        sleep([0.5, next_work_time - current_time].min)
       end
     end
   rescue Interrupt => ex
