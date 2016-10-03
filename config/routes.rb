@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  post '/create_course' => 'course#create'
+  post '/create_course' => 'courses#create'
 
   post '/record_responses' => 'responses#record'
 
