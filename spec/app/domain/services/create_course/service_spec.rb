@@ -72,7 +72,7 @@ RSpec.describe Services::CreateCourse::Service do
     let!(:split_time) { time = Time.now; sleep(0.001); time }
 
     it "raises error" do
-      expect{action}.to raise_error(Errors::AppRequestValidationError)
+      expect{action}.to raise_error(Errors::AppUnprocessableError)
     end
   end
 
