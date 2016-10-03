@@ -71,17 +71,8 @@ RSpec.describe Services::CreateCourse::Service do
 
     let!(:split_time) { time = Time.now; sleep(0.001); time }
 
-    it "no Courses are created" do
-      expect{action}.to_not change{Course.count}
-    end
-    it "no Courses are updated" do
-      action
-
-      updated_courses = Course.where{updated_at > my{split_time}}
-      expect(updated_courses).to be_empty
-    end
-    it "nil is returned" do
-      expect(action).to be_nil
+    it "raises error" do
+      expect{action}.to raise_error(Errors::AppRequestValidationError)
     end
   end
 

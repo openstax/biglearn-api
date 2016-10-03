@@ -7,7 +7,8 @@ class Services::CreateCourse::Service
 
     ecosystem = Ecosystem.find_by uuid: ecosystem_uuid
 
-    return nil if ecosystem.nil?
+    fail Errors::AppRequestValidationError.new("Ecosystem #{ecosystem_uuid} does not exist. Course cannot be created.") \
+      if ecosystem.nil?
 
     values_str = %Q{
       ( '#{course_uuid}',
