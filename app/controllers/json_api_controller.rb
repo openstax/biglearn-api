@@ -11,9 +11,6 @@ class JsonApiController < ApplicationController
   JSON_SCHEMA='http://json-schema.org/draft-04/schema#'
 
   def with_json_apis(input_schema:, output_schema:, &block)
-    input_schema['$schema'] = JSON_SCHEMA
-    output_schema['$schema'] = JSON_SCHEMA
-
     _validate_request(input_schema)
     block.call
     _validate_response(output_schema)

@@ -25,6 +25,8 @@ class CoursesController < JsonApiController
 
   def _create_request_payload_schema
     {
+      '$schema': JSON_SCHEMA,
+
       'type': 'object',
       'properties': {
         'course_uuid': {'$ref': '#standard_definitions/uuid'},
@@ -40,6 +42,8 @@ class CoursesController < JsonApiController
 
   def _create_response_payload_schema
     {
+      '$schema': JSON_SCHEMA,
+
       'type': 'object',
       'properties': {
         'created_course_uuid': {'$ref': '#standard_definitions/uuid'},

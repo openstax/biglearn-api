@@ -16,6 +16,8 @@ class ResponsesController < JsonApiController
 
   def _record_request_payload_schema
     {
+      '$schema': JSON_SCHEMA,
+
       'type': 'object',
       'properties': {
         'responses': {
@@ -60,6 +62,8 @@ class ResponsesController < JsonApiController
 
   def _record_response_payload_schema
     {
+      '$schema': JSON_SCHEMA,
+
       'type': 'object',
       'properties': {
         'recorded_response_uuids': {
