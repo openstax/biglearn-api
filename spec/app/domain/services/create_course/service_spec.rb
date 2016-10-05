@@ -2,81 +2,45 @@ require 'rails_helper'
 
 RSpec.describe Services::CreateCourse::Service do
   let(:service) { Services::CreateCourse::Service.new }
-  let(:action) { process }
 
-  def process
-    service.process(course_uuid: given_course_uuid, ecosystem_uuid: given_ecosystem_uuid)
-  end
+  let(:action) { service.process(course_uuid: given_course_uuid, ecosystem_uuid: given_ecosystem_uuid) }
 
-  context "when non-existing ecosystem is given" do
-    let(:given_course_uuid) { SecureRandom.uuid.to_s }
-    let(:given_ecosystem_uuid) { SecureRandom.uuid.to_s }
+  let(:given_course_uuid)    { SecureRandom.uuid.to_s }
+  let(:given_ecosystem_uuid) { SecureRandom.uuid.to_s }
 
-    let!(:split_time) { time = Time.now; sleep(0.001); time }
-
+  context "when previously non-existing Ecosystem uuid is given" do
     it "raises error" do
       expect{action}.to raise_error(Errors::AppUnprocessableError)
     end
   end
 
-  context "when existing ecosystem is given" do
-
-    ecosystem_uuid = SecureRandom.uuid.to_s
-    course_uuid = SecureRandom.uuid.to_s
-
-    let(:given_course_uuid) { course_uuid }
-    let(:given_ecosystem_uuid) { ecosystem_uuid }
-
-    let!(:split_time) { time = Time.now; sleep(0.001); time }
-
-    expected = {created_course_uuid: course_uuid}
-
+  context "when previously-existing Ecosystem uuid is given" do
     before(:each) do
-      Ecosystem.find_or_create_by(uuid: ecosystem_uuid)
+      create(:ecosystem, uuid: given_ecosystem_uuid)
     end
 
-    it "Course is created" do
-      expect{action}.to change{Course.count}
+    context "and a previously-existing Course uuid is given" do
+      before(:each) do
+        create(:course, uuid: given_course_uuid)
+      end
+
+      it "a Course is NOT created" do
+        expect{action}.to_not change{Course.count}
+      end
+
+      it "the Course's uuid is returned" do
+        expect(action.fetch(:created_course_uuid)).to eq(given_course_uuid)
+      end
     end
 
-    it "created_course_uuid is returned" do
-      expect(action).to eq expected
-    end
+    context "and a previously non-existing Course uuid is given" do
+      it "a Course is created" do
+        expect{action}.to change{Course.count}.by(1)
+      end
 
-    it "Course is updated" do
-      action
-
-      updated_courses = Course.where{updated_at > my{split_time}}
-      expect(updated_courses).to_not be_empty
+      it "the Course's uuid is returned" do
+        expect(action.fetch(:created_course_uuid)).to eq(given_course_uuid)
+      end
     end
   end
-
-  context "when existing course is given" do
-
-    ecosystem_uuid = SecureRandom.uuid.to_s
-    course_uuid = SecureRandom.uuid.to_s
-
-    let(:given_course_uuid) { course_uuid }
-    let(:given_ecosystem_uuid) { ecosystem_uuid }
-
-    expected = {created_course_uuid: course_uuid}
-
-    let!(:split_time) { time = Time.now; sleep(0.001); time }
-
-    before(:each) do
-      Ecosystem.find_or_create_by(uuid: ecosystem_uuid)
-      process
-    end
-
-    it "Course is not created" do
-      expect{process}.to_not change{Course.count}
-    end
-
-    it "created_course_uuid is returned" do
-      expect(process).to eq expected
-    end
-
-  end
-
 end
-
