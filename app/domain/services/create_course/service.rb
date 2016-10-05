@@ -31,14 +31,11 @@ class Services::CreateCourse::Service
         RETURNING uuid
       }.gsub(/\n\s*/, ' ')
 
-      inserted_courses = Course.connection.execute(sql_inserted_course)
-
-      inserted_courses.collect{|hash| hash.fetch('uuid')}[0] or course_uuid
+      Course.connection.execute(sql_inserted_course)
+        .collect{|hash| hash.fetch('uuid')}[0] or course_uuid
     end
 
-    {
-      created_course_uuid: created_course_uuid
-    }
+    { created_course_uuid: created_course_uuid }
   end
 end
 

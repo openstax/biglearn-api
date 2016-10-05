@@ -14,9 +14,7 @@ class CoursesController < JsonApiController
         ecosystem_uuid: ecosystem_uuid,
       )
 
-      response_payload = {
-        created_course_uuid: result.fetch(:created_course_uuid)
-      }
+      response_payload = { created_course_uuid: result.fetch(:created_course_uuid) }
 
       render json: response_payload.to_json, status: 200
     end
