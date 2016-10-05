@@ -3,29 +3,25 @@ require 'rails_helper'
 RSpec.describe CoursesController, type: :request do
   let(:request_payload) { 
     {
-      course_uuid: given_course_data.uuid,
-      ecosystem_uuid: given_course_data.ecosystem_uuid
+      course_uuid:    given_course_uuid,
+      ecosystem_uuid: given_ecosystem_uuid
     }
   }
 
-  let(:given_course_data) {
-    build(:course, ecosystem_uuid: ecosystem.uuid)
-  }
+  let(:given_course_uuid)     { SecureRandom.uuid.to_s }
+  let(:given_ecosystem_uuid)  { SecureRandom.uuid.to_s }
 
-  let(:ecosystem) {
-    build(:ecosystem)
-  }
-
-  let(:target_result) {
-    {
-      created_course_uuid: given_course_data.uuid
-    }
+  let(:target_result)         {
+    { created_course_uuid: given_course_uuid }
   }
 
   let(:service_double) {
     dbl = object_double(Services::CreateCourse::Service.new)
     allow(dbl).to receive(:process)
-              .with(**request_payload)
+              .with(
+                course_uuid:    given_course_uuid,
+                ecosystem_uuid: given_ecosystem_uuid
+              )
               .and_return(target_result)
     dbl
   }
@@ -49,7 +45,7 @@ RSpec.describe CoursesController, type: :request do
     end
     it "the response contains the course uuid returned by the CreateCourse service" do
       response_status, response_body = create_course(request_payload: request_payload)
-      expect(response_body.fetch('created_course_uuid')).to eq(given_course_data.uuid)
+      expect(response_body.fetch('created_course_uuid')).to eq(given_course_uuid)
     end
   end
 end
