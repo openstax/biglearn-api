@@ -4,10 +4,9 @@ class Services::CreateCourse::Service
     start_time     = Time.now
     start_time_str = start_time.utc.iso8601(6)
 
-    ecosystem = Ecosystem.find_by uuid: ecosystem_uuid
-
-    fail Errors::AppUnprocessableError.new("Ecosystem #{ecosystem_uuid} does not exist. Course cannot be created.") \
-      if ecosystem.nil?
+    unless Ecosystem.find_by uuid: ecosystem_uuid
+      fail Errors::AppUnprocessableError.new("Ecosystem #{ecosystem_uuid} does not exist. Course cannot be created.")
+    end
 
     values_str = %Q{
       '#{course_uuid}',
