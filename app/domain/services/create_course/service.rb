@@ -8,34 +8,16 @@ class Services::CreateCourse::Service
       fail Errors::AppUnprocessableError.new("Ecosystem #{ecosystem_uuid} does not exist. Course cannot be created.")
     end
 
-    values_str = %Q{
-      '#{course_uuid}',
-        '#{ecosystem_uuid}',
-        TIMESTAMP WITH TIME ZONE '#{start_time_str}',
-        TIMESTAMP WITH TIME ZONE '#{start_time_str}'
-    }.gsub(/\n\s*/, ' ')
+    course = Course.new(
+      :uuid           => course_uuid,
+      :ecosystem_uuid => ecosystem_uuid
+    )
 
-    select_str = %Q{
-      SELECT 1
-        FROM courses
-        WHERE
-          courses.uuid = '#{course_uuid}'
-    }.gsub(/\n\s*/, ' ')
-
-    created_course_uuid = Course.transaction(isolation: :serializable) do
-      sql_inserted_course = %Q{
-        INSERT INTO courses
-        (uuid, ecosystem_uuid, created_at, updated_at)
-        SELECT #{values_str}
-        WHERE NOT EXISTS (#{select_str})
-        RETURNING uuid
-      }.gsub(/\n\s*/, ' ')
-
-      Course.connection.execute(sql_inserted_course)
-        .collect{|hash| hash.fetch('uuid')}[0] or course_uuid
+    Course.transaction(isolation: :serializable) do
+      Course.import [course], on_duplicate_key_ignore: true
     end
 
-    { created_course_uuid: created_course_uuid }
+    { created_course_uuid: course_uuid }
   end
 end
 
