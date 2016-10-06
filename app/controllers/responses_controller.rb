@@ -16,7 +16,7 @@ class ResponsesController < JsonApiController
 
   def _record_request_payload_schema
     {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
+      '$schema': JSON_SCHEMA,
 
       'type': 'object',
       'properties': {
@@ -62,7 +62,7 @@ class ResponsesController < JsonApiController
 
   def _record_response_payload_schema
     {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
+      '$schema': JSON_SCHEMA,
 
       'type': 'object',
       'properties': {
