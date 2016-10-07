@@ -22,7 +22,7 @@ class ResponsesController < JsonApiController
       'properties': {
         'responses': {
           'type': 'array',
-          'items': {'$ref': '#definitions/response'},
+          'items': {'$ref': '#/definitions/response'},
           'minItems': 0,
           'maxItems': 1000,
         },
@@ -36,13 +36,13 @@ class ResponsesController < JsonApiController
         'response': {
           'type': 'object',
           'properties': {
-            'response_uuid':  {'$ref': '#standard_definitions/uuid'},
-            'trial_uuid':     {'$ref': '#standard_definitions/uuid'},
-            'trial_sequence': {'$ref': '#standard_definitions/non_negative_integer'},
-            'learner_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'question_uuid':  {'$ref': '#standard_definitions/uuid'},
+            'response_uuid':  {'$ref': '#/standard_definitions/uuid'},
+            'trial_uuid':     {'$ref': '#/standard_definitions/uuid'},
+            'trial_sequence': {'$ref': '#/standard_definitions/non_negative_integer'},
+            'learner_uuid':   {'$ref': '#/standard_definitions/uuid'},
+            'question_uuid':  {'$ref': '#/standard_definitions/uuid'},
             'is_correct':     {'type': 'boolean'},
-            'responded_at':   {'$ref': '#standard_definitions/datetime'},
+            'responded_at':   {'$ref': '#/standard_definitions/datetime'},
           },
           'required': [
             'response_uuid',
@@ -68,7 +68,7 @@ class ResponsesController < JsonApiController
       'properties': {
         'recorded_response_uuids': {
           'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'items': {'$ref': '#/standard_definitions/uuid'},
           'minItems': 0,
           'maxItems': 1000,
         },
