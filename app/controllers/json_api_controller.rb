@@ -132,7 +132,7 @@ class JsonApiController < ApplicationController
       'receiver_info': {
         'type': 'object',
         'properties': {
-          'receiver_uuid': {'$ref': '#standard_definitions/uuid'},
+          'receiver_uuid': {'$ref': '#/standard_definitions/uuid'},
           'partition_count': {
             'type': 'integer',
             'minumum': 0,

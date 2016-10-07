@@ -27,8 +27,8 @@ class CoursesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'course_uuid': {'$ref': '#standard_definitions/uuid'},
-        'ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
+        'course_uuid': {'$ref': '#/standard_definitions/uuid'},
+        'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
       },
       'required': ['course_uuid', 'ecosystem_uuid'],
       'additionalProperties': false,
@@ -44,7 +44,7 @@ class CoursesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'created_course_uuid': {'$ref': '#standard_definitions/uuid'},
+        'created_course_uuid': {'$ref': '#/standard_definitions/uuid'},
       },
       'required': ['created_course_uuid'],
       'additionalProperties': false,

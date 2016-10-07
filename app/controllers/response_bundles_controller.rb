@@ -46,11 +46,11 @@ class ResponseBundlesController < JsonApiController
         },
         'bundle_uuids_to_confirm': {
           'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'items': {'$ref': '#/standard_definitions/uuid'},
           'minItems': 0,
           'maxItems': 1000,
         },
-        'receiver_info': {'$ref': '#standard_definitions/receiver_info'},
+        'receiver_info': {'$ref': '#/standard_definitions/receiver_info'},
       },
       'required': [
         'goal_max_responses_to_return',
@@ -72,19 +72,19 @@ class ResponseBundlesController < JsonApiController
       'properties': {
         'confirmed_bundle_uuids': {
           'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'items': {'$ref': '#/standard_definitions/uuid'},
           'minItems': 0,
           'maxItems': 1000,
         },
         'bundle_uuids': {
           'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'items': {'$ref': '#/standard_definitions/uuid'},
           'minItems': 0,
           'maxItems': 1000,
         },
         'responses': {
           'type': 'array',
-          'items': {'$ref': '#definitions/response'},
+          'items': {'$ref': '#/definitions/response'},
           'minItems': 0,
         },
       },
@@ -97,13 +97,13 @@ class ResponseBundlesController < JsonApiController
         'response': {
           'type': 'object',
           'properties': {
-            'response_uuid':  {'$ref': '#standard_definitions/uuid'},
-            'trial_uuid':     {'$ref': '#standard_definitions/uuid'},
-            'trial_sequence': {'$ref': '#standard_definitions/non_negative_integer'},
-            'learner_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'question_uuid':  {'$ref': '#standard_definitions/uuid'},
+            'response_uuid':  {'$ref': '#/standard_definitions/uuid'},
+            'trial_uuid':     {'$ref': '#/standard_definitions/uuid'},
+            'trial_sequence': {'$ref': '#/standard_definitions/non_negative_integer'},
+            'learner_uuid':   {'$ref': '#/standard_definitions/uuid'},
+            'question_uuid':  {'$ref': '#/standard_definitions/uuid'},
             'is_correct':     {'type': 'boolean'},
-            'responded_at':   {'$ref': '#standard_definitions/datetime'},
+            'responded_at':   {'$ref': '#/standard_definitions/datetime'},
           },
           'required': [
             'response_uuid',
