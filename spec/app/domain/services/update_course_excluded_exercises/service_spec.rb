@@ -18,7 +18,7 @@ RSpec.describe Services::UpdateCourseExcludedExercises::Service do
       exercise_uuid = SecureRandom.uuid.to_s
 
       given_exclusion_uuids.push(exercise_uuid)
-      { exercise_uuid: exercise_uuid }
+      { 'exercise_uuid' => exercise_uuid }
     }
   }
 
@@ -27,7 +27,7 @@ RSpec.describe Services::UpdateCourseExcludedExercises::Service do
       exercise_group_uuid = SecureRandom.uuid.to_s
 
       given_exclusion_uuids.push(exercise_group_uuid)
-      { exercise_group_uuid: exercise_group_uuid }
+      { 'exercise_group_uuid' => exercise_group_uuid }
     }
   }
 

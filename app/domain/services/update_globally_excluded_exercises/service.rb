@@ -5,7 +5,7 @@ class Services::UpdateGloballyExcludedExercises::Service
 
       ExcludedExercise.new(
         :sequence_number  => sequence_number,
-        :excluded_uuid    => exclusion.values_at(:exercise_uuid, :exercise_group_uuid).compact.first
+        :excluded_uuid    => exclusion.values_at('exercise_uuid', 'exercise_group_uuid').compact.first
       )
     }
 

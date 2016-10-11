@@ -9,7 +9,7 @@ class CourseExcludedExercisesController < ExcludedExercisesController
       exclusions = request_payload.fetch('exclusions')
       sequence_number = request_payload.fetch('sequence_number')
 
-      service = Services::UpdateGloballyExcludedExercises::Service.new
+      service = Services::UpdateCourseExcludedExercises::Service.new
       result = service.process(
         course_uuid: course_uuid,
         sequence_number: sequence_number,

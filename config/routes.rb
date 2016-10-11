@@ -10,9 +10,9 @@ Rails.application.routes.draw do
 
   post '/fetch_course_ecosystem_statuses' => 'course_ecosystems#status'
 
-  post '/update_globally_excluded_exercises'  => 'global_exclusions#update'
+  post '/update_globally_excluded_exercises'  => 'globally_excluded_exercises#update'
 
-  post '/update_course_excluded_exercises'    => 'course_exclusions#update'
+  post '/update_course_excluded_exercises'    => 'course_excluded_exercises#update'
 
   post '/record_responses' => 'responses#record'
 
