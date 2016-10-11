@@ -10,7 +10,7 @@ class Services::UpdateCourseExcludedExercises::Service
       CourseExcludedExercise.new(
         :course_uuid      => course_uuid,
         :sequence_number  => sequence_number,
-        :excluded_uuid    => exclusion.values_at(:exercise_uuid, :exercise_group_uuid).compact.first
+        :excluded_uuid    => exclusion.values_at('exercise_uuid', 'exercise_group_uuid').compact.first
       )
     }
 
