@@ -1,19 +1,19 @@
-class Services::UpdateGloballyExcludedExercises::Service
+class Services::UpdateGlobalExerciseExclusions::Service
   def process(sequence_number:, exclusions:)
 
-    excluded_exercises = exclusions.map{ |exclusion|
-      ExcludedExercise.new(
+    exercise_exclusions = exclusions.map{ |exclusion|
+      GlobalExerciseExclusion.new(
         :sequence_number  => sequence_number,
         :excluded_uuid    => exclusion.values_at('exercise_uuid', 'exercise_group_uuid').compact.first
       )
     }
 
-    ExcludedExercise.transaction(isolation: :serializable) do
-      ExcludedExercise.import excluded_exercises
+    GlobalExerciseExclusion.transaction(isolation: :serializable) do
+      GlobalExerciseExclusion.import exercise_exclusions
     end
 
     { 
-      excluded_exercises: excluded_exercises.map{ |exercise|
+      exercise_exclusions: exercise_exclusions.map{ |exercise|
         { excluded_uuid:  exercise.excluded_uuid }
       },
       sequence_number:    sequence_number
