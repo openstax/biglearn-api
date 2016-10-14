@@ -103,8 +103,8 @@ ActiveRecord::Schema.define(version: 20161011151936) do
 
   create_table "course_excluded_exercises", force: :cascade do |t|
     t.integer  "sequence_number", null: false
-    t.uuid     "excluded_uuid",   null: false
     t.uuid     "course_uuid",     null: false
+    t.uuid     "excluded_uuid",   null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end

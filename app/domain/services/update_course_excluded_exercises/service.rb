@@ -6,7 +6,6 @@ class Services::UpdateCourseExcludedExercises::Service
     end
 
     excluded_exercises = exclusions.map{ |exclusion|
-
       CourseExcludedExercise.new(
         :course_uuid      => course_uuid,
         :sequence_number  => sequence_number,

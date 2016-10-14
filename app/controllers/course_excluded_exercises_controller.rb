@@ -42,14 +42,25 @@ class CourseExcludedExercisesController < ExcludedExercisesController
       'required': ['request_uuid', 'course_uuid', 'sequence_number', 'exclusions'],
       'additionalProperties': false,
 
-      'definitions': _definitions,
+      'definitions': _exclusion_definitions,
       'standard_definitions': _standard_definitions,
     }
   end
 
 
   def _update_response_payload_schema
-    _response
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'status': {
+          'emum': ['success'],
+        },
+      },
+      'required': ['status'],
+      'additionalProperties': false,
+    }
   end
 
 end

@@ -1,6 +1,6 @@
 class ExcludedExercisesController < JsonApiController
 
-  def _definitions
+  def _exclusion_definitions
     {
       'exclusion': {
         'oneOf': [
@@ -24,21 +24,6 @@ class ExcludedExercisesController < JsonApiController
         'required': ['exercise_group_uuid'],
         'additionalProperties': false,
       },
-    }
-  end
-
-  def _response
-    {
-      '$schema': JSON_SCHEMA,
-
-      'type': 'object',
-      'properties': {
-        'status': {
-          'emum': ['success'],
-        },
-      },
-      'required': ['status'],
-      'additionalProperties': false,
     }
   end
 
