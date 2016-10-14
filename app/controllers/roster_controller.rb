@@ -63,20 +63,20 @@ class RosterController < JsonApiController
           'additionalProperties': false,
         }
       }
-  },
-  output_schema: {
-    '$schema': 'http://json-schema.org/draft-04/schema#',
-    'type': 'object',
-    'properties': {
-      'updated_course_uuids': {
-        'type': 'array',
-        'items': {'$ref': '#standard_definitions/uuid'},
-        'minItems': 0,
-        'maxItems': 1000,
-      },
     },
-    'required': ['updated_course_uuid'],
-    'additionalProperties': false
-  }
+    output_schema: {
+      '$schema': 'http://json-schema.org/draft-04/schema#',
+      'type': 'object',
+      'properties': {
+        'updated_course_uuids': {
+          'type': 'array',
+          'items': {'$ref': '#standard_definitions/uuid'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['updated_course_uuid'],
+      'additionalProperties': false
+    }
 
 end
