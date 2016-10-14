@@ -1,3 +1,3 @@
 class GlobalExerciseExclusion < ActiveRecord::Base
-  validates :sequence_number, :numericality => { :greater_than_or_equal_to => 0 }
+  belongs_to :global_exercise_exclusion_updates, :foreign_key => 'update_uuid', :primary_key => 'update_uuid'
 end

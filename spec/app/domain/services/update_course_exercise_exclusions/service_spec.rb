@@ -4,8 +4,9 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
   let(:service) { Services::UpdateCourseExerciseExclusions::Service.new }
 
   let(:action) { service.process(
-    course_uuid:      given_course_uuid,
+    update_uuid:      given_update_uuid,
     sequence_number:  given_sequence_number,
+    course_uuid:      given_course_uuid,
     exclusions:       given_exclusions
   ) }
 
@@ -31,8 +32,9 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
     }
   }
 
-  let(:given_course_uuid)     { SecureRandom.uuid.to_s }
+  let(:given_update_uuid)     { SecureRandom.uuid.to_s }
   let(:given_sequence_number) { Kernel::rand(10) }
+  let(:given_course_uuid)     { SecureRandom.uuid.to_s }
   let(:number_of_exclusions)  { 10 }
   let(:given_exclusion_uuids) { [] }
 

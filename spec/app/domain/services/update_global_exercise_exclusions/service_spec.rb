@@ -4,6 +4,7 @@ RSpec.describe Services::UpdateGlobalExerciseExclusions::Service do
   let(:service) { Services::UpdateGlobalExerciseExclusions::Service.new }
 
   let(:action) { service.process(
+    update_uuid:        given_update_uuid,
     sequence_number: given_sequence_number,
     exclusions: given_exclusions
   ) }
@@ -30,6 +31,7 @@ RSpec.describe Services::UpdateGlobalExerciseExclusions::Service do
     }
   }
 
+  let(:given_update_uuid)     { SecureRandom.uuid.to_s }
   let(:given_sequence_number) { Kernel::rand(10) }
   let(:number_of_exclusions)  { 10 }
   let(:given_exclusion_uuids) { [] }

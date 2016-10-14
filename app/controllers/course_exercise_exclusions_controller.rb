@@ -5,14 +5,16 @@ class CourseExerciseExclusionsController < ExerciseExclusionsController
                    output_schema: _update_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
+      request_uuid = request_payload.fetch('request_uuid')
+      sequence_number = request_payload.fetch('sequence_number')
       course_uuid = request_payload.fetch('course_uuid')
       exclusions = request_payload.fetch('exclusions')
-      sequence_number = request_payload.fetch('sequence_number')
 
       service = Services::UpdateCourseExerciseExclusions::Service.new
       result = service.process(
-        course_uuid: course_uuid,
+        update_uuid: request_uuid,
         sequence_number: sequence_number,
+        course_uuid: course_uuid,
         exclusions: exclusions,
       )
 

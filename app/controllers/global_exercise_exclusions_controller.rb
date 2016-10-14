@@ -5,11 +5,13 @@ class GlobalExerciseExclusionsController < ExerciseExclusionsController
                    output_schema: _update_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
-      exclusions = request_payload.fetch('exclusions')
+      request_uuid = request_payload.fetch('request_uuid')
       sequence_number = request_payload.fetch('sequence_number')
+      exclusions = request_payload.fetch('exclusions')
 
       service = Services::UpdateGlobalExerciseExclusions::Service.new
       result = service.process(
+        update_uuid: request_uuid,
         sequence_number: sequence_number,
         exclusions: exclusions,
       )
