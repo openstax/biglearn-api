@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Services::UpdateCourseExcludedExercises::Service do
-  let(:service) { Services::UpdateCourseExcludedExercises::Service.new }
+RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
+  let(:service) { Services::UpdateCourseExerciseExclusions::Service.new }
 
   let(:action) { service.process(
     course_uuid:      given_course_uuid,
@@ -48,16 +48,16 @@ RSpec.describe Services::UpdateCourseExcludedExercises::Service do
     end
 
     context "and when excluded exercises are given" do
-      it "the given number of CourseExcludedExercise is created" do
-        expect{action}.to change{CourseExcludedExercise.count}.by(number_of_exclusions)
+      it "the given number of CourseExerciseExclusion is created" do
+        expect{action}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions)
       end
 
       it "the number of excluded exercises returned is the given number of exclusions" do
-        expect(action.fetch(:excluded_exercises).length).to eq(number_of_exclusions)
+        expect(action.fetch(:exercise_exclusions).length).to eq(number_of_exclusions)
       end
 
       it "the excluded uuids returned matches the given exclusions" do
-        returned_excluded_uuids = action.fetch(:excluded_exercises).map{ |exercise|
+        returned_excluded_uuids = action.fetch(:exercise_exclusions).map{ |exercise|
           exercise.fetch(:excluded_uuid)
         }
         expect(returned_excluded_uuids).to match_array(given_exclusion_uuids)

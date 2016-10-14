@@ -1,4 +1,4 @@
-class ExcludedExercisesController < JsonApiController
+class ExerciseExclusionsController < JsonApiController
 
   def _exclusion_definitions
     {

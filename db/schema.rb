@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 20161011151936) do
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
-  create_table "course_excluded_exercises", force: :cascade do |t|
+  create_table "course_exercise_exclusions", force: :cascade do |t|
     t.integer  "sequence_number", null: false
     t.uuid     "course_uuid",     null: false
     t.uuid     "excluded_uuid",   null: false
@@ -126,7 +126,7 @@ ActiveRecord::Schema.define(version: 20161011151936) do
 
   add_index "ecosystems", ["uuid"], name: "index_ecosystems_on_uuid", unique: true, using: :btree
 
-  create_table "excluded_exercises", force: :cascade do |t|
+  create_table "global_exercise_exclusions", force: :cascade do |t|
     t.integer  "sequence_number", null: false
     t.uuid     "excluded_uuid",   null: false
     t.datetime "created_at",      null: false
