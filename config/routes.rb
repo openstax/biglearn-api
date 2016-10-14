@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
 
+  post '/create_ecosystem' => 'ecosystems#create'
+
   post '/create_course' => 'courses#create'
 
-  post '/create_ecosystem' => 'ecosystems#create'
+  post '/update_roster' => 'rosters#update'
 
   post '/prepare_course_ecosystem' => 'course_ecosystems#prepare'
 
