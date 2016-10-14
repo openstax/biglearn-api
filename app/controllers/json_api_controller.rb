@@ -13,7 +13,6 @@ class JsonApiController < ApplicationController
   def self.validate_json_action(method, input_schema:, output_schema:)
     alias_method "#{method}_without_validation", method
     define_method method do |*args|
-      puts "#{method} called"
       _validate_request(input_schema)
       send "#{method}_without_validation"
       _validate_response(output_schema)
