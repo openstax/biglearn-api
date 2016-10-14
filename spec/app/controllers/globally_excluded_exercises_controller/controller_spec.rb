@@ -20,7 +20,7 @@ RSpec.describe GloballyExcludedExercisesController, type: :request do
   }
 
   let(:given_any_version_exclusions) {
-    (Kernel::rand(number_of_exclusions)).times.map{
+    Kernel::rand(number_of_exclusions).times.map{
       { 'exercise_group_uuid' => SecureRandom.uuid.to_s }
     }
   }

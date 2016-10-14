@@ -22,7 +22,7 @@ RSpec.describe Services::UpdateGloballyExcludedExercises::Service do
   }
 
   let(:given_any_version_exclusions) {
-    (Kernel::rand(number_of_exclusions)).times.map{
+    Kernel::rand(number_of_exclusions).times.map{
       exercise_group_uuid = SecureRandom.uuid.to_s
 
       given_exclusion_uuids.push(exercise_group_uuid)
