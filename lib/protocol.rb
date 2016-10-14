@@ -13,14 +13,21 @@ class Protocol
     @instance_uuid      = SecureRandom.uuid.to_s
   end
 
+  def round_time(time:, tol: 1e-3)
+    Time.at((time.to_f/tol + 0.5).floor * tol)
+  end
+
+  def compute_next_work_time(time:)
+    time + @work_offset - (time.to_f % @work_offset)
+  end
 
   def run
     ActiveRecord::Base.clear_active_connections!
 
     current_time = Time.now
-    next_work_time = current_time + @work_offset - (current_time.to_f % @work_offset)
-    puts "current_time:   #{current_time.utc.iso8601(6)}"
-    puts "next_work_time: #{next_work_time.utc.iso8601(6)}"
+    next_work_time = compute_next_work_time(time: current_time)
+    puts "current_time:   #{round_time(time: current_time).utc.iso8601(6)}"
+    puts "next_work_time: #{round_time(time: next_work_time).utc.iso8601(6)}"
 
     loop do
       my_record, group_records, dead_records = _read_records
@@ -63,19 +70,24 @@ class Protocol
         raise "instance_modulo error (#{my_record.instance_modulo} / #{boss_record.instance_count})"
       end
 
-      curent_time = Time.now
-      if curent_time >= next_work_time
+      current_time = Time.now
+      puts "current_time:   #{round_time(time: current_time).utc.iso8601(6)}"
+      if current_time >= next_work_time
         last_work_time = next_work_time
-        puts "work_time:      #{last_work_time.utc.iso8601(6)}"
+        puts "work_time:      #{round_time(time: last_work_time).utc.iso8601(6)}"
+        puts "(am boss)" if am_boss
         @work_block.call(
           instance_count:  boss_record.instance_count,
           instance_modulo: my_record.instance_modulo,
         )
         current_time = Time.now
-        next_work_time = last_work_time + ((current_time - last_work_time + @min_work_interval - 0.000001.seconds)/@min_work_interval).to_i*@min_work_interval
-        puts "next_work_time: #{next_work_time.utc.iso8601(6)}"
+        # next_work_time = last_work_time + ((current_time - last_work_time + @min_work_interval - 0.000001.seconds)/@min_work_interval).to_i*@min_work_interval
+        next_work_time = compute_next_work_time(time: current_time)
+        puts "next_work_time: #{round_time(time: next_work_time).utc.iso8601(6)}"
       else
-        sleep([0.5, next_work_time - current_time].min)
+        sleep_interval = [0.5, next_work_time - current_time].min
+        puts "sleeping for #{sleep_interval}"
+        sleep(sleep_interval)
       end
     end
   rescue Interrupt => ex
