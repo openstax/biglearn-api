@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :global_exercise_exclusion do
-    sequence_number   { Kernel::rand(10) }
+    update_uuid       { SecureRandom.uuid.to_s }
+
     excluded_uuid     { SecureRandom.uuid.to_s }
   end
 end

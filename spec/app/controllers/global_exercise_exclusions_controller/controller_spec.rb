@@ -35,6 +35,7 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
     dbl = object_double(Services::UpdateGlobalExerciseExclusions::Service.new)
     allow(dbl).to receive(:process)
               .with(
+                update_uuid:        given_request_uuid,
                 sequence_number:    given_sequence_number,
                 exclusions:         given_exclusions,
               )

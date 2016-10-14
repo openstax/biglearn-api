@@ -37,8 +37,9 @@ RSpec.describe CourseExerciseExclusionsController, type: :request do
     dbl = object_double(Services::UpdateCourseExerciseExclusions::Service.new)
     allow(dbl).to receive(:process)
               .with(
-                course_uuid:  given_course_uuid,
+                update_uuid:        given_request_uuid,
                 sequence_number:    given_sequence_number,
+                course_uuid:        given_course_uuid,
                 exclusions:         given_exclusions,
               )
               .and_return(target_result)
