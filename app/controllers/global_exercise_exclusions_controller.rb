@@ -1,4 +1,4 @@
-class GlobalExerciseExclusionsController < ExerciseExclusionsController
+class GlobalExerciseExclusionsController < JsonApiController
 
   def update
     with_json_apis(input_schema:  _update_request_payload_schema,
@@ -41,7 +41,7 @@ class GlobalExerciseExclusionsController < ExerciseExclusionsController
       'required': ['request_uuid', 'sequence_number', 'exclusions'],
       'additionalProperties': false,
 
-      'definitions': _exclusion_definitions,
+      'definitions': Schemas::ExerciseExclusions::definitions,
       'standard_definitions': _standard_definitions,
     }
   end
