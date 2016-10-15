@@ -164,7 +164,5 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
         end
       end
     end
-
-
   end
 end
