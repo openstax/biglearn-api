@@ -1,6 +1,6 @@
-class ExerciseExclusionsController < JsonApiController
+module Schemas::ExerciseExclusions
 
-  def _exclusion_definitions
+  def self.definitions
     {
       'exclusion': {
         'oneOf': [
