@@ -50,6 +50,13 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
     exclusions:       given_many_exclusions.fetch(:exclusions)
   ) }
 
+  let(:action_repeat) { service.process(
+    update_uuid:      given_update_uuid,
+    sequence_number:  given_sequence_number,
+    course_uuid:      given_course_uuid,
+    exclusions:       given_some_exclusions.fetch(:exclusions)
+  ) }
+
   let(:given_none_exclusions) {
     generate_exclusions(number_of_exclusions_none)
   }
@@ -76,60 +83,88 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
     end
   end
 
-  context "when previously-existing Course uuid is given" do
+  context "when previously existing Course uuid is given" do
     before(:each) do
       create(:course, uuid: given_course_uuid)
     end
 
-    context "and when none excluded exercises are given" do
-      it "the given number of CourseExerciseExclusion is created" do
-        expect{action_none}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_none)
+    context "and previously existing request is given" do
+      before(:each) do
+        action_repeat
       end
 
-      it "the number of excluded exercises returned is the given number of exclusions" do
-        expect(action_none.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_none)
+      context "with no exclusions" do
+        it "raises error" do
+          expect{action_none}.to raise_error(ActiveRecord::RecordNotUnique)
+        end
       end
 
-      it "the excluded uuids returned matches the given exclusions" do
-        returned_excluded_uuids = action_none.fetch(:exercise_exclusions).map{ |exercise|
-          exercise.fetch(:excluded_uuid)
-        }
-        expect(returned_excluded_uuids).to match_array(given_none_exclusions.fetch(:uuids))
+      context "with some exclusions" do
+        it "raises error" do
+          expect{action_some}.to raise_error(ActiveRecord::RecordNotUnique)
+        end
+      end
+
+      context "with many exclusions" do
+        it "raises error" do
+          expect{action_many}.to raise_error(ActiveRecord::RecordNotUnique)
+        end
       end
     end
 
-    context "and when some excluded exercises are given" do
-      it "the given number of CourseExerciseExclusion is created" do
-        expect{action_some}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_some)
+    context "and previously non-existing request is given" do
+      context "with no exclusions" do
+        it "the given number of CourseExerciseExclusion is created" do
+          expect{action_none}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_none)
+        end
+
+        it "the number of excluded exercises returned is the given number of exclusions" do
+          expect(action_none.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_none)
+        end
+
+        it "the excluded uuids returned matches the given exclusions" do
+          returned_excluded_uuids = action_none.fetch(:exercise_exclusions).map{ |exercise|
+            exercise.fetch(:excluded_uuid)
+          }
+          expect(returned_excluded_uuids).to match_array(given_none_exclusions.fetch(:uuids))
+        end
       end
 
-      it "the number of excluded exercises returned is the given number of exclusions" do
-        expect(action_some.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_some)
+      context "with some exclusions" do
+        it "the given number of CourseExerciseExclusion is created" do
+          expect{action_some}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_some)
+        end
+
+        it "the number of excluded exercises returned is the given number of exclusions" do
+          expect(action_some.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_some)
+        end
+
+        it "the excluded uuids returned matches the given exclusions" do
+          returned_excluded_uuids = action_some.fetch(:exercise_exclusions).map{ |exercise|
+            exercise.fetch(:excluded_uuid)
+          }
+          expect(returned_excluded_uuids).to match_array(given_some_exclusions.fetch(:uuids))
+        end
       end
 
-      it "the excluded uuids returned matches the given exclusions" do
-        returned_excluded_uuids = action_some.fetch(:exercise_exclusions).map{ |exercise|
-          exercise.fetch(:excluded_uuid)
-        }
-        expect(returned_excluded_uuids).to match_array(given_some_exclusions.fetch(:uuids))
+      context "with many exclusions" do
+        it "the given number of CourseExerciseExclusion is created" do
+          expect{action_many}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_many)
+        end
+
+        it "the number of excluded exercises returned is the given number of exclusions" do
+          expect(action_many.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_many)
+        end
+
+        it "the excluded uuids returned matches the given exclusions" do
+          returned_excluded_uuids = action_many.fetch(:exercise_exclusions).map{ |exercise|
+            exercise.fetch(:excluded_uuid)
+          }
+          expect(returned_excluded_uuids).to match_array(given_many_exclusions.fetch(:uuids))
+        end
       end
     end
 
-    context "and when many excluded exercises are given" do
-      it "the given number of CourseExerciseExclusion is created" do
-        expect{action_many}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_many)
-      end
 
-      it "the number of excluded exercises returned is the given number of exclusions" do
-        expect(action_many.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_many)
-      end
-
-      it "the excluded uuids returned matches the given exclusions" do
-        returned_excluded_uuids = action_many.fetch(:exercise_exclusions).map{ |exercise|
-          exercise.fetch(:excluded_uuid)
-        }
-        expect(returned_excluded_uuids).to match_array(given_many_exclusions.fetch(:uuids))
-      end
-    end
   end
 end
