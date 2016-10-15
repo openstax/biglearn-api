@@ -14,13 +14,13 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
   }
 
   let(:given_specific_version_exclusions) {
-    (number_of_exclusions - given_any_version_exclusions.length).times.map{
+    number_of_exclusions.times.map{
       { 'exercise_uuid' => SecureRandom.uuid.to_s }
     }
   }
 
   let(:given_any_version_exclusions) {
-    Kernel::rand(number_of_exclusions).times.map{
+    number_of_exclusions.times.map{
       { 'exercise_group_uuid' => SecureRandom.uuid.to_s }
     }
   }
