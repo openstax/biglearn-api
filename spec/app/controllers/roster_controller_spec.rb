@@ -21,21 +21,12 @@ RSpec.describe CoursesController, type: :request do
       expect_any_instance_of(Services::Roster::Update).to receive(:process!)
       container_uuid = SecureRandom.uuid
       rosters = [{ 'sequence_number': 0, 'course_uuid' => course.uuid,
-                   'course_containers': [
-                                          {
-                                            'parent_container_uuid' => course.uuid,
-                                            'container_uuid' => container_uuid
-                                          }
-                                        ],
-                   'students': [
-                                 {
-                                   'student_uuid' => SecureRandom.uuid,
-                                   'container_uuid' => container_uuid
-                                 }
-                               ]
+                   'course_containers': [{ 'parent_container_uuid' => course.uuid,
+                                           'container_uuid' => container_uuid }],
+                   'students': [{ 'student_uuid' => SecureRandom.uuid,
+                                  'container_uuid' => container_uuid }]
                  }]
       payload = request_payload.merge('rosters': rosters)
-
       status, body = make_json_request(route: '/update_roster', payload: payload)
       expect(status).to eq(200)
       expect(body).to eq({"updated_course_uuids"=>[course.uuid]})

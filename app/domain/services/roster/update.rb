@@ -35,7 +35,8 @@ class Services::Roster::Update
 
     def sync_students(students, containers, update)
       update.each do |student|
-        ensure_container(containers, student['container_uuid'])
+        ensure_container(containers, {'container_uuid' => student['container_uuid'],
+                                      'parent_container_uuid' => course.uuid })
         unless students.include? student['student_uuid']
           CourseStudent.create! student
         end
@@ -50,7 +51,7 @@ class Services::Roster::Update
     def sync_containers(containers, update)
 
       update.each do |container|
-        ensure_container(containers, container['container_uuid'])
+        ensure_container(containers, container)
         containers.delete container['container_uuid']
       end
 
@@ -65,10 +66,10 @@ class Services::Roster::Update
     end
 
 
-    def ensure_container(containers, container_uuid)
-      unless containers.include? container_uuid
-        course.containers.create(container_uuid: container_uuid)
-        containers.add(container_uuid)
+    def ensure_container(containers, container)
+      unless containers.include? container['container_uuid']
+        course.containers.create(container)
+        containers.add(container['container_uuid'])
       end
     end
 

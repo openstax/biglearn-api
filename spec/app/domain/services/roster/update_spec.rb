@@ -9,13 +9,15 @@ RSpec.describe Services::Roster::Update do
     let(:roster){ { 'course_uuid' => course.uuid } }
     let(:update) { Services::Roster::Update.new({'rosters' => [roster]}) }
     let(:container){
-      course.containers.create!(container_uuid: SecureRandom.uuid)
+      course.containers.create!(container_uuid: SecureRandom.uuid,
+                                parent_container_uuid: course.uuid)
     }
     let(:student){
       container.students.create!(student_uuid: SecureRandom.uuid)
     }
     let(:new_containers) {
-      Array.new(3){ { 'container_uuid' => SecureRandom.uuid.to_s } }
+      Array.new(3){ { 'container_uuid' => SecureRandom.uuid,
+                      'parent_container_uuid' => course.uuid } }
     }
     let(:new_students) {
       Array.new(10){ { 'student_uuid'   => SecureRandom.uuid.to_s,

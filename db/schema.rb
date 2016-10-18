@@ -103,8 +103,9 @@ ActiveRecord::Schema.define(version: 20161017204529) do
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
   create_table "course_containers", id: false, force: :cascade do |t|
-    t.uuid "container_uuid", null: false
-    t.uuid "course_uuid",    null: false
+    t.uuid "container_uuid",        null: false
+    t.uuid "parent_container_uuid", null: false
+    t.uuid "course_uuid",           null: false
   end
 
   add_index "course_containers", ["course_uuid"], name: "index_course_containers_on_course_uuid", using: :btree
