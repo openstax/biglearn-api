@@ -130,6 +130,7 @@ ActiveRecord::Schema.define(version: 20170123210543) do
     t.uuid "course_uuid",           null: false
   end
 
+  add_index "course_containers", ["container_uuid"], name: "index_course_containers_on_container_uuid", unique: true, using: :btree
   add_index "course_containers", ["course_uuid"], name: "index_course_containers_on_course_uuid", using: :btree
 
   create_table "course_exercise_exclusions", force: :cascade do |t|
@@ -150,6 +151,7 @@ ActiveRecord::Schema.define(version: 20170123210543) do
     t.uuid "container_uuid", null: false
   end
 
+  add_index "course_students", ["container_uuid"], name: "index_course_students_on_container_uuid", using: :btree
   add_index "course_students", ["student_uuid", "container_uuid"], name: "index_course_students_on_student_uuid_and_container_uuid", unique: true, using: :btree
   add_index "course_students", ["student_uuid"], name: "index_course_students_on_student_uuid", using: :btree
 
@@ -272,4 +274,6 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "x_test1s", ["created_at"], name: "index_x_test1s_on_created_at", using: :btree
   add_index "x_test1s", ["uuid"], name: "index_x_test1s_on_uuid", unique: true, using: :btree
 
+  add_foreign_key "course_containers", "courses", column: "course_uuid", primary_key: "uuid"
+  add_foreign_key "course_students", "course_containers", column: "container_uuid", primary_key: "container_uuid"
 end
