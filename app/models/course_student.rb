@@ -4,4 +4,5 @@ class CourseStudent < ActiveRecord::Base
              foreign_key: 'container_uuid', primary_key: 'container_uuid'
 
   validates :student_uuid, presence: true
+  validates :container, presence: true
 end
