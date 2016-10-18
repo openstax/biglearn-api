@@ -8,4 +8,16 @@ class CourseContainer < ActiveRecord::Base
            primary_key: 'container_uuid', foreign_key: 'container_uuid'
 
   validates :course, presence: true
+
+  before_destroy :ensure_no_students
+
+  private
+
+  def ensure_no_students
+    if students.any?
+      errors.add(:students, 'Cannot delete while students are present')
+      return false # will need to be "throw(:abort)" in Rails 5
+    end
+  end
+
 end
