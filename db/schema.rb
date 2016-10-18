@@ -124,6 +124,13 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
+  create_table "course_containers", id: false, force: :cascade do |t|
+    t.uuid "container_uuid", null: false
+    t.uuid "course_uuid",    null: false
+  end
+
+  add_index "course_containers", ["course_uuid"], name: "index_course_containers_on_course_uuid", using: :btree
+
   create_table "course_exercise_exclusions", force: :cascade do |t|
     t.uuid     "uuid",                          null: false
     t.uuid     "course_uuid",                   null: false
@@ -136,6 +143,14 @@ ActiveRecord::Schema.define(version: 20170123210543) do
 
   add_index "course_exercise_exclusions", ["course_uuid", "sequence_number"], name: "index_course_exercise_exclusions_on_c_uuid_and_s_number_uniq", unique: true, using: :btree
   add_index "course_exercise_exclusions", ["uuid"], name: "index_course_exercise_exclusions_on_uuid", unique: true, using: :btree
+
+  create_table "course_students", force: :cascade do |t|
+    t.uuid "student_uuid",   null: false
+    t.uuid "container_uuid", null: false
+  end
+
+  add_index "course_students", ["student_uuid", "container_uuid"], name: "index_course_students_on_student_uuid_and_container_uuid", unique: true, using: :btree
+  add_index "course_students", ["student_uuid"], name: "index_course_students_on_student_uuid", using: :btree
 
   create_table "courses", force: :cascade do |t|
     t.uuid     "uuid",           null: false

@@ -1,9 +1,9 @@
 class RosterController < JsonApiController
 
   def update
-    request_payload = json_parsed_request_payload
-
-    # do stuff
+    update = Services::Roster::Update.new(json_parsed_request_payload)
+    update.process!
+    render json: update.response
   end
 
   protected
@@ -22,6 +22,7 @@ class RosterController < JsonApiController
       },
       'required': ['rosters'],
       'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
       'definitions': {
         'roster': {
           'type': 'object',
@@ -75,8 +76,9 @@ class RosterController < JsonApiController
           'maxItems': 1000,
         },
       },
-      'required': ['updated_course_uuid'],
-      'additionalProperties': false
+      'required': ['updated_course_uuids'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions
     }
 
 end
