@@ -72,7 +72,10 @@ group :development do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  # re-run specs when files change
+  gem 'spring-commands-rspec'
+  gem 'rb-readline' # needed for Guard to work on Ruby's built without readline
+  gem 'guard-rspec'
 
   gem 'thin'
 end
-

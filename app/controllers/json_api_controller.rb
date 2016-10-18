@@ -10,6 +10,15 @@ class JsonApiController < ApplicationController
 
   JSON_SCHEMA='http://json-schema.org/draft-04/schema#'
 
+  def self.validate_json_action(method, input_schema:, output_schema:)
+    alias_method "#{method}_without_validation", method
+    define_method method do |*args|
+      _validate_request(input_schema)
+      send "#{method}_without_validation"
+      _validate_response(output_schema)
+    end
+  end
+
   def with_json_apis(input_schema:, output_schema:, &block)
     _validate_request(input_schema)
     block.call
@@ -35,7 +44,6 @@ class JsonApiController < ApplicationController
       insert_defaults: true,
       validate_schema: true
     )
-
     fail Errors::AppRequestSchemaError.new('request body failed validation', validation_errors) \
       if validation_errors.any?
   end
@@ -100,74 +108,82 @@ class JsonApiController < ApplicationController
   end
 
 
-  def _standard_definitions
-    {
-      'uuid': {
-        'type': 'string',
-        'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
-                   '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
-                   '[a-fA-F0-9]{12}$',
-      },
-      'number_between_0_and_1': {
-        'type': 'number',
-        'minimum': 0,
-        'maximum': 1,
-      },
-      'non_negative_integer': {
-        'type': 'integer',
-        'minumum': 0,
-      },
-      'datetime': {
-        'type': 'string',
-        'pattern': '^\d{4}-'                       + ## year
-                   '(0[1-9]|1[0-2])-'              + ## month
-                   '(0[1-9]|1[0-9]|2[0-9]|3[0-1])' + ## day of month
-                   '(T|t)'                         + ## ISO8601 spacer
-                   '(0[0-9]|1[0-9]|2[0-3]):'       + ## hour
-                   '([0-5][0-9]):'                 + ## minute
-                   '([0-5][0-9]|60)'               + ## second
-                   '\.\d{6}'                       + ## fraction of second
-                   '(Z|z)$'                          ## Zulu timezone
-      },
-      'receiver_info': {
+  module SchemaDefinitions
+
+    def _standard_definitions
+      {
+        'uuid': {
+          'type': 'string',
+          'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
+                     '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
+                     '[a-fA-F0-9]{12}$',
+        },
+        'number_between_0_and_1': {
+          'type': 'number',
+          'minimum': 0,
+          'maximum': 1,
+        },
+        'non_negative_integer': {
+          'type': 'integer',
+          'minumum': 0,
+        },
+        'datetime': {
+          'type': 'string',
+          'pattern': '^\d{4}-'                       + ## year
+                     '(0[1-9]|1[0-2])-'              + ## month
+                     '(0[1-9]|1[0-9]|2[0-9]|3[0-1])' + ## day of month
+                     '(T|t)'                         + ## ISO8601 spacer
+                     '(0[0-9]|1[0-9]|2[0-3]):'       + ## hour
+                     '([0-5][0-9]):'                 + ## minute
+                     '([0-5][0-9]|60)'               + ## second
+                     '\.\d{6}'                       + ## fraction of second
+                     '(Z|z)$'                          ## Zulu timezone
+        },
+        'receiver_info': {
+          'type': 'object',
+          'properties': {
+            'receiver_uuid': {'$ref': '#/standard_definitions/uuid'},
+            'partition_count': {
+              'type': 'integer',
+              'minumum': 0,
+              'maximum': 10000,
+            },
+            'partition_modulo': {
+              'type': 'integer',
+              'minumum': 0,
+              'maximum': 9999,
+            },
+          },
+          'required': ['receiver_uuid', 'partition_count', 'partition_modulo'],
+          'additionalProperties': false,
+        }
+      }
+    end
+
+
+    def _generic_error_schema
+      {
+        '$schema': JSON_SCHEMA,
         'type': 'object',
         'properties': {
-          'receiver_uuid': {'$ref': '#/standard_definitions/uuid'},
-          'partition_count': {
-            'type': 'integer',
-            'minumum': 0,
-            'maximum': 10000,
-          },
-          'partition_modulo': {
-            'type': 'integer',
-            'minumum': 0,
-            'maximum': 9999,
+          'errors': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+            'minItems': 1,
           },
         },
-        'required': ['receiver_uuid', 'partition_count', 'partition_modulo'],
-        'additionalProperties': false,
-      },
-    }
+        'required': ['errors'],
+        'additionalProperties': false
+      }
+    end
+
+
   end
 
-
-  def _generic_error_schema
-    {
-      '$schema': JSON_SCHEMA,
-
-      'type': 'object',
-      'properties': {
-        'errors': {
-          'type': 'array',
-          'items': {
-            'type': 'string',
-          },
-          'minItems': 1,
-        },
-      },
-      'required': ['errors'],
-      'additionalProperties': false,
-    }
-  end
+  # make methods available both on instance and class
+  include SchemaDefinitions
+  extend SchemaDefinitions
 
 end
