@@ -54,15 +54,7 @@ class Services::Roster::Update
         ensure_container(containers, container)
         containers.delete container['container_uuid']
       end
-
-      # Likewise remove invalid containers.
-      # Q: is this what should happen if the container still has students?
-      containers.each do |container_uuid|
-        if course.containers.find(container_uuid).students.any?
-          raise "Container #{container_uuid} is to be removed but it still has students present!"
-        end
-      end
-      course.containers.where(container_uuid: containers.to_a).delete_all if containers.any?
+      course.containers.where(container_uuid: containers.to_a).destroy_all if containers.any?
     end
 
 
