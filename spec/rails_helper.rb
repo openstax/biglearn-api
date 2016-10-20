@@ -10,6 +10,7 @@ require 'rspec/rails'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'shoulda/matchers'
+require 'exercise_exclusions_domain_helper'
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
@@ -67,6 +68,7 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include FactoryGirl::Syntax::Methods
+  config.include ExerciseExclusionsHelper, type: :exercise_exclusions_service
 end
 
 def make_post_request(route:, headers: nil, body: nil)
