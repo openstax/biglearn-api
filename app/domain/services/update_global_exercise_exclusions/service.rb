@@ -13,11 +13,8 @@ class Services::UpdateGlobalExerciseExclusions::Service
       )
     }
 
-    GlobalExerciseExclusionUpdate.transaction(isolation: :serializable) do
+    ActiveRecord::Base.transaction(isolation: :serializable) do
       GlobalExerciseExclusionUpdate.import [exercise_exclusions_update]
-    end
-
-    GlobalExerciseExclusion.transaction(isolation: :serializable) do
       GlobalExerciseExclusion.import exercise_exclusions
     end
 

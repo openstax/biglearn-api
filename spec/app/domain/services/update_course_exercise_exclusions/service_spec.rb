@@ -105,10 +105,6 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
           expect{action_none}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_none)
         end
 
-        it "the number of excluded exercises returned is the given number of exclusions" do
-          expect(action_none.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_none)
-        end
-
         it "the excluded uuids returned matches the given exclusions" do
           returned_excluded_uuids = action_none.fetch(:exercise_exclusions).map{ |exercise|
             exercise.fetch(:excluded_uuid)
@@ -122,10 +118,6 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
           expect{action_some}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_some)
         end
 
-        it "the number of excluded exercises returned is the given number of exclusions" do
-          expect(action_some.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_some)
-        end
-
         it "the excluded uuids returned matches the given exclusions" do
           returned_excluded_uuids = action_some.fetch(:exercise_exclusions).map{ |exercise|
             exercise.fetch(:excluded_uuid)
@@ -137,10 +129,6 @@ RSpec.describe Services::UpdateCourseExerciseExclusions::Service do
       context "with many exclusions" do
         it "the given number of CourseExerciseExclusion is created" do
           expect{action_many}.to change{CourseExerciseExclusion.count}.by(number_of_exclusions_many)
-        end
-
-        it "the number of excluded exercises returned is the given number of exclusions" do
-          expect(action_many.fetch(:exercise_exclusions).length).to eq(number_of_exclusions_many)
         end
 
         it "the excluded uuids returned matches the given exclusions" do

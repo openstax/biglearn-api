@@ -18,11 +18,8 @@ class Services::UpdateCourseExerciseExclusions::Service
       )
     }
 
-    CourseExerciseExclusionUpdate.transaction(isolation: :serializable) do
+    ActiveRecord::Base.transaction(isolation: :serializable) do
       CourseExerciseExclusionUpdate.import [exercise_exclusions_update]
-    end
-
-    CourseExerciseExclusion.transaction(isolation: :serializable) do
       CourseExerciseExclusion.import exercise_exclusions
     end
 
