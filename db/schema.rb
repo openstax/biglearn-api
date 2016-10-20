@@ -109,7 +109,7 @@ ActiveRecord::Schema.define(version: 20161014202613) do
     t.datetime "updated_at",      null: false
   end
 
-  add_index "course_exercise_exclusion_updates", ["course_uuid", "sequence_number"], name: "index_course_exclusions_by_course_and_sequence", unique: true, using: :btree
+  add_index "course_exercise_exclusion_updates", ["course_uuid", "sequence_number"], name: "index_course_exclusions_by_uniq_course_and_sequence", unique: true, using: :btree
   add_index "course_exercise_exclusion_updates", ["update_uuid"], name: "index_course_exercise_exclusion_updates_on_update_uuid", unique: true, using: :btree
 
   create_table "course_exercise_exclusions", force: :cascade do |t|
