@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160930170819) do
+ActiveRecord::Schema.define(version: 20161110200641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,6 +101,28 @@ ActiveRecord::Schema.define(version: 20160930170819) do
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
+  create_table "course_events", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.uuid     "course_uuid",     null: false
+    t.string   "event_type",      null: false
+    t.integer  "event_id",        null: false
+    t.integer  "sequence_number", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "course_events", ["course_uuid", "event_type", "event_id"], name: "index_ce_on_c_uuid_et_eid_uniq", unique: true, using: :btree
+  add_index "course_events", ["course_uuid", "sequence_number"], name: "index_ce_on_c_uuid_sn_uniq", unique: true, using: :btree
+  add_index "course_events", ["created_at"], name: "index_course_events_on_created_at", using: :btree
+  add_index "course_events", ["uuid"], name: "index_course_events_on_uuid", unique: true, using: :btree
+
+  create_table "course_sequence_numbers", force: :cascade do |t|
+    t.uuid    "course_uuid",     null: false
+    t.integer "sequence_number", null: false
+  end
+
+  add_index "course_sequence_numbers", ["course_uuid"], name: "index_course_sequence_numbers_on_course_uuid", unique: true, using: :btree
+
   create_table "courses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "ecosystem_uuid", null: false
@@ -117,6 +139,26 @@ ActiveRecord::Schema.define(version: 20160930170819) do
   end
 
   add_index "ecosystems", ["uuid"], name: "index_ecosystems_on_uuid", unique: true, using: :btree
+
+  create_table "exper_one_events", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.integer  "data",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "exper_one_events", ["created_at"], name: "index_exper_one_events_on_created_at", using: :btree
+  add_index "exper_one_events", ["uuid"], name: "index_exper_one_events_on_uuid", unique: true, using: :btree
+
+  create_table "exper_two_events", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.integer  "data",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "exper_two_events", ["created_at"], name: "index_exper_two_events_on_created_at", using: :btree
+  add_index "exper_two_events", ["uuid"], name: "index_exper_two_events_on_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
