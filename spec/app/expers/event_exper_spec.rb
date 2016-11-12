@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "event experiments" do
   it "it works" do
-    num_threads = 2
-    num_courses = 1000
+    num_threads = 6
+    num_courses = 1
     num_loops   = 100
 
     course_uuids = num_courses.times.map{ SecureRandom.uuid.to_s }
@@ -34,7 +34,8 @@ RSpec.describe "event experiments" do
           puts "begin #{thread_num} #{loop_num}"
           ActiveRecord::Base.connection_pool.with_connection do
             begin
-              CourseEvent.transaction(isolation: :serializable) do
+              # CourseEvent.transaction(isolation: :serializable) do
+              CourseEvent.transaction(isolation: :read_committed) do
                 sleep(0.05)
                 event = ExperOneEvent.new(
                   uuid: SecureRandom.uuid.to_s,
@@ -78,8 +79,9 @@ RSpec.describe "event experiments" do
     elapsed        = finish - start
     num_events     = num_threads * num_loops
     events_per_sec = num_events / elapsed
-    events_per_sec_per_thread = events_per_sec / num_threads
     sec_per_event  = 1.0 / events_per_sec
+    events_per_sec_per_thread = events_per_sec / num_threads
+    sec_per_event_per_thread  = 1.0 / events_per_sec_per_thread
 
     puts "num_threads               = #{num_threads}"
     puts "num_loops                 = #{num_loops}"
@@ -87,8 +89,9 @@ RSpec.describe "event experiments" do
     puts "elapsed                   = #{elapsed}"
     puts "num events                = #{num_events}"
     puts "events_per_sec            = #{events_per_sec}"
-    puts "events_per_sec_per_thread = #{events_per_sec_per_thread}"
     puts "sec_per_event             = #{sec_per_event}"
+    puts "events_per_sec_per_thread = #{events_per_sec_per_thread}"
+    puts "sec_per_event_per_thread  = #{sec_per_event_per_thread}"
     puts "num_retries               = #{num_retries}"
   end
 end
