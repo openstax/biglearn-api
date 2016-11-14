@@ -26,7 +26,7 @@ namespace :event do
           }
         end
 
-        CourseEvent.find_each do |course_event|
+        CourseEvent.find_each(batch_size: 10000) do |course_event|
           case course_event.event_type
           when "ExperOneEvent"
             results[course_event.course_uuid][:num_event_ones] += 1
