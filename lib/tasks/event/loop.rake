@@ -23,7 +23,7 @@ namespace :event do
     last_num_events   = 0
     num_events        = 0
 
-    at_most_every(max_events_per_sec) do
+    at_most_every(1.0/max_events_per_sec) do
       course_uuid = course_uuids.sample
 
       num_retries = 0
