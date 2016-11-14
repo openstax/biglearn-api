@@ -29,14 +29,21 @@ namespace :event do
       num_retries = 0
       begin
         CourseEvent.transaction(isolation: isolation_level) do
-          event = ExperOneEvent.create!(
-            uuid: SecureRandom.uuid.to_s,
-            data: Kernel.rand(100),
-          )
-
           course_sequence_number = CourseSequenceNumber.lock.find_by(course_uuid: course_uuid)
           course_sequence_number.sequence_number += 1
           course_sequence_number.save!
+
+          if Kernel.rand > 0.5
+            event = ExperOneEvent.create!(
+              uuid: SecureRandom.uuid.to_s,
+              data: Kernel.rand(100),
+            )
+          else
+            event = ExperTwoEvent.create!(
+              uuid: SecureRandom.uuid.to_s,
+              data: Kernel.rand(100),
+            )
+          end
 
           course_event = CourseEvent.create!(
             uuid:            SecureRandom.uuid.to_s,
@@ -57,7 +64,7 @@ namespace :event do
       current_time = Time.now
       if current_time > next_summary_time
         events_per_sec = (num_events - last_num_events) / (next_summary_time - last_summary_time)
-        puts "#{current_time.iso8601(6)} #{course_uuid}: events_per_sec=%03.3f  max_retries=%03d" % [events_per_sec, max_retries]
+        puts "#{current_time.iso8601(6)}: events_per_sec=%03.3f  max_retries=%03d" % [events_per_sec, max_retries]
 
         max_retries       = 0
         last_num_events   = num_events
