@@ -26,15 +26,13 @@ namespace :event do
           }
         end
 
-        CourseEvent.find_each(batch_size: 10000) do |course_event|
-          case course_event.event_type
-          when "ExperOneEvent"
-            results[course_event.course_uuid][:num_event_ones] += 1
-          when "ExperTwoEvent"
-            results[course_event.course_uuid][:num_event_twos] += 1
-          else
-            fail "unknown event type: #{course_event.event_type}"
-          end
+        results.each do |uuid, values|
+          values[:num_event_ones] = CourseEvent.where{course_uuid == uuid}
+                                               .where{event_type == "ExperOneEvent"}
+                                               .count
+          values[:num_event_twos] = CourseEvent.where{course_uuid == uuid}
+                                               .where{event_type == "ExperTwoEvent"}
+                                               .count
         end
 
         puts "#{Time.now.iso8601(6)}:"
