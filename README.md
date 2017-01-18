@@ -14,6 +14,6 @@
 
 6. `bundle install`
 
-7. `rake db:prepare`
+7. `rake db:setup` and `RAILS_ENV=test rake db:setup`
 
 8. `rake` to run tests

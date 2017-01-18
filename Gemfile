@@ -64,6 +64,9 @@ end
 group :test do
   ## clean up the database before/after specs
   gem 'database_cleaner'
+
+  ## convenience matchers for specs
+  gem 'shoulda-matchers'
 end
 
 group :development do
@@ -75,4 +78,3 @@ group :development do
 
   gem 'thin'
 end
-
