@@ -10,7 +10,7 @@ RSpec.describe "Openstax::BundleManager::Manager: confirmation" do
     )
   }
 
-  let(:given_receiver_uuid)           { SecureRandom.uuid.to_s }
+  let(:given_receiver_uuid)           { SecureRandom.uuid }
   let(:given_bundle_uuids_to_confirm) { [] }
 
   context "when there are no Bundle::RecordBundles" do
@@ -26,7 +26,7 @@ RSpec.describe "Openstax::BundleManager::Manager: confirmation" do
       end
     end
     context "and [invalid] Bundles::RecordBundle uuids are confirmed" do
-      let(:given_bundle_uuids_to_confirm) { [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ] }
+      let(:given_bundle_uuids_to_confirm) { [ SecureRandom.uuid, SecureRandom.uuid ] }
 
       it "no Bundle::RecordConfirmations are created" do
         expect{action}.to_not change{Bundle::XTest1Confirmation.count}
@@ -40,11 +40,11 @@ RSpec.describe "Openstax::BundleManager::Manager: confirmation" do
 
   context "when there are Bundle::RecordBundles" do
     let!(:bundles) {
-      [ create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid.to_s, given_receiver_uuid]),
-        create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid.to_s]),
-        create(:bundle_record_bundle, confirmed_by: [given_receiver_uuid, SecureRandom.uuid.to_s]),
+      [ create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid, given_receiver_uuid]),
+        create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid]),
+        create(:bundle_record_bundle, confirmed_by: [given_receiver_uuid, SecureRandom.uuid]),
         create(:bundle_record_bundle, confirmed_by: []),
-        create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid.to_s]), ]
+        create(:bundle_record_bundle, confirmed_by: [SecureRandom.uuid]), ]
     }
 
     let(:confirmed_bundles)   { bundles.values_at(0,2) }
@@ -64,7 +64,7 @@ RSpec.describe "Openstax::BundleManager::Manager: confirmation" do
     context "and Bundle::RecordBundle uuids are confirmed" do
       let(:previously_confirmed_bundle_uuids) { bundles.values_at(2).map(&:uuid) }
       let(:newly_confirmed_bundle_uuids)      { bundles.values_at(1,3).map(&:uuid) }
-      let(:invalid_bundle_uuids)              { [SecureRandom.uuid.to_s] }
+      let(:invalid_bundle_uuids)              { [SecureRandom.uuid] }
 
       let(:given_bundle_uuids_to_confirm) {
         (previously_confirmed_bundle_uuids + newly_confirmed_bundle_uuids + invalid_bundle_uuids).shuffle

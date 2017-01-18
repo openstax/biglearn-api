@@ -4,8 +4,8 @@ FactoryGirl.define do
       for_bundle  false
     end
 
-    bundle_uuid   { SecureRandom.uuid.to_s }
-    receiver_uuid { SecureRandom.uuid.to_s }
+    bundle_uuid   { SecureRandom.uuid }
+    receiver_uuid { SecureRandom.uuid }
 
     after(:build) do |bundle_record_confirmation, evaluator|
       if evaluator.for_bundle

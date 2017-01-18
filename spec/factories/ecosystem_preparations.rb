@@ -1,6 +1,7 @@
 FactoryGirl.define do
-  factory :course do
+  factory :ecosystem_preparation do
     uuid { SecureRandom.uuid }
+    course
     ecosystem
   end
 end

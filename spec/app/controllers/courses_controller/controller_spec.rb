@@ -8,8 +8,8 @@ RSpec.describe CoursesController, type: :request do
     }
   }
 
-  let(:given_course_uuid)     { SecureRandom.uuid.to_s }
-  let(:given_ecosystem_uuid)  { SecureRandom.uuid.to_s }
+  let(:given_course_uuid)     { SecureRandom.uuid }
+  let(:given_ecosystem_uuid)  { SecureRandom.uuid }
 
   let(:target_result)         {
     { created_course_uuid: given_course_uuid }

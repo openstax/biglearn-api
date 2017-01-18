@@ -8,7 +8,7 @@ RSpec.describe Openstax::BundleManager::Manager do
       XTest1.count
 
       num_models = 2_000
-      model_uuids = num_models.times.map{ SecureRandom.uuid.to_s }
+      model_uuids = num_models.times.map{ SecureRandom.uuid }
 
       ActiveRecord::Base.clear_active_connections!
 
@@ -105,7 +105,7 @@ RSpec.describe Openstax::BundleManager::Manager do
 
         manager = Openstax::BundleManager::Manager.new(model: XTest1)
 
-        receiver_uuid = SecureRandom.uuid.to_s
+        receiver_uuid = SecureRandom.uuid
 
         unconfirmed_bundle_uuids = {}
         confirmed_bundle_uuids   = {}

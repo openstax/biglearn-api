@@ -82,7 +82,7 @@ class Openstax::BundleManager::Manager
       bundle_infos = bundle_records.each_slice(max_records_per_bundle).inject([]) do |result, records|
         if (records.count == max_records_per_bundle) || (Time.now - records.first.created_at >= max_age_per_bundle)
           bundle_bundle = bundle_bundle_model.new(
-            uuid:            SecureRandom.uuid.to_s,
+            uuid:            SecureRandom.uuid,
             partition_value: Kernel::rand(10000),
           )
 
@@ -125,7 +125,7 @@ class Openstax::BundleManager::Manager
                  (Time.now - target_records.map(&:created_at).min < max_age_per_bundle)
 
         bundle = bundle_bundle_model.create!(
-          uuid:             SecureRandom.uuid.to_s,
+          uuid:             SecureRandom.uuid,
           partition_value:  Kernel::rand(10000)
         )
 

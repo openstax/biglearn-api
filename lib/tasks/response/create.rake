@@ -19,11 +19,11 @@ namespace :response do
     at_most_every(interval) do
       response_data = num_responses.times.map{
         {
-          response_uuid:  SecureRandom.uuid.to_s,
-          trial_uuid:     SecureRandom.uuid.to_s,
+          response_uuid:  SecureRandom.uuid,
+          trial_uuid:     SecureRandom.uuid,
           trial_sequence: Kernel::rand(10000),
-          learner_uuid:   SecureRandom.uuid.to_s,
-          question_uuid:  SecureRandom.uuid.to_s,
+          learner_uuid:   SecureRandom.uuid,
+          question_uuid:  SecureRandom.uuid,
           is_correct:     [true, false].sample,
           responded_at:   Time.now.utc.iso8601(6),
         }

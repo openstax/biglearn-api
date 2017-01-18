@@ -7,8 +7,6 @@ class CreateBundleResponseConfirmations < ActiveRecord::Migration
       t.timestamps             null: false
     end
 
-    add_index  :bundle_response_confirmations,  :bundle_uuid
-
     add_index  :bundle_response_confirmations,  :receiver_uuid
 
     add_index  :bundle_response_confirmations,  :bundle_uuid,

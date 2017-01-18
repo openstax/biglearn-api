@@ -117,7 +117,7 @@ RSpec.describe "Response bundling" do
 
         service = Services::FetchResponseBundles::Service.new
 
-        receiver_uuid = SecureRandom.uuid.to_s
+        receiver_uuid = SecureRandom.uuid
 
         unconfirmed_bundle_uuids = {}
         confirmed_bundle_uuids   = {}

@@ -17,7 +17,7 @@ RSpec.describe Services::FetchResponseBundles::Service do
   let(:given_goal_max_responses_to_return) { 10 }
   let(:given_max_bundles_to_process)       { 10 }
   let(:given_bundle_uuids_to_confirm)      { [] }
-  let(:given_receiver_uuid)                { SecureRandom.uuid.to_s }
+  let(:given_receiver_uuid)                { SecureRandom.uuid }
   let(:given_partition_count)              { 6 }
   let(:given_partition_modulo)             { 1 }
 
@@ -27,10 +27,10 @@ RSpec.describe Services::FetchResponseBundles::Service do
     end
   }
 
-  let(:target_confirmed_bundle_uuids) { [ SecureRandom.uuid.to_s ] }
+  let(:target_confirmed_bundle_uuids) { [ SecureRandom.uuid ] }
   let(:target_responses)              { responses.values_at(1,3,5,7,9) }
   let(:target_model_uuids)            { target_responses.map(&:uuid) }
-  let(:target_bundle_uuids)           { [ SecureRandom.uuid.to_s ] }
+  let(:target_bundle_uuids)           { [ SecureRandom.uuid ] }
 
   let(:bundle_manager) {
     dbl = object_double(Openstax::BundleManager::Manager.new(model: Response))
