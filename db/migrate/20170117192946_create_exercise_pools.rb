@@ -1,6 +1,6 @@
-class CreateEcosystemPools < ActiveRecord::Migration
+class CreateExercisePools < ActiveRecord::Migration
   def change
-    create_table :ecosystem_pools do |t|
+    create_table :exercise_pools do |t|
       t.uuid    :uuid,                                      null: false, index: { unique: true }
       t.uuid    :container_uuid,                            null: false, index: true
       t.boolean :use_for_clue,                              null: false

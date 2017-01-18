@@ -1,5 +1,5 @@
 class Bundle::ResponseEntry < ActiveRecord::Base
-  include HasUniqueUuid
+  #include HasUniqueUuid
 
-  validates :bundle_uuid, presence: true
+  #validates :bundle_uuid, presence: true
 end

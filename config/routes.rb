@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   post '/create_course' => 'courses#create'
 
+  post '/create_ecosystem' => 'ecosystems#create'
+
   post '/record_responses' => 'responses#record'
 
   post '/fetch_response_bundles' => 'response_bundles#fetch'

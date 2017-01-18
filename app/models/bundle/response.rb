@@ -1,5 +1,5 @@
 class Bundle::Response < ActiveRecord::Base
-  include HasUniqueUuid
+  #include HasUniqueUuid
 
-  validates :partition_value, presence: true
+  #validates :partition_value, presence: true
 end

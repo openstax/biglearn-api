@@ -11,10 +11,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170118002342) do
+ActiveRecord::Schema.define(version: 20170118223358) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "book_containers", force: :cascade do |t|
+    t.uuid     "uuid",         null: false
+    t.uuid     "book_uuid",    null: false
+    t.uuid     "parent_uuid"
+    t.string   "cnx_identity"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "book_containers", ["book_uuid"], name: "index_book_containers_on_book_uuid", using: :btree
+  add_index "book_containers", ["cnx_identity"], name: "index_book_containers_on_cnx_identity", using: :btree
+  add_index "book_containers", ["parent_uuid"], name: "index_book_containers_on_parent_uuid", using: :btree
+  add_index "book_containers", ["uuid"], name: "index_book_containers_on_uuid", unique: true, using: :btree
+
+  create_table "books", force: :cascade do |t|
+    t.uuid     "uuid",         null: false
+    t.string   "cnx_identity"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "books", ["cnx_identity"], name: "index_books_on_cnx_identity", unique: true, using: :btree
+  add_index "books", ["uuid"], name: "index_books_on_uuid", unique: true, using: :btree
 
   create_table "bundle_response_bundles", force: :cascade do |t|
     t.uuid     "uuid",            null: false
@@ -110,33 +134,6 @@ ActiveRecord::Schema.define(version: 20170118002342) do
   add_index "courses", ["ecosystem_uuid"], name: "index_courses_on_ecosystem_uuid", using: :btree
   add_index "courses", ["uuid"], name: "index_courses_on_uuid", unique: true, using: :btree
 
-  create_table "ecosystem_containers", force: :cascade do |t|
-    t.uuid     "uuid",           null: false
-    t.uuid     "ecosystem_uuid", null: false
-    t.uuid     "parent_uuid"
-    t.string   "cnx_identity"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-  end
-
-  add_index "ecosystem_containers", ["cnx_identity"], name: "index_ecosystem_containers_on_cnx_identity", using: :btree
-  add_index "ecosystem_containers", ["ecosystem_uuid"], name: "index_ecosystem_containers_on_ecosystem_uuid", using: :btree
-  add_index "ecosystem_containers", ["parent_uuid"], name: "index_ecosystem_containers_on_parent_uuid", using: :btree
-  add_index "ecosystem_containers", ["uuid"], name: "index_ecosystem_containers_on_uuid", unique: true, using: :btree
-
-  create_table "ecosystem_pools", force: :cascade do |t|
-    t.uuid     "uuid",                                      null: false
-    t.uuid     "container_uuid",                            null: false
-    t.boolean  "use_for_clue",                              null: false
-    t.string   "use_for_personalized_for_assignment_types", null: false, array: true
-    t.uuid     "exercise_uuids",                            null: false, array: true
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
-  end
-
-  add_index "ecosystem_pools", ["container_uuid"], name: "index_ecosystem_pools_on_container_uuid", using: :btree
-  add_index "ecosystem_pools", ["uuid"], name: "index_ecosystem_pools_on_uuid", unique: true, using: :btree
-
   create_table "ecosystem_preparations", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "course_uuid",    null: false
@@ -161,11 +158,26 @@ ActiveRecord::Schema.define(version: 20170118002342) do
 
   create_table "ecosystems", force: :cascade do |t|
     t.uuid     "uuid",       null: false
+    t.uuid     "book_uuid",  null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  add_index "ecosystems", ["book_uuid"], name: "index_ecosystems_on_book_uuid", using: :btree
   add_index "ecosystems", ["uuid"], name: "index_ecosystems_on_uuid", unique: true, using: :btree
+
+  create_table "exercise_pools", force: :cascade do |t|
+    t.uuid     "uuid",                                      null: false
+    t.uuid     "container_uuid",                            null: false
+    t.boolean  "use_for_clue",                              null: false
+    t.string   "use_for_personalized_for_assignment_types", null: false, array: true
+    t.uuid     "exercise_uuids",                            null: false, array: true
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "exercise_pools", ["container_uuid"], name: "index_exercise_pools_on_container_uuid", using: :btree
+  add_index "exercise_pools", ["uuid"], name: "index_exercise_pools_on_uuid", unique: true, using: :btree
 
   create_table "exercises", force: :cascade do |t|
     t.uuid     "uuid",              null: false
