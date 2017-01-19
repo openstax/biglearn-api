@@ -11,7 +11,7 @@ class Services::CreateEcosystem::Service
       Ecosystem.import [ecosystem], on_duplicate_key_ignore: true
     end
 
-    ecosystem_uuid
+    { created_ecosystem_uuid: ecosystem_uuid }
 
   end
 end

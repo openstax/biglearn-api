@@ -7,11 +7,13 @@ class EcosystemsController < JsonApiController
       ecosystem_data = request_payload.deep_symbolize_keys
 
       service = Services::CreateEcosystem::Service.new
-      created_ecosystem_uuid = service.process(ecosystem_uuid: ecosystem_uuid,
-                                               book: book,
-                                               exercises: exercises)
+      result = service.process(ecosystem_uuid: ecosystem_data[:ecosystem_uuid],
+                               book: ecosystem_data[:book],
+                               exercises: ecosystem_data[:exercises])
 
-      render json: { 'created_ecosystem_uuid': created_ecosystem_uuid }.to_json, status: 201
+      response_payload = { created_ecosystem_uuid: result.fetch(:created_ecosystem_uuid) }
+
+      render json: response_payload.to_json, status: 200
     end
   end
 
@@ -23,18 +25,18 @@ class EcosystemsController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
+        'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
         'book': {
-          'cnx_identity': {'$ref': '#standard_definitions/cnx_identity'},
+          'cnx_identity': {'$ref': '#/standard_definitions/cnx_identity'},
           'contents': {
             'type': 'array',
             'items': {
               'type': 'object',
               'properties': {
-                'container_uuid':         {'$ref': '#standard_definitions/uuid'},
-                'container_parent_uuid':  {'$ref': '#standard_definitions/uuid'},
+                'container_uuid':         {'$ref': '#/standard_definitions/uuid'},
+                'container_parent_uuid':  {'$ref': '#/standard_definitions/uuid'},
                 ## NOTE: optional
-                'container_cnx_identity': {'$ref': '#standard_definitions/cnx_identity'},
+                'container_cnx_identity': {'$ref': '#/standard_definitions/cnx_identity'},
                 'pools': {
                   'type': 'array',
                   'items': {'$ref': '#definitions/pool'},
@@ -58,7 +60,7 @@ class EcosystemsController < JsonApiController
       },
       'required': ['ecosystem_uuid', 'book', 'exercises'],
       'additionalProperties': false,
-
+      'standard_definitions': _standard_definitions,
       'definitions': {
         'pool': {
           'type': 'object',
@@ -78,7 +80,7 @@ class EcosystemsController < JsonApiController
             },
             'exercise_uuids': {
               'type': 'array',
-              'items': {'$ref': '#standard_definitions/uuid'},
+              'items': {'$ref': '#/standard_definitions/uuid'},
               'minItems': 0,
               'maxItems': 500,
             },
@@ -89,9 +91,9 @@ class EcosystemsController < JsonApiController
         'exercise': {
           'type': 'object',
           'properties': {
-            'uuid':              {'$ref': '#standard_definitions/uuid'},
-            'exercises_uuid':    {'$ref': '#standard_definitions/uuid'},
-            'exercises_version': {'$ref': '#standard_definitions/non_negative_integer'},
+            'uuid':              {'$ref': '#/standard_definitions/uuid'},
+            'exercises_uuid':    {'$ref': '#/standard_definitions/uuid'},
+            'exercises_version': {'$ref': '#/standard_definitions/non_negative_integer'},
             'los': {
               'type': 'array',
               'items': {'$ref': '#definitions/lo'},
@@ -118,10 +120,11 @@ class EcosystemsController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'created_ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
+        'created_ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
       },
       'required': ['created_ecosystem_uuid'],
       'additionalProperties': false,
+      'standard_definitions': _standard_definitions
     }
   end
 
