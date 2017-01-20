@@ -11,4 +11,6 @@ class Book < ActiveRecord::Base
                              inverse_of: :book
 
   has_many :exercise_pools, through: :book_containers
+
+  validates :cnx_identity, presence: true, uniqueness: true
 end

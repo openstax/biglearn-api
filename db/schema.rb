@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20170118223358) do
 
   create_table "books", force: :cascade do |t|
     t.uuid     "uuid",         null: false
-    t.string   "cnx_identity"
+    t.string   "cnx_identity", null: false
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end

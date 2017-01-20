@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Services::CreateCourse::Service do
-  let(:service) { Services::CreateCourse::Service.new }
+  let(:service) { described_class.new }
 
   let(:action) { service.process(course_uuid: given_course_uuid, ecosystem_uuid: given_ecosystem_uuid) }
 
