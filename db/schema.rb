@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170118223358) do
+ActiveRecord::Schema.define(version: 20170123210543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,6 +133,20 @@ ActiveRecord::Schema.define(version: 20170118223358) do
 
   add_index "courses", ["ecosystem_uuid"], name: "index_courses_on_ecosystem_uuid", using: :btree
   add_index "courses", ["uuid"], name: "index_courses_on_uuid", unique: true, using: :btree
+
+  create_table "ecosystem_maps", force: :cascade do |t|
+    t.uuid     "uuid",                    null: false
+    t.uuid     "from_ecosystem_uuid",     null: false
+    t.uuid     "to_ecosystem_uuid",       null: false
+    t.jsonb    "cnx_pagemodule_mappings", null: false, array: true
+    t.jsonb    "exercise_mappings",       null: false, array: true
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "ecosystem_maps", ["from_ecosystem_uuid", "to_ecosystem_uuid"], name: "index_e_maps_from_e_uuid_to_e_uuid_uniq", unique: true, using: :btree
+  add_index "ecosystem_maps", ["to_ecosystem_uuid"], name: "index_ecosystem_maps_on_to_ecosystem_uuid", using: :btree
+  add_index "ecosystem_maps", ["uuid"], name: "index_ecosystem_maps_on_uuid", unique: true, using: :btree
 
   create_table "ecosystem_preparations", force: :cascade do |t|
     t.uuid     "uuid",           null: false

@@ -40,8 +40,7 @@ class Services::CreateEcosystem::Service
 
       if result.failed_instances.include?(book_model)
         # Abort the import completely if the book already exists
-        # The serializable isolation level should ensure that
-        # we find the inserted record here if the INSERT failed above
+        # THIS CODE WILL NEED CHANGES IF WE STOP USING SERIALIZABLE ISOLATION
         # If not using serializable, we could use ON CONFLICT UPDATE and update only some
         # meaningless column, like updated_at, which would cause the INSERT to return the record
         book_model = Book.find_by(cnx_identity: book[:cnx_identity])
