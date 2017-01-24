@@ -3,6 +3,6 @@ FactoryGirl.define do
     uuid            { SecureRandom.uuid }
     course
     ecosystem
-    sequence_number { (EcosystemPreparation.maximum(:sequence_number) || -1) + 1 }
+    sequence_number { (course&.ecosystem_preparations&.maximum(:sequence_number) || -1) + 1 }
   end
 end

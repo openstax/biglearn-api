@@ -14,8 +14,8 @@ class EcosystemPreparation < ActiveRecord::Base
                          foreign_key: :ecosystem_uuid,
                          inverse_of: :ecosystem_preparations
 
-  validates :course,    presence: true
-  validates :ecosystem, presence: true
+  validates :course_uuid,     presence: true
+  validates :ecosystem_uuid,  presence: true
   validates :sequence_number, presence: true, uniqueness: { scope: :course_uuid }
 
   # TODO: Validate that there is a valid ecosystem map from the previous eco to this one?

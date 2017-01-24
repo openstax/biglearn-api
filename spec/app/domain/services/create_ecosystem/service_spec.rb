@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Services::CreateEcosystem::Service, type: :service do
-  let(:service) { described_class.new }
+  let(:service)              { described_class.new }
 
   let(:given_ecosystem_uuid) { SecureRandom.uuid }
 
@@ -71,7 +71,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
     end
 
     it "an Ecosystem is NOT created" do
-      expect{action}.to_not change{Ecosystem.count}
+      expect{action}.not_to change{Ecosystem.count}
     end
 
     it "the Ecosystem's uuid is returned" do
@@ -80,7 +80,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
   end
 
   context "when a previously non-existing Ecosystem uuid is given" do
-    it "an Ecosystem is created, as well as associated records" do
+    it "an Ecosystem is created, as well as associated records with the correct attributes" do
       given_exercise_pools = given_book_contents.flat_map{|container_hash| container_hash[:pools]}
 
       expect{action}.to change{Ecosystem.count}.by(1)
@@ -88,6 +88,17 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
                     .and change{BookContainer.count}.by(given_book_contents.size)
                     .and change{ExercisePool.count}.by(given_exercise_pools.size)
                     .and change{Exercise.count}.by(given_exercises.size)
+
+      ecosystem = Ecosystem.find_by(uuid: given_ecosystem_uuid)
+      book = ecosystem.book
+      expect(book.book_containers.length).to eq given_book_contents.size
+      pools = book.book_containers.flat_map(&:exercise_pools)
+      expect(pools.length).to eq given_exercise_pools.size
+      valid_exercise_uuids = given_exercises.map{ |ex_hash| ex_hash[:uuid] }
+      uniq_exercise_uuids = pools.flat_map(&:exercise_uuids).uniq
+      uniq_exercise_uuids.each do |exercise_uuid|
+        expect(valid_exercise_uuids).to include(exercise_uuid)
+      end
     end
 
     it "the Ecosystem's uuid is returned" do

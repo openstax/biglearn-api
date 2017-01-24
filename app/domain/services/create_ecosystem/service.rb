@@ -39,14 +39,14 @@ class Services::CreateEcosystem::Service
       result = Book.import [book_model], on_duplicate_key_ignore: true
 
       if result.failed_instances.include?(book_model)
-        # Abort the import completely if the book already exists
-        # THIS CODE WILL NEED CHANGES IF WE STOP USING SERIALIZABLE ISOLATION
+        # Abort the import completely if the book import failed (already exists?)
+        # Need to test that the find below will always find the record that conflicted
         # If not using serializable, we could use ON CONFLICT UPDATE and update only some
         # meaningless column, like updated_at, which would cause the INSERT to return the record
         book_model = Book.find_by(cnx_identity: book[:cnx_identity])
 
         # Import failed, but record not already in DB so something weird happened
-        raise ActiveRecord::RecordNotSaved if book_model.nil?
+        raise ActiveRecord::RecordNotSaved, book_model if book_model.nil?
 
         return book_model
       end
