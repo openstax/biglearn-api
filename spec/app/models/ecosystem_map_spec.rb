@@ -6,8 +6,8 @@ RSpec.describe EcosystemMap, type: :model do
   it { is_expected.to belong_to :from_ecosystem }
   it { is_expected.to belong_to :to_ecosystem }
 
-  it { is_expected.to validate_presence_of :from_ecosystem }
-  it { is_expected.to validate_presence_of :to_ecosystem }
+  it { is_expected.to validate_presence_of :from_ecosystem_uuid }
+  it { is_expected.to validate_presence_of :to_ecosystem_uuid }
 
   it do
     is_expected.to(

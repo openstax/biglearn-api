@@ -8,8 +8,8 @@ RSpec.describe EcosystemPreparation, type: :model do
 
   it { is_expected.to have_one :ecosystem_update }
 
-  it { is_expected.to validate_presence_of :course }
-  it { is_expected.to validate_presence_of :ecosystem }
+  it { is_expected.to validate_presence_of :course_uuid }
+  it { is_expected.to validate_presence_of :ecosystem_uuid }
   it { is_expected.to validate_presence_of :sequence_number }
 
   it { is_expected.to validate_uniqueness_of(:sequence_number).scoped_to(:course_uuid) }
