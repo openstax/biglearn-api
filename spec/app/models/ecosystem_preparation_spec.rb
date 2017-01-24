@@ -10,4 +10,7 @@ RSpec.describe EcosystemPreparation, type: :model do
 
   it { is_expected.to validate_presence_of :course }
   it { is_expected.to validate_presence_of :ecosystem }
+  it { is_expected.to validate_presence_of :sequence_number }
+
+  it { is_expected.to validate_uniqueness_of(:sequence_number).scoped_to(:course_uuid) }
 end

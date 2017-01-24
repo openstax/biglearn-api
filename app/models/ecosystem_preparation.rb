@@ -16,4 +16,7 @@ class EcosystemPreparation < ActiveRecord::Base
 
   validates :course,    presence: true
   validates :ecosystem, presence: true
+  validates :sequence_number, presence: true, uniqueness: { scope: :course_uuid }
+
+  # TODO: Validate that there is a valid ecosystem map from the previous eco to this one?
 end

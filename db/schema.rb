@@ -149,14 +149,15 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "ecosystem_maps", ["uuid"], name: "index_ecosystem_maps_on_uuid", unique: true, using: :btree
 
   create_table "ecosystem_preparations", force: :cascade do |t|
-    t.uuid     "uuid",           null: false
-    t.uuid     "course_uuid",    null: false
-    t.uuid     "ecosystem_uuid", null: false
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.uuid     "uuid",            null: false
+    t.uuid     "course_uuid",     null: false
+    t.uuid     "ecosystem_uuid",  null: false
+    t.integer  "sequence_number", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
-  add_index "ecosystem_preparations", ["course_uuid"], name: "index_ecosystem_preparations_on_course_uuid", using: :btree
+  add_index "ecosystem_preparations", ["course_uuid", "sequence_number"], name: "index_ecosystem_preparations_on_course_uuid_and_sequence_number", unique: true, using: :btree
   add_index "ecosystem_preparations", ["ecosystem_uuid"], name: "index_ecosystem_preparations_on_ecosystem_uuid", using: :btree
   add_index "ecosystem_preparations", ["uuid"], name: "index_ecosystem_preparations_on_uuid", unique: true, using: :btree
 
