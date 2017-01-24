@@ -3,7 +3,7 @@ class Services::PrepareCourseEcosystem::Service
               next_ecosystem_uuid:, ecosystem_map:)
     create_ecosystem_map(ecosystem_map: ecosystem_map)
 
-    EcosystemPreparation.create(
+    create_ecosystem_preparation(
       uuid: preparation_uuid,
       course_uuid: course_uuid,
       sequence_number: sequence_number,
@@ -25,7 +25,20 @@ class Services::PrepareCourseEcosystem::Service
     )
 
     EcosystemMap.transaction(isolation: :serializable) do
-      result = EcosystemMap.import [map], on_duplicate_key_ignore: true
+      EcosystemMap.import [map], on_duplicate_key_ignore: true
+    end
+  end
+
+  def create_ecosystem_preparation(uuid:, course_uuid:, sequence_number:, ecosystem_uuid:)
+    ecosystem_preparation = EcosystemPreparation.new(
+      uuid: uuid,
+      course_uuid: course_uuid,
+      sequence_number: sequence_number,
+      ecosystem_uuid: ecosystem_uuid
+    )
+
+    EcosystemPreparation.transaction(isolation: :serializable) do
+      EcosystemPreparation.import [ecosystem_preparation], on_duplicate_key_ignore: true
     end
   end
 end
