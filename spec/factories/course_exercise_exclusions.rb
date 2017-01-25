@@ -1,7 +1,11 @@
 FactoryGirl.define do
   factory :course_exercise_exclusion do
-    update_uuid     { SecureRandom.uuid.to_s }
-
-    excluded_uuid   { SecureRandom.uuid.to_s }
+    uuid                          { SecureRandom.uuid }
+    course_uuid                   { SecureRandom.uuid }
+    sequence_number               do
+      (course&.course_exercise_exclusions&.maximum(:sequence_number) || -1) + 1
+    end
+    excluded_exercise_uuids       []
+    excluded_exercise_group_uuids []
   end
 end

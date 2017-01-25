@@ -7,6 +7,7 @@ RSpec.describe Course, type: :model do
 
   it { is_expected.to have_many :ecosystem_preparations }
   it { is_expected.to have_many :ecosystem_updates }
+  it { is_expected.to have_many :course_exercise_exclusions }
 
   it { is_expected.to validate_presence_of :ecosystem_uuid }
 

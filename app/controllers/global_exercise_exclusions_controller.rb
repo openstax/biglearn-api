@@ -3,22 +3,20 @@ class GlobalExerciseExclusionsController < JsonApiController
   def update
     with_json_apis(input_schema:  _update_request_payload_schema,
                    output_schema: _update_response_payload_schema) do
-      request_payload = json_parsed_request_payload
+      request_payload = json_parsed_request_payload.deep_symbolize_keys
 
-      request_uuid = request_payload.fetch('request_uuid')
-      sequence_number = request_payload.fetch('sequence_number')
-      exclusions = request_payload.fetch('exclusions')
+      request_uuid = request_payload.fetch(:request_uuid)
+      sequence_number = request_payload.fetch(:sequence_number)
+      exclusions = request_payload.fetch(:exclusions)
 
       service = Services::UpdateGlobalExerciseExclusions::Service.new
       result = service.process(
-        update_uuid: request_uuid,
+        request_uuid:    request_uuid,
         sequence_number: sequence_number,
-        exclusions: exclusions,
+        exclusions:      exclusions
       )
 
-      response_payload = { status: 'success' }
-
-      render json: response_payload.to_json, status: 200
+      render json: { status: result[:status] }.to_json, status: 200
     end
   end
 

@@ -1,3 +1,8 @@
 class GlobalExerciseExclusion < ActiveRecord::Base
-  belongs_to :global_exercise_exclusion_updates, :foreign_key => 'update_uuid', :primary_key => 'update_uuid'
+  include AppendOnly
+  include HasUniqueUuid
+
+  validates :sequence_number, presence: true,
+                              uniqueness: true,
+                              numericality: { greater_than_or_equal_to: 0 }
 end
