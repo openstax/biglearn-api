@@ -18,7 +18,7 @@ class RosterStudent < ActiveRecord::Base
   validates :course_roster,    presence: true
   validates :roster_container, presence: true
   validates :student,          presence: true
-  validates :student_uuid,     uniqueness: { scope: :roster_container_uuid, case_sensitive: false }
+  validates :student_uuid,     uniqueness: { scope: :roster_container_uuid }
   validate  :same_roster, :same_course
 
   protected

@@ -18,6 +18,6 @@ class CourseRoster < ActiveRecord::Base
 
   validates :course_uuid, presence: true
   validates :sequence_number, presence: true,
-                              uniqueness: { scope: :course_uuid, case_sensitive: false },
+                              uniqueness: { scope: :course_uuid },
                               numericality: { greater_than_or_equal_to: 0 }
 end

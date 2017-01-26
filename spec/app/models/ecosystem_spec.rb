@@ -10,5 +10,7 @@ RSpec.describe Ecosystem, type: :model do
   it { is_expected.to have_many :ecosystem_preparations }
   it { is_expected.to have_many :ecosystem_updates }
 
+  it { is_expected.to have_many :assignments }
+
   it { is_expected.to validate_presence_of :book }
 end

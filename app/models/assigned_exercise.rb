@@ -10,6 +10,10 @@ class AssignedExercise < ActiveRecord::Base
                         foreign_key: :exercise_uuid,
                         inverse_of: :assigned_exercises
 
+  has_many :assigned_exercises, primary_key: :uuid,
+                                foreign_key: :assignment_uuid,
+                                inverse_of: :assignment
+
   validates :assignment,    presence: true
   validates :exercise_uuid, presence: true, uniqueness: { scope: :assignment_uuid }
 end

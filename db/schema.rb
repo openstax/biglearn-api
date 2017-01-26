@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170126001407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "citext"
 
   create_table "assigned_exercises", force: :cascade do |t|
     t.uuid     "uuid",            null: false
@@ -70,7 +71,7 @@ ActiveRecord::Schema.define(version: 20170126001407) do
 
   create_table "books", force: :cascade do |t|
     t.uuid     "uuid",         null: false
-    t.string   "cnx_identity", null: false
+    t.citext   "cnx_identity", null: false
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end

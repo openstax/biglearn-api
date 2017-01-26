@@ -7,9 +7,9 @@ FactoryGirl.define do
     end
     is_deleted                    { [true, false].sample }
     ecosystem
-    course_student
+    student
     assignment_type               { ['reading', 'homework', 'extra'].sample }
-    opens_at                      { Time.now.yesteday }
+    opens_at                      { Time.now.yesterday }
     due_at                        { Time.now.tomorrow }
     assigned_book_container_uuids []
     goal_num_tutor_assigned_spes  { rand(2) + 1 }

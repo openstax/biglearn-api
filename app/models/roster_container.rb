@@ -28,7 +28,7 @@ class RosterContainer < ActiveRecord::Base
 
   validates :course_roster, presence: true
   validates :course_container, presence: true
-  validates :container_uuid, uniqueness: { scope: :roster_uuid, case_sensitive: false }
+  validates :container_uuid, uniqueness: { scope: :roster_uuid }
   validate  :same_course
 
   protected
