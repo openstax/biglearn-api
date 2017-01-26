@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170123210543) do
+ActiveRecord::Schema.define(version: 20170126001407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,14 +124,15 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
-  create_table "course_containers", id: false, force: :cascade do |t|
-    t.uuid "container_uuid",        null: false
-    t.uuid "parent_container_uuid", null: false
-    t.uuid "course_uuid",           null: false
+  create_table "course_containers", force: :cascade do |t|
+    t.uuid     "uuid",        null: false
+    t.uuid     "course_uuid", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
-  add_index "course_containers", ["container_uuid"], name: "index_course_containers_on_container_uuid", unique: true, using: :btree
   add_index "course_containers", ["course_uuid"], name: "index_course_containers_on_course_uuid", using: :btree
+  add_index "course_containers", ["uuid"], name: "index_course_containers_on_uuid", unique: true, using: :btree
 
   create_table "course_exercise_exclusions", force: :cascade do |t|
     t.uuid     "uuid",                          null: false
@@ -146,14 +147,16 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "course_exercise_exclusions", ["course_uuid", "sequence_number"], name: "index_course_exercise_exclusions_on_c_uuid_and_s_number_uniq", unique: true, using: :btree
   add_index "course_exercise_exclusions", ["uuid"], name: "index_course_exercise_exclusions_on_uuid", unique: true, using: :btree
 
-  create_table "course_students", force: :cascade do |t|
-    t.uuid "student_uuid",   null: false
-    t.uuid "container_uuid", null: false
+  create_table "course_rosters", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.uuid     "course_uuid",     null: false
+    t.integer  "sequence_number", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
-  add_index "course_students", ["container_uuid"], name: "index_course_students_on_container_uuid", using: :btree
-  add_index "course_students", ["student_uuid", "container_uuid"], name: "index_course_students_on_student_uuid_and_container_uuid", unique: true, using: :btree
-  add_index "course_students", ["student_uuid"], name: "index_course_students_on_student_uuid", using: :btree
+  add_index "course_rosters", ["course_uuid", "sequence_number"], name: "index_course_rosters_on_course_uuid_and_sequence_number", unique: true, using: :btree
+  add_index "course_rosters", ["uuid"], name: "index_course_rosters_on_uuid", unique: true, using: :btree
 
   create_table "courses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
@@ -265,6 +268,44 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "responses", ["trial_uuid", "trial_sequence"], name: "index_responses_on_trial_uuid_and_trial_sequence", unique: true, using: :btree
   add_index "responses", ["uuid"], name: "index_responses_on_uuid", unique: true, using: :btree
 
+  create_table "roster_containers", force: :cascade do |t|
+    t.uuid     "uuid",                         null: false
+    t.uuid     "roster_uuid",                  null: false
+    t.uuid     "container_uuid",               null: false
+    t.uuid     "parent_roster_container_uuid"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "roster_containers", ["container_uuid"], name: "index_roster_containers_on_container_uuid", using: :btree
+  add_index "roster_containers", ["parent_roster_container_uuid"], name: "index_roster_containers_on_parent_roster_container_uuid", using: :btree
+  add_index "roster_containers", ["roster_uuid", "container_uuid"], name: "index_roster_containers_on_roster_uuid_and_container_uuid", unique: true, using: :btree
+  add_index "roster_containers", ["uuid"], name: "index_roster_containers_on_uuid", unique: true, using: :btree
+
+  create_table "roster_students", force: :cascade do |t|
+    t.uuid     "uuid",                  null: false
+    t.uuid     "roster_uuid",           null: false
+    t.uuid     "roster_container_uuid", null: false
+    t.uuid     "student_uuid",          null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "roster_students", ["roster_container_uuid"], name: "index_roster_students_on_roster_container_uuid", using: :btree
+  add_index "roster_students", ["roster_uuid", "student_uuid"], name: "index_roster_students_on_roster_uuid_and_student_uuid", unique: true, using: :btree
+  add_index "roster_students", ["student_uuid"], name: "index_roster_students_on_student_uuid", using: :btree
+  add_index "roster_students", ["uuid"], name: "index_roster_students_on_uuid", unique: true, using: :btree
+
+  create_table "students", force: :cascade do |t|
+    t.uuid     "uuid",        null: false
+    t.uuid     "course_uuid", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "students", ["course_uuid"], name: "index_students_on_course_uuid", using: :btree
+  add_index "students", ["uuid"], name: "index_students_on_uuid", unique: true, using: :btree
+
   create_table "x_test1s", force: :cascade do |t|
     t.uuid     "uuid",       null: false
     t.datetime "created_at", null: false
@@ -274,6 +315,4 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "x_test1s", ["created_at"], name: "index_x_test1s_on_created_at", using: :btree
   add_index "x_test1s", ["uuid"], name: "index_x_test1s_on_uuid", unique: true, using: :btree
 
-  add_foreign_key "course_containers", "courses", column: "course_uuid", primary_key: "uuid"
-  add_foreign_key "course_students", "course_containers", column: "container_uuid", primary_key: "container_uuid"
 end

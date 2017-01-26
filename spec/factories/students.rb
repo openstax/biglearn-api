@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :course_container do
+  factory :student do
     uuid { SecureRandom.uuid }
     course
   end

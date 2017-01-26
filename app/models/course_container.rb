@@ -1,23 +1,15 @@
 class CourseContainer < ActiveRecord::Base
+  include AppendOnly
+  include HasUniqueUuid
 
-  self.primary_key = 'container_uuid'
+  belongs_to :course, primary_key: :uuid,
+                      foreign_key: :course_uuid,
+                      inverse_of: :course_containers
 
-  belongs_to :course, primary_key: 'uuid', foreign_key: 'course_uuid'
+  has_many :roster_containers, primary_key: :uuid,
+                               foreign_key: :container_uuid,
+                               inverse_of: :course_container
+  has_many :course_rosters, through: :roster_containers
 
-  has_many :students, class_name: 'CourseStudent', inverse_of: 'container',
-           primary_key: 'container_uuid', foreign_key: 'container_uuid'
-
-  validates :course, presence: true
-
-  before_destroy :ensure_no_students
-
-  private
-
-  def ensure_no_students
-    if students.any?
-      errors.add(:students, 'Cannot delete while students are present')
-      return false # will need to be "throw(:abort)" in Rails 5
-    end
-  end
-
+  validates :course_uuid, presence: true
 end

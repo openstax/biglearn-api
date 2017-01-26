@@ -1,16 +1,24 @@
-class RosterController < JsonApiController
+class RostersController < JsonApiController
 
   def update
-    update = Services::Roster::Update.new(json_parsed_request_payload)
-    update.process!
-    render json: update.response
+    with_json_apis(input_schema:  _update_request_payload_schema,
+                   output_schema: _update_response_payload_schema) do
+      request_payload = json_parsed_request_payload
+      roster_data = request_payload.deep_symbolize_keys.fetch(:rosters)
+
+      service = Services::UpdateRoster::Service.new
+      result = service.process(rosters: roster_data)
+
+      response_payload = { updated_course_uuids: roster_data.map { |roster| roster[:course_uuid] } }
+      render json: response_payload.to_json, status: 200
+    end
   end
 
   protected
 
-  validate_json_action :update,
-    input_schema: {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
+  def _update_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
       'type': 'object',
       'properties': {
         'rosters': {
@@ -64,9 +72,12 @@ class RosterController < JsonApiController
           'additionalProperties': false,
         }
       }
-    },
-    output_schema: {
-      '$schema': 'http://json-schema.org/draft-04/schema#',
+    }
+  end
+
+  def _update_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
       'type': 'object',
       'properties': {
         'updated_course_uuids': {
@@ -80,5 +91,6 @@ class RosterController < JsonApiController
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }
+  end
 
 end
