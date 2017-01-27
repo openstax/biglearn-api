@@ -1,4 +1,6 @@
 class AssignedExercise < ActiveRecord::Base
+  # The assignment_uuid column refers to an Assignment's uuid column (NOT assignment_uuid)
+
   include AppendOnly
   include HasUniqueUuid
 

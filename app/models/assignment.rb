@@ -1,4 +1,8 @@
 class Assignment < ActiveRecord::Base
+  # The uuid column is unique per-record
+  # The assignment_uuid column may be repeated with different sequence_numbers
+  # Joins are done based on the uuid column
+
   include AppendOnly
   include HasUniqueUuid
 

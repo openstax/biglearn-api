@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20170126001407) do
   create_table "assigned_exercises", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
+    t.uuid     "trial_uuid",      null: false
     t.uuid     "exercise_uuid",   null: false
     t.boolean  "is_spe",          null: false
     t.boolean  "is_pe",           null: false
@@ -29,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170126001407) do
 
   add_index "assigned_exercises", ["assignment_uuid"], name: "index_assigned_exercises_on_assignment_uuid", using: :btree
   add_index "assigned_exercises", ["exercise_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_exercise_uuid_and_assignment_uuid", unique: true, using: :btree
+  add_index "assigned_exercises", ["trial_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_trial_uuid_and_assignment_uuid", unique: true, using: :btree
   add_index "assigned_exercises", ["uuid"], name: "index_assigned_exercises_on_uuid", unique: true, using: :btree
 
   create_table "assignments", force: :cascade do |t|
