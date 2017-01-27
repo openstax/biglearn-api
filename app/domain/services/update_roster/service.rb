@@ -67,7 +67,8 @@ class Services::UpdateRoster::Service
           uuid: SecureRandom.uuid,
           course_roster: course_roster,
           container_uuid: container[:container_uuid],
-          parent_roster_container_uuid: container[:parent_container_uuid]
+          parent_roster_container_uuid: container[:parent_container_uuid],
+          is_archived: container[:is_archived]
         )
       end
       roster_containers_by_container_uuid = roster_containers.index_by(&:container_uuid)

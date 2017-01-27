@@ -58,8 +58,9 @@ class RostersController < JsonApiController
           'properties': {
             'container_uuid': {'$ref': '#standard_definitions/uuid'},
             'parent_container_uuid': {'$ref': '#standard_definitions/uuid'},
+            'is_archived': {'type': 'boolean'}
           },
-          'required': ['container_uuid', 'parent_container_uuid'],
+          'required': ['container_uuid', 'parent_container_uuid', 'is_archived'],
           'additionalProperties': false,
         },
         'student': {

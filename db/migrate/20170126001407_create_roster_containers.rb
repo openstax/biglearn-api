@@ -9,6 +9,7 @@ class CreateRosterContainers < ActiveRecord::Migration
       t.uuid :parent_roster_container_uuid,
              index: true,
              foreign_key: { to_table: :roster_containers, to_column: :uuid }
+      t.boolean :is_archived, null: false
 
       t.timestamps                   null: false
     end

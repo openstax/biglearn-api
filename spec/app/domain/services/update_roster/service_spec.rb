@@ -8,17 +8,21 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
 
   let(:given_course_container_1_uuid)                  { SecureRandom.uuid }
   let(:given_course_container_1_parent_container_uuid) { given_course_container_1_uuid }
+  let(:given_course_container_1_is_archived)           { true }
   let(:given_course_container_2_uuid)                  { SecureRandom.uuid }
   let(:given_course_container_2_parent_container_uuid) { given_course_container_1_uuid }
+  let(:given_course_container_2_is_archived)           { false }
   let(:given_course_containers)                        do
     [
       {
         container_uuid: given_course_container_1_uuid,
-        parent_container_uuid: given_course_container_1_parent_container_uuid
+        parent_container_uuid: given_course_container_1_parent_container_uuid,
+        is_archived: given_course_container_1_is_archived
       },
       {
         container_uuid: given_course_container_2_uuid,
-        parent_container_uuid: given_course_container_2_parent_container_uuid
+        parent_container_uuid: given_course_container_2_parent_container_uuid,
+        is_archived: given_course_container_2_is_archived
       }
     ]
   end
