@@ -4,15 +4,19 @@ Rails.application.routes.draw do
 
   post '/create_ecosystem' => 'ecosystems#create'
 
-  post '/record_responses' => 'responses#record'
-
-  post '/fetch_response_bundles' => 'response_bundles#fetch'
-
   post '/prepare_course_ecosystem' => 'course_ecosystems#prepare'
 
   post '/update_course_ecosystems' => 'course_ecosystems#update'
 
   post '/fetch_course_ecosystem_statuses' => 'course_ecosystems#status'
+
+  post '/update_globally_excluded_exercises'  => 'global_exercise_exclusions#update'
+
+  post '/update_course_excluded_exercises'    => 'course_exercise_exclusions#update'
+
+  post '/record_responses' => 'responses#record'
+
+  post '/fetch_response_bundles' => 'response_bundles#fetch'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

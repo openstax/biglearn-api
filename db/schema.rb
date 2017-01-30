@@ -124,6 +124,19 @@ ActiveRecord::Schema.define(version: 20170123210543) do
   add_index "bundle_x_test1s", ["partition_value"], name: "index_bundle_x_test1s_on_partition_value", using: :btree
   add_index "bundle_x_test1s", ["uuid"], name: "index_bundle_x_test1s_on_uuid", unique: true, using: :btree
 
+  create_table "course_exercise_exclusions", force: :cascade do |t|
+    t.uuid     "uuid",                          null: false
+    t.uuid     "course_uuid",                   null: false
+    t.integer  "sequence_number",               null: false
+    t.uuid     "excluded_exercise_uuids",       null: false, array: true
+    t.uuid     "excluded_exercise_group_uuids", null: false, array: true
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "course_exercise_exclusions", ["course_uuid", "sequence_number"], name: "index_course_exercise_exclusions_on_c_uuid_and_s_number_uniq", unique: true, using: :btree
+  add_index "course_exercise_exclusions", ["uuid"], name: "index_course_exercise_exclusions_on_uuid", unique: true, using: :btree
+
   create_table "courses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "ecosystem_uuid", null: false
@@ -205,6 +218,18 @@ ActiveRecord::Schema.define(version: 20170123210543) do
 
   add_index "exercises", ["exercises_uuid", "exercises_version"], name: "index_exercises_on_exercises_uuid_and_exercises_version", unique: true, using: :btree
   add_index "exercises", ["uuid"], name: "index_exercises_on_uuid", unique: true, using: :btree
+
+  create_table "global_exercise_exclusions", force: :cascade do |t|
+    t.uuid     "uuid",                          null: false
+    t.integer  "sequence_number",               null: false
+    t.uuid     "excluded_exercise_uuids",       null: false, array: true
+    t.uuid     "excluded_exercise_group_uuids", null: false, array: true
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "global_exercise_exclusions", ["sequence_number"], name: "index_global_exercise_exclusions_on_sequence_number", unique: true, using: :btree
+  add_index "global_exercise_exclusions", ["uuid"], name: "index_global_exercise_exclusions_on_uuid", unique: true, using: :btree
 
   create_table "responses", force: :cascade do |t|
     t.uuid     "uuid",           null: false
