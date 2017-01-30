@@ -11,8 +11,8 @@ FactoryGirl.define do
     confidence_right     { sorted_random_values.last }
     sample_size          { rand(10) }
     unique_learner_count { rand(10) }
-    is_confidence_good   { [true, false].sample }
-    is_level_high        { [true, false].sample }
+    is_good_confidence   { [true, false].sample }
+    is_high_level        { [true, false].sample }
     is_above_threshold   { [true, false].sample }
   end
 end

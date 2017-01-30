@@ -9,8 +9,8 @@ class CreateTeacherClues < ActiveRecord::Migration
       t.decimal :confidence_right,     null: false
       t.integer :sample_size,          null: false
       t.integer :unique_learner_count, null: false
-      t.boolean :is_confidence_good,   null: false
-      t.boolean :is_level_high,        null: false
+      t.boolean :is_good_confidence,   null: false
+      t.boolean :is_high_level,        null: false
       t.boolean :is_above_threshold,   null: false
 
       t.timestamps                     null: false

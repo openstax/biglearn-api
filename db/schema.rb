@@ -381,8 +381,8 @@ ActiveRecord::Schema.define(version: 20170131233336) do
     t.decimal  "confidence_left",     null: false
     t.decimal  "confidence_right",    null: false
     t.integer  "sample_size",         null: false
-    t.boolean  "is_confidence_good",  null: false
-    t.boolean  "is_level_high",       null: false
+    t.boolean  "is_good_confidence",  null: false
+    t.boolean  "is_high_level",       null: false
     t.boolean  "is_above_threshold",  null: false
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
@@ -422,8 +422,8 @@ ActiveRecord::Schema.define(version: 20170131233336) do
     t.decimal  "confidence_right",      null: false
     t.integer  "sample_size",           null: false
     t.integer  "unique_learner_count",  null: false
-    t.boolean  "is_confidence_good",    null: false
-    t.boolean  "is_level_high",         null: false
+    t.boolean  "is_good_confidence",    null: false
+    t.boolean  "is_high_level",         null: false
     t.boolean  "is_above_threshold",    null: false
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
