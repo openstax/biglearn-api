@@ -26,11 +26,11 @@ class CluesController < JsonApiController
       service = Services::FetchTeacherClues::Service.new
       result = service.process(teacher_clue_requests: teacher_clue_requests_data)
 
-      response_data = result.fetch(:teacher_clue_requests).map do |response|
+      response_data = result.fetch(:teacher_clue_responses).map do |response|
         response.slice(:request_uuid, :clue_data, :clue_status)
       end
 
-      render json: { teacher_clue_requests: response_data }.to_json, status: 200
+      render json: { teacher_clue_responses: response_data }.to_json, status: 200
     end
   end
 
