@@ -152,7 +152,7 @@ class JsonApiController < ApplicationController
               'type': 'integer',
               'minumum': 0,
               'maximum': 9999,
-            },
+            }
           },
           'required': ['receiver_uuid', 'partition_count', 'partition_modulo'],
           'additionalProperties': false,
@@ -163,7 +163,7 @@ class JsonApiController < ApplicationController
             'aggregate': {'$ref': '#/standard_definitions/number_between_0_and_1'},
             'confidence': {
               'type': 'object',
-              'properties:' {
+              'properties': {
                 'left': {'$ref': '#/standard_definitions/number_between_0_and_1'},
                 'right': {'$ref': '#/standard_definitions/number_between_0_and_1'},
                 'sample_size': {'$ref': '#/standard_definitions/non_negative_integer'},
@@ -174,7 +174,7 @@ class JsonApiController < ApplicationController
             },
             'interpretation': {
               'type': 'object',
-              'properties:' {
+              'properties': {
                 'confidence': {
                   'type': 'string',
                   'enum': ['good', 'bad']

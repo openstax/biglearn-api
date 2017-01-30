@@ -9,5 +9,8 @@ RSpec.describe BookContainer, type: :model do
   it { is_expected.to have_many :child_book_containers }
   it { is_expected.to have_many :exercise_pools }
 
+  it { is_expected.to have_many :student_clues }
+  it { is_expected.to have_many :teacher_clues }
+
   it { is_expected.to validate_presence_of :book }
 end

@@ -12,5 +12,7 @@ RSpec.describe Student, type: :model do
 
   it { is_expected.to have_one :student_pe }
 
+  it { is_expected.to have_many :student_clues }
+
   it { is_expected.to validate_presence_of :course_uuid }
 end
