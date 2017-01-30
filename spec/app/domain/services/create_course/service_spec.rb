@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Services::CreateCourse::Service do
-  let(:service) { Services::CreateCourse::Service.new }
+  let(:service) { described_class.new }
 
   let(:action) { service.process(course_uuid: given_course_uuid, ecosystem_uuid: given_ecosystem_uuid) }
 
-  let(:given_course_uuid)    { SecureRandom.uuid.to_s }
-  let(:given_ecosystem_uuid) { SecureRandom.uuid.to_s }
+  let(:given_course_uuid)    { SecureRandom.uuid }
+  let(:given_ecosystem_uuid) { SecureRandom.uuid }
 
   context "when previously non-existing Ecosystem uuid is given" do
     it "raises error" do

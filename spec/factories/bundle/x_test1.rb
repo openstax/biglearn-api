@@ -4,7 +4,7 @@ FactoryGirl.define do
       for_record  false
     end
 
-    uuid            { SecureRandom.uuid.to_s }
+    uuid            { SecureRandom.uuid }
     partition_value { Kernel::rand(10000) }
 
     after(:build) do |bundle_record, evaluator|

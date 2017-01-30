@@ -1,14 +1,10 @@
 class CreateCourses < ActiveRecord::Migration
   def change
     create_table :courses do |t|
-      t.uuid          :uuid,              null: false
-      t.uuid          :ecosystem_uuid,    null: false
+      t.uuid :uuid,           null: false, index: { unique: true }
+      t.uuid :ecosystem_uuid, null: false, index: true
 
-      t.timestamps                        null: false
+      t.timestamps  null: false
     end
-    add_index         :courses, :uuid,
-                                unique: true
-
-
   end
 end

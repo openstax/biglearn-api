@@ -19,8 +19,8 @@ RSpec.describe "Openstax::BundleManager::Manager: fetching" do
   let(:given_partition_count)        { 5 }
   let(:given_partition_modulo)       { target_partition_modulo }
 
-  let(:target_receiver_uuid)    { SecureRandom.uuid.to_s }
-  let(:nontarget_receiver_uuid) { SecureRandom.uuid.to_s }
+  let(:target_receiver_uuid)    { SecureRandom.uuid }
+  let(:nontarget_receiver_uuid) { SecureRandom.uuid }
 
   let(:target_partition_modulo) { 3 }
   let(:target_partition_value) {

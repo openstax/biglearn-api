@@ -19,7 +19,7 @@ RSpec.describe ResponseBundlesController, type: :request do
   let(:given_partition_count)              { partition_count }
   let(:given_partition_modulo)             { target_partition_modulo }
 
-  let(:target_receiver_uuid) { SecureRandom.uuid.to_s }
+  let(:target_receiver_uuid) { SecureRandom.uuid }
 
   let(:partition_count)         { 5 }
   let(:target_partition_modulo) { 3 }
@@ -40,9 +40,9 @@ RSpec.describe ResponseBundlesController, type: :request do
     }
   }
 
-  let(:target_bundle_uuids) { [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ] }
+  let(:target_bundle_uuids) { [ SecureRandom.uuid, SecureRandom.uuid ] }
 
-  let(:target_confirmed_bundle_uuids) { [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ] }
+  let(:target_confirmed_bundle_uuids) { [ SecureRandom.uuid, SecureRandom.uuid ] }
 
   let(:target_results) {
     {

@@ -25,7 +25,7 @@ RSpec.describe ResponsesController, type: :request do
 
   let(:num_responses) { 2 }
 
-  let(:target_results) { [ SecureRandom.uuid.to_s, SecureRandom.uuid.to_s ] }
+  let(:target_results) { [ SecureRandom.uuid, SecureRandom.uuid ] }
 
   let(:service_double) {
     dbl = object_double(Services::RecordResponses::Service.new)
