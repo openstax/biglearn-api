@@ -11,6 +11,18 @@ class Course < ActiveRecord::Base
                                     inverse_of: :course
   has_many :ecosystem_updates, through: :ecosystem_preparations
 
+  has_many :course_rosters, primary_key: :uuid,
+                            foreign_key: :course_uuid,
+                            inverse_of: :course
+
+  has_many :course_containers, primary_key: :uuid,
+                               foreign_key: :course_uuid,
+                               inverse_of: :course
+
+  has_many :students, primary_key: :uuid,
+                      foreign_key: :course_uuid,
+                      inverse_of: :course
+
   has_many :course_exercise_exclusions, primary_key: :uuid,
                                         foreign_key: :course_uuid,
                                         inverse_of: :course
