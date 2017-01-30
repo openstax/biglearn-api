@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Response bundling" do
+RSpec.describe "Response bundling", type: :acceptance do
   let!(:avoid_autoload_errors) {
     Response.count;
     Services::RecordResponses::Service.new

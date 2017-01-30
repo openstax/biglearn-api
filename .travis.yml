@@ -7,9 +7,9 @@ addons:
 services:
   - postgresql
 before_script:
-  - bundle exec rake --trace db:create db:schema:load db:seed
+  - bundle exec rake --trace db:setup
 script:
-  - bundle exec rake spec
+  - bundle exec rspec --format progress --tag ~type:acceptance
 branches:
   only:
     - master
