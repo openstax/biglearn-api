@@ -51,7 +51,6 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
           expect{action}.not_to change{EcosystemUpdate.count}
         end
 
-        # TODO: how to determine if it is really ready?
         it "the request_uuid is returned with update_status: 'updated_and_ready'" do
           update_response = action.fetch(:update_responses).first
           expect(update_response.fetch(:request_uuid)).to eq(given_request_uuid)

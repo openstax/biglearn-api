@@ -36,5 +36,4 @@ class Assignment < ActiveRecord::Base
   validates :assignment_type,              presence: true
   validates :goal_num_tutor_assigned_spes, presence: true
   validates :goal_num_tutor_assigned_pes,  presence: true
-  # TODO: Validate that assigned_book_container_uuids contains only UUIDs
 end
