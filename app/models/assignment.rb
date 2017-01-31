@@ -19,15 +19,13 @@ class Assignment < ActiveRecord::Base
                                 inverse_of: :assignment
   has_many :exercises, through: :assigned_exercises
 
-  sortable_has_many :assignment_pes, on: :number,
-                                     primary_key: :uuid,
-                                     foreign_key: :assignment_uuid,
-                                     inverse_of: :assignment
+  has_one :assignment_pe, primary_key: :uuid,
+                          foreign_key: :assignment_uuid,
+                          inverse_of: :assignment
 
-  sortable_has_many :assignment_spes, on: :number,
-                                      primary_key: :uuid,
-                                      foreign_key: :assignment_uuid,
-                                      inverse_of: :assignment
+  has_one :assignment_spe, primary_key: :uuid,
+                           foreign_key: :assignment_uuid,
+                           inverse_of: :assignment
 
   validates :assignment_uuid,              presence: true
   validates :sequence_number,              presence: true, uniqueness: { scope: :assignment_uuid }

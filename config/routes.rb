@@ -19,6 +19,10 @@ Rails.application.routes.draw do
 
   post '/create_update_assignments' => 'assignments#create_update'
 
+  post '/fetch_assignment_pes' => 'assignments#fetch_pes'
+
+  post '/fetch_assignment_spes' => 'assignments#fetch_spes'
+
   post '/record_responses' => 'responses#record'
 
   post '/fetch_response_bundles' => 'response_bundles#fetch'
