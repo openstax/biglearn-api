@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe StudentClue, type: :model do
-  subject { FactoryGirl.create :student_clue }
+  subject(:student_clue) { FactoryGirl.create :student_clue }
 
   it { is_expected.to belong_to :student }
   it { is_expected.to belong_to :book_container }
@@ -34,5 +34,9 @@ RSpec.describe StudentClue, type: :model do
   it do
     is_expected.to validate_numericality_of(:sample_size).only_integer
                                                          .is_greater_than_or_equal_to(0)
+  end
+
+  it 'returns 1 for unique_learner_count' do
+    expect(student_clue.unique_learner_count).to eq 1
   end
 end

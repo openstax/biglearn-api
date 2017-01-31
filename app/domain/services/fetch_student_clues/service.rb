@@ -58,7 +58,7 @@ class Services::FetchStudentClues::Service
             left: clue.confidence_left,
             right: clue.confidence_right,
             sample_size: clue.sample_size,
-            unique_learner_count: 1
+            unique_learner_count: clue.unique_learner_count
           },
           interpretation: {
             confidence: clue.is_good_confidence ? 'good' : 'bad',

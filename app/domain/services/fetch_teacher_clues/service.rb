@@ -10,7 +10,7 @@ class Services::FetchTeacherClues::Service
 
     clues_map = Hash.new { |hash, key| hash[key] = {} }
     clues.each do |clue|
-      clues_map[clue.student_uuid.downcase][clue.book_container_uuid.downcase] = clue
+      clues_map[clue.course_container_uuid.downcase][clue.book_container_uuid.downcase] = clue
     end
 
     missing_clue_requests = teacher_clue_requests.reject do |request|
@@ -27,7 +27,7 @@ class Services::FetchTeacherClues::Service
     missing_clue_book_containers_by_uuid = \
       BookContainer.where(uuid: missing_clue_book_container_uuids).index_by(&:uuid)
 
-    responses = student_clue_requests.map do |request|
+    responses = teacher_clue_requests.map do |request|
       clue = \
         clues_map[request[:course_container_uuid].downcase][request[:book_container_uuid].downcase]
 

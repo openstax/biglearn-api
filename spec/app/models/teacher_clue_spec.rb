@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TeacherClue, type: :model do
-  subject { FactoryGirl.create :teacher_clue }
+  subject(:teacher_clue) { FactoryGirl.create :teacher_clue }
 
   it { is_expected.to belong_to :course_container }
   it { is_expected.to belong_to :book_container }
