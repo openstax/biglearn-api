@@ -6,8 +6,6 @@ RSpec.describe AssignedExercise, type: :model do
   it { is_expected.to belong_to :assignment }
   it { is_expected.to belong_to :exercise }
 
-  it { is_expected.to have_many :assigned_exercises }
-
   it { is_expected.to validate_presence_of :assignment }
   it { is_expected.to validate_presence_of :exercise_uuid }
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170131163104) do
+ActiveRecord::Schema.define(version: 20170131233336) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -372,6 +372,17 @@ ActiveRecord::Schema.define(version: 20170131163104) do
   add_index "roster_students", ["roster_uuid", "student_uuid"], name: "index_roster_students_on_roster_uuid_and_student_uuid", unique: true, using: :btree
   add_index "roster_students", ["student_uuid"], name: "index_roster_students_on_student_uuid", using: :btree
   add_index "roster_students", ["uuid"], name: "index_roster_students_on_uuid", unique: true, using: :btree
+
+  create_table "student_pes", force: :cascade do |t|
+    t.uuid     "uuid",           null: false
+    t.uuid     "student_uuid",   null: false
+    t.uuid     "exercise_uuids", null: false, array: true
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "student_pes", ["student_uuid"], name: "index_student_pes_on_student_uuid", unique: true, using: :btree
+  add_index "student_pes", ["uuid"], name: "index_student_pes_on_uuid", unique: true, using: :btree
 
   create_table "students", force: :cascade do |t|
     t.uuid     "uuid",        null: false

@@ -4,9 +4,9 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
   let(:service)                   { described_class.new }
 
   let(:given_assignment_uuid_1)   { SecureRandom.uuid }
-  let(:given_max_num_exercises_1) { rand(10) + 1 }
+  let(:given_max_num_exercises_1) { rand(10) }
   let(:given_assignment_uuid_2)   { SecureRandom.uuid }
-  let(:given_max_num_exercises_2) { rand(10) + 1 }
+  let(:given_max_num_exercises_2) { rand(10) }
 
   let(:given_pe_requests)         do
     [
@@ -49,14 +49,16 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
 
   context "when previously-existing AssignmentPe assignment_uuids are given" do
     let(:exercise_uuids_1) do
-      (given_max_num_exercises_1 + rand(given_max_num_exercises_1)).times.map { SecureRandom.uuid }
+      (given_max_num_exercises_1 + rand(given_max_num_exercises_1 + 1)).times.map do
+        SecureRandom.uuid
+      end
     end
     let!(:assignment_pe_1) do
       FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_1,
                                          exercise_uuids: exercise_uuids_1
     end
     let(:exercise_uuids_2) do
-      rand(given_max_num_exercises_2).times.map { SecureRandom.uuid }
+      rand(given_max_num_exercises_2 + 1).times.map { SecureRandom.uuid }
     end
     let!(:assignment_pe_2) do
       FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_2,

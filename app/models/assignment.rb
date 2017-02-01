@@ -19,11 +19,11 @@ class Assignment < ActiveRecord::Base
                                 inverse_of: :assignment
   has_many :exercises, through: :assigned_exercises
 
-  has_one :assignment_pe, primary_key: :uuid,
+  has_one :assignment_pe, primary_key: :assignment_uuid,
                           foreign_key: :assignment_uuid,
                           inverse_of: :assignment
 
-  has_one :assignment_spe, primary_key: :uuid,
+  has_one :assignment_spe, primary_key: :assignment_uuid,
                            foreign_key: :assignment_uuid,
                            inverse_of: :assignment
 
