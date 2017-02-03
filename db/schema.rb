@@ -15,6 +15,47 @@ ActiveRecord::Schema.define(version: 20170126001407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "citext"
+
+  create_table "assigned_exercises", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.uuid     "assignment_uuid", null: false
+    t.uuid     "trial_uuid",      null: false
+    t.uuid     "exercise_uuid",   null: false
+    t.boolean  "is_spe",          null: false
+    t.boolean  "is_pe",           null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "assigned_exercises", ["assignment_uuid"], name: "index_assigned_exercises_on_assignment_uuid", using: :btree
+  add_index "assigned_exercises", ["exercise_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_exercise_uuid_and_assignment_uuid", unique: true, using: :btree
+  add_index "assigned_exercises", ["trial_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_trial_uuid_and_assignment_uuid", unique: true, using: :btree
+  add_index "assigned_exercises", ["uuid"], name: "index_assigned_exercises_on_uuid", unique: true, using: :btree
+
+  create_table "assignments", force: :cascade do |t|
+    t.uuid     "uuid",                          null: false
+    t.uuid     "assignment_uuid",               null: false
+    t.integer  "sequence_number",               null: false
+    t.boolean  "is_deleted",                    null: false
+    t.uuid     "ecosystem_uuid",                null: false
+    t.uuid     "student_uuid",                  null: false
+    t.string   "assignment_type",               null: false
+    t.datetime "opens_at"
+    t.datetime "due_at"
+    t.uuid     "assigned_book_container_uuids", null: false, array: true
+    t.integer  "goal_num_tutor_assigned_spes",  null: false
+    t.boolean  "spes_are_assigned",             null: false
+    t.integer  "goal_num_tutor_assigned_pes",   null: false
+    t.boolean  "pes_are_assigned",              null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "assignments", ["assignment_uuid", "sequence_number"], name: "index_assignments_on_assignment_uuid_and_sequence_number", unique: true, using: :btree
+  add_index "assignments", ["ecosystem_uuid"], name: "index_assignments_on_ecosystem_uuid", using: :btree
+  add_index "assignments", ["student_uuid"], name: "index_assignments_on_student_uuid", using: :btree
+  add_index "assignments", ["uuid"], name: "index_assignments_on_uuid", unique: true, using: :btree
 
   create_table "book_containers", force: :cascade do |t|
     t.uuid     "uuid",         null: false
@@ -32,7 +73,7 @@ ActiveRecord::Schema.define(version: 20170126001407) do
 
   create_table "books", force: :cascade do |t|
     t.uuid     "uuid",         null: false
-    t.string   "cnx_identity", null: false
+    t.citext   "cnx_identity", null: false
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end

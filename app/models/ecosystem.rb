@@ -14,5 +14,9 @@ class Ecosystem < ActiveRecord::Base
                                     inverse_of: :ecosystem
   has_many :ecosystem_updates, through: :ecosystem_preparations
 
+  has_many :assignments, primary_key: :uuid,
+                         foreign_key: :ecosystem_uuid,
+                         inverse_of: :ecosystem
+
   validates :book, presence: true
 end

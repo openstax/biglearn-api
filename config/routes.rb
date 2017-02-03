@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   post '/create_ecosystem' => 'ecosystems#create'
 
   post '/create_course' => 'courses#create'
@@ -15,6 +14,8 @@ Rails.application.routes.draw do
   post '/update_globally_excluded_exercises'  => 'global_exercise_exclusions#update'
 
   post '/update_course_excluded_exercises'    => 'course_exercise_exclusions#update'
+
+  post '/create_update_assignments' => 'assignments#create_update'
 
   post '/record_responses' => 'responses#record'
 
