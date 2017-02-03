@@ -19,5 +19,13 @@ class BookContainer < ActiveRecord::Base
                             foreign_key: :container_uuid,
                             inverse_of: :book_container
 
+  has_many :student_clues, primary_key: :uuid,
+                           foreign_key: :book_container_uuid,
+                           inverse_of: :book_container
+
+  has_many :teacher_clues, primary_key: :uuid,
+                           foreign_key: :book_container_uuid,
+                           inverse_of: :book_container
+
   validates :book, presence: true
 end

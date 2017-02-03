@@ -373,6 +373,25 @@ ActiveRecord::Schema.define(version: 20170131233336) do
   add_index "roster_students", ["student_uuid"], name: "index_roster_students_on_student_uuid", using: :btree
   add_index "roster_students", ["uuid"], name: "index_roster_students_on_uuid", unique: true, using: :btree
 
+  create_table "student_clues", force: :cascade do |t|
+    t.uuid     "uuid",                null: false
+    t.uuid     "student_uuid",        null: false
+    t.uuid     "book_container_uuid", null: false
+    t.decimal  "aggregate",           null: false
+    t.decimal  "confidence_left",     null: false
+    t.decimal  "confidence_right",    null: false
+    t.integer  "sample_size",         null: false
+    t.boolean  "is_good_confidence",  null: false
+    t.boolean  "is_high_level",       null: false
+    t.boolean  "is_above_threshold",  null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "student_clues", ["book_container_uuid"], name: "index_student_clues_on_book_container_uuid", using: :btree
+  add_index "student_clues", ["student_uuid", "book_container_uuid"], name: "index_student_clues_on_student_uuid_and_book_container_uuid", unique: true, using: :btree
+  add_index "student_clues", ["uuid"], name: "index_student_clues_on_uuid", unique: true, using: :btree
+
   create_table "student_pes", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "student_uuid",   null: false
@@ -393,6 +412,26 @@ ActiveRecord::Schema.define(version: 20170131233336) do
 
   add_index "students", ["course_uuid"], name: "index_students_on_course_uuid", using: :btree
   add_index "students", ["uuid"], name: "index_students_on_uuid", unique: true, using: :btree
+
+  create_table "teacher_clues", force: :cascade do |t|
+    t.uuid     "uuid",                  null: false
+    t.uuid     "course_container_uuid", null: false
+    t.uuid     "book_container_uuid",   null: false
+    t.decimal  "aggregate",             null: false
+    t.decimal  "confidence_left",       null: false
+    t.decimal  "confidence_right",      null: false
+    t.integer  "sample_size",           null: false
+    t.integer  "unique_learner_count",  null: false
+    t.boolean  "is_good_confidence",    null: false
+    t.boolean  "is_high_level",         null: false
+    t.boolean  "is_above_threshold",    null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "teacher_clues", ["book_container_uuid"], name: "index_teacher_clues_on_book_container_uuid", using: :btree
+  add_index "teacher_clues", ["course_container_uuid", "book_container_uuid"], name: "index_teacher_clues_on_course_cont_uuid_and_book_cont_uuid", unique: true, using: :btree
+  add_index "teacher_clues", ["uuid"], name: "index_teacher_clues_on_uuid", unique: true, using: :btree
 
   create_table "x_test1s", force: :cascade do |t|
     t.uuid     "uuid",       null: false

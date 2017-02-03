@@ -19,5 +19,9 @@ class Student < ActiveRecord::Base
                        foreign_key: :student_uuid,
                        inverse_of: :student
 
+  has_many :student_clues, primary_key: :uuid,
+                           foreign_key: :student_uuid,
+                           inverse_of: :student
+
   validates :course_uuid, presence: true
 end
