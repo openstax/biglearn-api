@@ -10,7 +10,6 @@ class Services::FetchCourseEvents::Service
 
       ce[:course_uuid]
         .eq(request[:course_uuid])
-        .and(ce[:event_type].in(request[:event_types]))
         .and(ce[:sequence_number].gteq(request[:sequence_number_offset]))
         .and(ce[:sequence_number].lt(request[:sequence_number_offset] + limit))
     end.reduce(:or)
@@ -21,6 +20,7 @@ class Services::FetchCourseEvents::Service
 
     responses = course_event_requests.map do |request|
       course_events = course_events_by_course_uuid[request[:course_uuid]]
+      included_event_types = Set.new(request[:event_types])
 
       current_sequence_number = request[:sequence_number_offset]
       is_gap = false
@@ -29,15 +29,17 @@ class Services::FetchCourseEvents::Service
         is_gap = event.sequence_number != current_sequence_number
         break if is_gap # Gap detected... Stop processing
 
+        current_sequence_number += 1
+
+        next unless included_event_types.include? event.event_type # Skip non-included event types
+
         event_hash = {
           sequence_number: event.sequence_number,
           event_uuid: event.uuid,
-          event_type: event.type,
+          event_type: event.event_type,
           event_data: event.data
         }
         gapless_event_hashes << event_hash
-
-        current_sequence_number += 1
       end
 
       {
