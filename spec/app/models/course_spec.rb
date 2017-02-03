@@ -13,6 +13,8 @@ RSpec.describe Course, type: :model do
   it { is_expected.to have_many :course_containers }
   it { is_expected.to have_many :students }
 
+  it { is_expected.to have_many :course_active_dates }
+
   it { is_expected.to validate_presence_of :ecosystem_uuid }
 
   it 'can return its active ecosystem preparation' do

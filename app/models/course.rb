@@ -27,6 +27,10 @@ class Course < ActiveRecord::Base
                                         foreign_key: :course_uuid,
                                         inverse_of: :course
 
+  has_many :course_active_dates, primary_key: :uuid,
+                                 foreign_key: :course_uuid,
+                                 inverse_of: :course
+
   validates :ecosystem_uuid, presence: true
 
   def active_ecosystem_preparation

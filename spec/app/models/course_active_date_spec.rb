@@ -1,0 +1,12 @@
+require 'rails_helper'
+
+RSpec.describe CourseActiveDate, type: :model do
+  subject { FactoryGirl.create :course_active_date }
+
+  it { is_expected.to belong_to :course }
+
+  it { is_expected.to validate_presence_of :course_uuid }
+  it { is_expected.to validate_presence_of :sequence_number }
+
+  it { is_expected.to validate_uniqueness_of(:sequence_number).scoped_to(:course_uuid) }
+end
