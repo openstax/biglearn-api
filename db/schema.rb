@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170131233336) do
+ActiveRecord::Schema.define(version: 20170203163129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -209,6 +209,19 @@ ActiveRecord::Schema.define(version: 20170131233336) do
 
   add_index "course_containers", ["course_uuid"], name: "index_course_containers_on_course_uuid", using: :btree
   add_index "course_containers", ["uuid"], name: "index_course_containers_on_uuid", unique: true, using: :btree
+
+  create_table "course_events", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.string   "type",            null: false
+    t.uuid     "course_uuid",     null: false
+    t.integer  "sequence_number", null: false
+    t.jsonb    "json",            null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "course_events", ["course_uuid", "sequence_number"], name: "index_course_events_on_course_uuid_and_sequence_number", unique: true, using: :btree
+  add_index "course_events", ["uuid"], name: "index_course_events_on_uuid", unique: true, using: :btree
 
   create_table "course_exercise_exclusions", force: :cascade do |t|
     t.uuid     "uuid",                          null: false
