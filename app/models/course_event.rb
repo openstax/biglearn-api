@@ -7,9 +7,11 @@ class CourseEvent < ActiveRecord::Base
     prepare_course_ecosystem:           1,
     update_course_ecosystems:           2,
     update_rosters:                     3,
-    update_globally_excluded_exercises: 4,
-    update_course_excluded_exercises:   5,
-    create_update_assignments:          6
+    update_course_active_dates:         4,
+    update_globally_excluded_exercises: 5,
+    update_course_excluded_exercises:   6,
+    create_update_assignments:          7,
+    record_responses:                   8
   }
 
   belongs_to :course, primary_key: :uuid,
