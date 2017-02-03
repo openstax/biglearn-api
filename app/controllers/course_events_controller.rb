@@ -3,10 +3,10 @@ class CourseEventsController < JsonApiController
   def fetch
     with_json_apis(input_schema:  _fetch_request_payload_schema,
                    output_schema: _fetch_response_payload_schema) do
-      event_requests = json_parsed_request_payload.fetch(:event_requests)
+      event_requests = json_parsed_request_payload.fetch(:course_event_requests)
 
       service = Services::FetchCourseEvents::Service.new
-      response_payload = service.process(event_requests: event_requests)
+      response_payload = service.process(course_event_requests: event_requests)
 
       render json: response_payload.to_json, status: 200
     end
@@ -20,37 +20,35 @@ class CourseEventsController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'event_requests': {
+        'course_event_requests': {
           'type': 'array',
-          'items': {'$ref': '#definitions/event_request'},
+          'items': {'$ref': '#definitions/course_event_request'},
           'minItems': 0,
           'maxItems': 100
         }
       },
-      'required': ['event_requests'],
+      'required': ['course_event_requests'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'event_request': {
+        'course_event_request': {
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'event_types': {
               'type': 'array',
-              'items': {
-                'type': 'string',
-                'enum': CourseEvent.event_types.keys
-              }
-            }
+              'items': {'$ref': '#standard_definitions/course_event_type'},
+              'minItems': 1
+            },
             'course_uuid': {'$ref': '#standard_definitions/uuid'},
             'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'},
             'event_limit': {
-              'type': 'number',
+              'type': 'integer',
               'minimum': 1,
               'maximum': 1000
             }
           },
-          'required': ['course_uuid', 'starting_sequence_number', 'event_limit'],
+          'required': ['course_uuid', 'sequence_number_offset', 'event_limit'],
           'additionalProperties': false
         }
       }
@@ -62,47 +60,44 @@ class CourseEventsController < JsonApiController
       '$schema': JSON_SCHEMA,
       'type': 'object',
       'properties': {
-        'event_responses': {
+        'course_event_responses': {
           'type': 'array',
-          'items': {
-            'type': 'object',
-            'properties': {
-              'request_uuid': {'$ref': '#standard_definitions/uuid'},
-              'course_uuid': {'$ref': '#standard_definitions/uuid'},
-              'events': {
-                'type': 'array',
-                'items': {
-                  'type': 'object',
-                  'properties': {
-                    'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
-                    'event_uuid': {'$ref': '#standard_definitions/uuid'},
-                    'event_type': {
-                      'type': 'string',
-                      'enum': CourseEvent.event_types.keys
-                    },
-                    'event_data': {
-                      'type': 'object'
-                      # TODO: Validate event_data contents
-                    }
-                  },
-                  'required': ['sequence_number', 'event_uuid', 'event_type', 'contents'],
-                  'additionalProperties': false
-                },
-                'minItems': 0,
-                'maxItems': 1000
-              },
-              'is_stopped_at_gap': {'type': 'boolean'}
-            },
-            'required': ['course_uuid', 'events', 'is_stopped_at_gap'],
-            'additionalProperties': false
-          },
+          'items': {'$ref': '#definitions/course_event_response'},
           'minItems': 0,
           'maxItems': 100
         },
       },
-      'required': ['event_responses'],
+      'required': ['course_event_responses'],
       'additionalProperties': false,
-      'standard_definitions': _standard_definitions
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'course_event_response': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'course_uuid': {'$ref': '#standard_definitions/uuid'},
+            'events': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
+                  'event_uuid': {'$ref': '#standard_definitions/uuid'},
+                  'event_type': {'$ref': '#standard_definitions/course_event_type'},
+                  'event_data': {'$ref': '#standard_definitions/course_event_data'}
+                },
+                'required': ['sequence_number', 'event_uuid', 'event_type', 'event_data'],
+                'additionalProperties': false
+              },
+              'minItems': 0,
+              'maxItems': 1000
+            },
+            'is_stopped_at_gap': {'type': 'boolean'}
+          },
+          'required': ['course_uuid', 'events', 'is_stopped_at_gap'],
+          'additionalProperties': false
+        }
+      }
     }
   end
 

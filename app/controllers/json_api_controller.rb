@@ -195,6 +195,14 @@ class JsonApiController < ApplicationController
           },
           'required': ['aggregate', 'confidence', 'interpretation', 'pool_id'],
           'additionalProperties': false
+        },
+        'course_event_type': {
+          'type': 'string',
+          'enum': CourseEvent.event_types.keys
+        },
+        'course_event_data': {
+          'type': 'object'
+          # TODO: Validate course_event_data contents
         }
       }
     end
