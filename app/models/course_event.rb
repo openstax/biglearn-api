@@ -1,25 +1,22 @@
 class CourseEvent < ActiveRecord::Base
-  VALID_EVENT_TYPES = [
-    :create_course,
-    :prepare_course_ecosystem,
-    :update_course_ecosystems,
-    :update_rosters,
-    :update_globally_excluded_exercises,
-    :update_course_excluded_exercises,
-    :create_update_assignments
-  ].map(&:to_s)
-
   include AppendOnly
   include HasUniqueUuid
 
-  self.inheritance_column = nil
+  enum event_type: {
+    create_course:                      0,
+    prepare_course_ecosystem:           1,
+    update_course_ecosystems:           2,
+    update_rosters:                     3,
+    update_globally_excluded_exercises: 4,
+    update_course_excluded_exercises:   5,
+    create_update_assignments:          6
+  }
 
   belongs_to :course, primary_key: :uuid,
                       foreign_key: :course_uuid,
                       inverse_of: :course_events
 
-  validates :type,            presence: true,
-                              inclusion: { in: VALID_EVENT_TYPES }
+  validates :event_type,      presence: true
   validates :course_uuid,     presence: true
   validates :sequence_number, presence: true,
                               uniqueness: { scope: :course_uuid },

@@ -3,7 +3,7 @@ class CourseActiveDatesController < JsonApiController
   def update
     with_json_apis(input_schema:  _update_request_payload_schema,
                    output_schema: _update_response_payload_schema) do
-      request_payload = json_parsed_request_payload.deep_symbolize_keys
+      request_payload = json_parsed_request_payload
 
       course_uuid = request_payload.fetch(:course_uuid)
       sequence_number = request_payload.fetch(:sequence_number)

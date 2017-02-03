@@ -3,8 +3,7 @@ class AssignmentsController < JsonApiController
   def create_update
     with_json_apis(input_schema:  _create_update_request_payload_schema,
                    output_schema: _create_update_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      assignment_data = request_payload.deep_symbolize_keys.fetch(:assignments)
+      assignment_data = json_parsed_request_payload.fetch(:assignments)
 
       service = Services::CreateUpdateAssignments::Service.new
       result = service.process(assignments: assignment_data)

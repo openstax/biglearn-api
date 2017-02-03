@@ -28,7 +28,7 @@ class JsonApiController < ApplicationController
 
   def json_parsed_request_payload
     request.body.rewind
-    JSON.parse(request.body.read)
+    JSON.parse(request.body.read).deep_symbolize_keys
   rescue StandardError => ex
     fail Errors::AppRequestValidationError.new('could not parse request json payload')
   end

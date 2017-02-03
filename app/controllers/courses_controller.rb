@@ -5,8 +5,8 @@ class CoursesController < JsonApiController
                    output_schema: _create_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
-      course_uuid = request_payload.fetch('course_uuid')
-      ecosystem_uuid = request_payload.fetch('ecosystem_uuid')
+      course_uuid = request_payload.fetch(:course_uuid)
+      ecosystem_uuid = request_payload.fetch(:ecosystem_uuid)
 
       service = Services::CreateCourse::Service.new
       result = service.process(

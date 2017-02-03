@@ -3,8 +3,7 @@ class ExercisesController < JsonApiController
   def fetch_assignment_pes
     with_json_apis(input_schema:  _fetch_assignment_pes_request_payload_schema,
                    output_schema: _fetch_assignment_pes_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      pe_requests = request_payload.deep_symbolize_keys.fetch(:pe_requests)
+      pe_requests = json_parsed_request_payload.fetch(:pe_requests)
 
       service = Services::FetchAssignmentPes::Service.new
       result = service.process(pe_requests: pe_requests)
