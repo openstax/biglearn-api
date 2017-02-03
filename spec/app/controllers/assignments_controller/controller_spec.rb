@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe AssignmentsController, type: :request do
-  let(:given_assignment_uuid)                 { SecureRandom.uuid }
+  let(:given_assignment_uuid)                   { SecureRandom.uuid }
   let(:given_sequence_number)                 { rand(10) }
   let(:given_is_deleted)                      { false }
   let(:given_ecosystem_uuid)                  { SecureRandom.uuid }

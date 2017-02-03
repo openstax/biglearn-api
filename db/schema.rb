@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170127213101) do
+ActiveRecord::Schema.define(version: 20170131233336) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,28 @@ ActiveRecord::Schema.define(version: 20170127213101) do
   add_index "assigned_exercises", ["exercise_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_exercise_uuid_and_assignment_uuid", unique: true, using: :btree
   add_index "assigned_exercises", ["trial_uuid", "assignment_uuid"], name: "index_assigned_exercises_on_trial_uuid_and_assignment_uuid", unique: true, using: :btree
   add_index "assigned_exercises", ["uuid"], name: "index_assigned_exercises_on_uuid", unique: true, using: :btree
+
+  create_table "assignment_pes", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.uuid     "assignment_uuid", null: false
+    t.uuid     "exercise_uuids",  null: false, array: true
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "assignment_pes", ["assignment_uuid"], name: "index_assignment_pes_on_assignment_uuid", unique: true, using: :btree
+  add_index "assignment_pes", ["uuid"], name: "index_assignment_pes_on_uuid", unique: true, using: :btree
+
+  create_table "assignment_spes", force: :cascade do |t|
+    t.uuid     "uuid",            null: false
+    t.uuid     "assignment_uuid", null: false
+    t.uuid     "exercise_uuids",  null: false, array: true
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "assignment_spes", ["assignment_uuid"], name: "index_assignment_spes_on_assignment_uuid", unique: true, using: :btree
+  add_index "assignment_spes", ["uuid"], name: "index_assignment_spes_on_uuid", unique: true, using: :btree
 
   create_table "assignments", force: :cascade do |t|
     t.uuid     "uuid",                          null: false
@@ -350,6 +372,17 @@ ActiveRecord::Schema.define(version: 20170127213101) do
   add_index "roster_students", ["roster_uuid", "student_uuid"], name: "index_roster_students_on_roster_uuid_and_student_uuid", unique: true, using: :btree
   add_index "roster_students", ["student_uuid"], name: "index_roster_students_on_student_uuid", using: :btree
   add_index "roster_students", ["uuid"], name: "index_roster_students_on_uuid", unique: true, using: :btree
+
+  create_table "student_pes", force: :cascade do |t|
+    t.uuid     "uuid",           null: false
+    t.uuid     "student_uuid",   null: false
+    t.uuid     "exercise_uuids", null: false, array: true
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "student_pes", ["student_uuid"], name: "index_student_pes_on_student_uuid", unique: true, using: :btree
+  add_index "student_pes", ["uuid"], name: "index_student_pes_on_uuid", unique: true, using: :btree
 
   create_table "students", force: :cascade do |t|
     t.uuid     "uuid",        null: false

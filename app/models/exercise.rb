@@ -6,7 +6,6 @@ class Exercise < ActiveRecord::Base
                                 foreign_key: :exercise_uuid,
                                 inverse_of: :exercise
 
-  validates :exercises_uuid, presence: true
+  validates :exercises_uuid,    presence: true
   validates :exercises_version, presence: true, uniqueness: { scope: :exercises_uuid }
-  # TODO: validate that the los array contains only strings
 end

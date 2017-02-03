@@ -9,6 +9,9 @@ RSpec.describe Assignment, type: :model do
   it { is_expected.to have_many :assigned_exercises }
   it { is_expected.to have_many :exercises }
 
+  it { is_expected.to have_one :assignment_pe }
+  it { is_expected.to have_one :assignment_spe }
+
   it { is_expected.to validate_presence_of :assignment_uuid }
   it { is_expected.to validate_presence_of :sequence_number }
   it { is_expected.to validate_presence_of :ecosystem_uuid }

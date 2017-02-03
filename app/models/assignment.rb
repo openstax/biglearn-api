@@ -19,6 +19,14 @@ class Assignment < ActiveRecord::Base
                                 inverse_of: :assignment
   has_many :exercises, through: :assigned_exercises
 
+  has_one :assignment_pe, primary_key: :assignment_uuid,
+                          foreign_key: :assignment_uuid,
+                          inverse_of: :assignment
+
+  has_one :assignment_spe, primary_key: :assignment_uuid,
+                           foreign_key: :assignment_uuid,
+                           inverse_of: :assignment
+
   validates :assignment_uuid,              presence: true
   validates :sequence_number,              presence: true, uniqueness: { scope: :assignment_uuid }
   validates :ecosystem_uuid,               presence: true
@@ -26,5 +34,4 @@ class Assignment < ActiveRecord::Base
   validates :assignment_type,              presence: true
   validates :goal_num_tutor_assigned_spes, presence: true
   validates :goal_num_tutor_assigned_pes,  presence: true
-  # TODO: Validate that assigned_book_container_uuids contains only UUIDs
 end
