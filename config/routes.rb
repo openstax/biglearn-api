@@ -41,6 +41,8 @@ Rails.application.routes.draw do
   post '/update_student_clues' => 'clues#update_student'
   post '/update_teacher_clues' => 'clues#update_teacher'
 
+  post '/fetch_course_events' => 'course_events#fetch'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
