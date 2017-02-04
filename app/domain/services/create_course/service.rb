@@ -17,4 +17,3 @@ class Services::CreateCourse::Service
     { created_course_uuid: course_uuid }
   end
 end
-
