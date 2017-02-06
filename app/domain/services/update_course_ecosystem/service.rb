@@ -1,31 +1,40 @@
 class Services::UpdateCourseEcosystem::Service
   def process(update_requests:)
+    preparation_uuids = update_requests.map{ |request| request[:preparation_uuid] }
+    preparations_by_uuid = CourseEvent.ecosystem_preparation.where(uuid: preparation_uuids)
+                                                            .index_by(&:uuid)
+    ready_preparation_uuids_set = Set.new(
+      EcosystemUpdateReady.where(preparation_uuid: preparation_uuids).pluck(:preparation_uuid)
+    )
+
+    course_event_attributes = []
     update_responses = update_requests.map do |request|
-      preparation = EcosystemPreparation.find_by(uuid: request[:preparation_uuid])
+      preparation = preparations_by_uuid[request[:preparation_uuid]]
 
-      if preparation.nil?
+      if preparation.nil? || preparation.course_uuid != request[:course_uuid]
         status = 'preparation_unknown'
+      # TODO: Some other check here that causes 'preparation_obsolete'?
       else
-        course = preparation.course
+        course_event_attributes << {
+          uuid: request[:request_uuid],
+          type: :ecosystem_update,
+          course_uuid: request[:course_uuid],
+          sequence_number: request[:sequence_number],
+          data: {
+            request_uuid: request[:request_uuid],
+            preparation_uuid: request[:preparation_uuid]
+          }
+        }
 
-        if course&.ecosystem_preparations&.order(:sequence_number)&.last != preparation
-          status = 'preparation_obsolete'
-        elsif preparation.ecosystem_update.present?
-          # TODO: Check some other record here when we support whatever processing needs to happen
-          status = 'updated_and_ready'
-        else
-          update = EcosystemUpdate.new(
-            uuid: request[:request_uuid],
-            ecosystem_preparation: preparation
-          )
-          EcosystemUpdate.import [update], on_duplicate_key_ignore: true
+        is_ready = ready_preparation_uuids_set.include? request[:preparation_uuid]
 
-          status = 'updated_but_unready'
-        end
+        status = is_ready ? 'updated_and_ready' : 'updated_but_unready'
       end
 
       { request_uuid: request[:request_uuid], update_status: status }
     end
+
+    CourseEvent.append course_event_attributes
 
     { update_responses: update_responses }
   end

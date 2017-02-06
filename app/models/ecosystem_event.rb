@@ -1,6 +1,5 @@
 class EcosystemEvent < ActiveRecord::Base
-  include AppendOnly
-  include HasUniqueUuid
+  include AppendOnlyWithUniqueUuid
 
   enum event_type: { create_ecosystem: 0 }
 
@@ -10,7 +9,7 @@ class EcosystemEvent < ActiveRecord::Base
                               uniqueness: { scope: :ecosystem_uuid },
                               numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  def self.standard_import(attributes_array)
+  def self.append(attributes_array)
     events = attributes_array.map{ |attributes| new(attributes) }
 
     transaction(isolation: :serializable) do

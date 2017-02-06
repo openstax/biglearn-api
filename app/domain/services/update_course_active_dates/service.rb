@@ -1,14 +1,12 @@
 class Services::UpdateCourseActiveDates::Service
   def process(course_uuid:, sequence_number:, starts_at:, ends_at:)
-    course_active_date = CourseActiveDate.new(
+    CourseEvent.append(
       uuid: SecureRandom.uuid,
+      type: :update_course_active_dates,
       course_uuid: course_uuid,
       sequence_number: sequence_number,
-      starts_at: starts_at,
-      ends_at: ends_at
+      data: { starts_at: starts_at, ends_at: ends_at }
     )
-
-    CourseActiveDate.import [course_active_date], on_duplicate_key_ignore: true
 
     { updated_course_uuid: course_uuid }
   end

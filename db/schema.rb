@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170203163129) do
+ActiveRecord::Schema.define(version: 20170206191822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,16 @@ ActiveRecord::Schema.define(version: 20170203163129) do
   add_index "ecosystem_events", ["ecosystem_uuid", "event_type"], name: "index_ecosystem_events_on_ecosystem_uuid_and_event_type", using: :btree
   add_index "ecosystem_events", ["sequence_number", "ecosystem_uuid"], name: "index_ecosystem_events_on_sequence_number_and_ecosystem_uuid", unique: true, using: :btree
   add_index "ecosystem_events", ["uuid"], name: "index_ecosystem_events_on_uuid", unique: true, using: :btree
+
+  create_table "ecosystem_update_readies", force: :cascade do |t|
+    t.uuid     "uuid",             null: false
+    t.uuid     "preparation_uuid", null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "ecosystem_update_readies", ["preparation_uuid"], name: "index_ecosystem_update_readies_on_preparation_uuid", unique: true, using: :btree
+  add_index "ecosystem_update_readies", ["uuid"], name: "index_ecosystem_update_readies_on_uuid", unique: true, using: :btree
 
   create_table "student_clues", force: :cascade do |t|
     t.uuid     "uuid",                null: false
