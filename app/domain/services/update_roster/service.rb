@@ -4,24 +4,30 @@ class Services::UpdateRoster::Service
     student_attributes = []
     course_event_attributes = []
     updated_couse_uuids = rosters.map do |roster|
-      roster[:course_containers].each do |course_container|
-        course_container_attributes << { uuid: course_container[:container_uuid] }
+      roster.fetch(:course_containers).each do |course_container|
+        course_container_attributes << { uuid: course_container.fetch(:container_uuid) }
       end
 
-      roster[:students].each do |student|
-        student_attributes << { uuid: student[:student_uuid] }
+      roster.fetch(:students).each do |student|
+        student_attributes << { uuid: student.fetch(:student_uuid) }
       end
 
       course_event_attributes << {
         # No appropriate uuid in the request to use here
-        uuid: SecureRandom.uuid,
+        uuid: roster.fetch(:request_uuid),
         type: :update_roster,
-        course_uuid: roster[:course_uuid],
-        sequence_number: roster[:sequence_number],
-        data: roster.slice(:course_containers, :students)
+        course_uuid: roster.fetch(:course_uuid),
+        sequence_number: roster.fetch(:sequence_number),
+        data: roster.slice(
+          :request_uuid,
+          :course_uuid,
+          :sequence_number,
+          :course_containers,
+          :students
+        )
       }
 
-      roster[:course_uuid]
+      roster.fetch(:course_uuid)
     end
 
     CourseEvent.transaction(isolation: :serializable) do

@@ -164,9 +164,9 @@ class JsonApiController < ApplicationController
             'confidence': {
               'type': 'object',
               'properties': {
-                'left': {'$ref': '#/standard_definitions/number_between_0_and_1'},
-                'right': {'$ref': '#/standard_definitions/number_between_0_and_1'},
-                'sample_size': {'$ref': '#/standard_definitions/non_negative_integer'},
+                'left':                 {'$ref': '#/standard_definitions/number_between_0_and_1'},
+                'right':                {'$ref': '#/standard_definitions/number_between_0_and_1'},
+                'sample_size':          {'$ref': '#/standard_definitions/non_negative_integer'},
                 'unique_learner_count': {'$ref': '#/standard_definitions/non_negative_integer'}
               },
               'required': ['left', 'right', 'sample_size', 'unique_learner_count'],

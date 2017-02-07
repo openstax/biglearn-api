@@ -97,7 +97,7 @@ RSpec.describe CourseEcosystemsController, type: :request do
       {
         update_responses: given_update_requests.map do |update_request|
           {
-            request_uuid: update_request[:request_uuid],
+            request_uuid: update_request.fetch(:request_uuid),
             update_status: valid_update_statuses.sample
           }
         end

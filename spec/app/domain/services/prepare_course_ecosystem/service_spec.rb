@@ -50,8 +50,8 @@ RSpec.describe Services::PrepareCourseEcosystem::Service, type: :service do
       expect(ecosystem_preparation.course_uuid).to eq given_course_uuid
       expect(ecosystem_preparation.sequence_number).to eq given_sequence_number
       data = ecosystem_preparation.data.deep_symbolize_keys
-      expect(data[:ecosystem_uuid]).to eq given_next_ecosystem_uuid
-      expect(data[:ecosystem_map]).to eq given_ecosystem_map
+      expect(data.fetch(:ecosystem_uuid)).to eq given_next_ecosystem_uuid
+      expect(data.fetch(:ecosystem_map)).to eq given_ecosystem_map
     end
 
     it "status: 'accepted' is returned" do

@@ -5,7 +5,12 @@ class Services::UpdateCourseExerciseExclusions::Service
       type:            :update_course_excluded_exercises,
       course_uuid:     course_uuid,
       sequence_number: sequence_number,
-      data:            { request_uuid: request_uuid, exclusions: exclusions }
+      data:            {
+        request_uuid: request_uuid,
+        course_uuid:     course_uuid,
+        sequence_number: sequence_number,
+        exclusions: exclusions
+      }
     )
 
     { status: 'success' }

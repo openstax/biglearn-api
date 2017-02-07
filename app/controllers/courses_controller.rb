@@ -11,7 +11,7 @@ class CoursesController < JsonApiController
       service = Services::CreateCourse::Service.new
       result = service.process(
         course_uuid: course_uuid,
-        ecosystem_uuid: ecosystem_uuid,
+        ecosystem_uuid: ecosystem_uuid
       )
 
       response_payload = { created_course_uuid: result.fetch(:created_course_uuid) }
@@ -27,7 +27,7 @@ class CoursesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'course_uuid': {'$ref': '#/standard_definitions/uuid'},
+        'course_uuid':    {'$ref': '#/standard_definitions/uuid'},
         'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
       },
       'required': ['course_uuid', 'ecosystem_uuid'],

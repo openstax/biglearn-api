@@ -71,10 +71,10 @@ RSpec.describe Services::RecordResponses::Service do
     let!(:existing_responses)    do
       existing_response_data.map do |response_data|
         FactoryGirl.create :course_event,
-                           uuid: response_data[:response_uuid],
+                           uuid: response_data.fetch(:response_uuid),
                            type: :record_response,
-                           course_uuid: response_data[:course_uuid],
-                           sequence_number: response_data[:sequence_number],
+                           course_uuid: response_data.fetch(:course_uuid),
+                           sequence_number: response_data.fetch(:sequence_number),
                            data: response_data.slice(
                              :response_uuid,
                              :trial_uuid,
@@ -122,26 +122,26 @@ RSpec.describe Services::RecordResponses::Service do
       newly_created_responses = CourseEvent.where(uuid: new_response_uuids)
 
       given_response_data_by_response_uuid = given_response_data.index_by do |response|
-        response[:response_uuid]
+        response.fetch(:response_uuid)
       end
 
       newly_created_responses.each do |newly_created_response|
         given_response_data = given_response_data_by_response_uuid[newly_created_response.uuid]
 
         aggregate_failures 'record_response data checks' do
-          expect(newly_created_response.uuid).to          eq(given_response_data[:response_uuid])
-          expect(newly_created_response.course_uuid).to   eq(given_response_data[:course_uuid])
+          expect(newly_created_response.uuid).to          eq(given_response_data.fetch(:response_uuid))
+          expect(newly_created_response.course_uuid).to   eq(given_response_data.fetch(:course_uuid))
           expect(newly_created_response.sequence_number).to(
-            eq(given_response_data[:sequence_number])
+            eq(given_response_data.fetch(:sequence_number))
           )
 
           data = newly_created_response.data.deep_symbolize_keys
-          expect(data[:trial_uuid]).to   eq(given_response_data[:trial_uuid])
-          expect(data[:student_uuid]).to eq(given_response_data[:student_uuid])
-          expect(data[:exercise_uuid]).to eq(given_response_data[:exercise_uuid])
-          expect(data[:is_correct]).to   eq(given_response_data[:is_correct])
-          expect(DateTime.parse(data[:responded_at])).to(
-            be_within(1e-6).of(DateTime.parse(given_response_data[:responded_at]))
+          expect(data.fetch(:trial_uuid)).to   eq(given_response_data.fetch(:trial_uuid))
+          expect(data.fetch(:student_uuid)).to eq(given_response_data.fetch(:student_uuid))
+          expect(data.fetch(:exercise_uuid)).to eq(given_response_data.fetch(:exercise_uuid))
+          expect(data.fetch(:is_correct)).to   eq(given_response_data.fetch(:is_correct))
+          expect(DateTime.parse(data.fetch(:responded_at))).to(
+            be_within(1e-6).of(DateTime.parse(given_response_data.fetch(:responded_at)))
           )
         end
       end

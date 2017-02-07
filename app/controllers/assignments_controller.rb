@@ -36,8 +36,10 @@ class AssignmentsController < JsonApiController
         'assignment': {
           'type': 'object',
           'properties': {
-            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':    {'$ref': '#standard_definitions/uuid'},
+            'course_uuid':     {'$ref': '#standard_definitions/uuid'},
             'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
+            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'is_deleted':      {'type': 'boolean'},
             'ecosystem_uuid':  {'$ref': '#standard_definitions/uuid'},
             'student_uuid':    {'$ref': '#standard_definitions/uuid'},

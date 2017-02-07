@@ -40,7 +40,7 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
   let(:given_course_event_requests)    { [ given_event_request_1, given_event_request_2 ] }
 
   let(:requests_by_request_uuid)       do
-    given_course_event_requests.index_by{ |request| request[:request_uuid] }
+    given_course_event_requests.index_by{ |request| request.fetch(:request_uuid) }
   end
 
   let(:action)                         do
@@ -87,20 +87,20 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
 
     it "returns all events with is_stopped_at_gap: false" do
       action.fetch(:course_event_responses).each do |response|
-        expect(requests_by_request_uuid.keys).to include response[:request_uuid]
-        request = requests_by_request_uuid[response[:request_uuid]]
-        expect(response[:course_uuid]).to eq request[:course_uuid]
+        expect(requests_by_request_uuid.keys).to include response.fetch(:request_uuid)
+        request = requests_by_request_uuid[response.fetch(:request_uuid)]
+        expect(response.fetch(:course_uuid)).to eq request.fetch(:course_uuid)
 
-        expect(response[:events].size).to eq 2
-        response[:events].each do |event|
-          event_model = event_models_by_uuid[event[:event_uuid]]
-          expect(event_model.course_uuid).to eq response[:course_uuid]
+        expect(response.fetch(:events).size).to eq 2
+        response.fetch(:events).each do |event|
+          event_model = event_models_by_uuid[event.fetch(:event_uuid)]
+          expect(event_model.course_uuid).to eq response.fetch(:course_uuid)
 
-          expect(event[:sequence_number]).to eq event_model.sequence_number
-          expect(event[:event_type]).to eq event_model.type
-          expect(event[:event_data]).to eq event_model.data
+          expect(event.fetch(:sequence_number)).to eq event_model.sequence_number
+          expect(event.fetch(:event_type)).to eq event_model.type
+          expect(event.fetch(:event_data)).to eq event_model.data
         end
-        expect(response[:is_stopped_at_gap]).to eq false
+        expect(response.fetch(:is_stopped_at_gap)).to eq false
       end
     end
   end
@@ -121,21 +121,21 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
 
     it "returns only events before the gap with is_stopped_at_gap: true" do
       action.fetch(:course_event_responses).each do |response|
-        expect(requests_by_request_uuid.keys).to include response[:request_uuid]
-        request = requests_by_request_uuid[response[:request_uuid]]
-        expect(response[:course_uuid]).to eq request[:course_uuid]
+        expect(requests_by_request_uuid.keys).to include response.fetch(:request_uuid)
+        request = requests_by_request_uuid[response.fetch(:request_uuid)]
+        expect(response.fetch(:course_uuid)).to eq request.fetch(:course_uuid)
 
-        expect(response[:events].size).to eq 1
-        response[:events].each do |event|
-          event_model = event_models_by_uuid[event[:event_uuid]]
+        expect(response.fetch(:events).size).to eq 1
+        response.fetch(:events).each do |event|
+          event_model = event_models_by_uuid[event.fetch(:event_uuid)]
           expect(gap_events).not_to include(event_model)
-          expect(event_model.course_uuid).to eq response[:course_uuid]
+          expect(event_model.course_uuid).to eq response.fetch(:course_uuid)
 
-          expect(event[:sequence_number]).to eq event_model.sequence_number
-          expect(event[:event_type]).to eq event_model.type
-          expect(event[:event_data]).to eq event_model.data
+          expect(event.fetch(:sequence_number)).to eq event_model.sequence_number
+          expect(event.fetch(:event_type)).to eq event_model.type
+          expect(event.fetch(:event_data)).to eq event_model.data
         end
-        expect(response[:is_stopped_at_gap]).to eq true
+        expect(response.fetch(:is_stopped_at_gap)).to eq true
       end
     end
   end

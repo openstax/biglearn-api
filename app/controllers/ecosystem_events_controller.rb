@@ -40,7 +40,7 @@ class EcosystemEventsController < JsonApiController
               'items': {'$ref': '#standard_definitions/ecosystem_event_type'},
               'minItems': 1
             },
-            'ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_uuid':         {'$ref': '#standard_definitions/uuid'},
             'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'},
             'event_limit': {
               'type': 'integer',
@@ -74,7 +74,7 @@ class EcosystemEventsController < JsonApiController
         'ecosystem_event_response': {
           'type': 'object',
           'properties': {
-            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':   {'$ref': '#standard_definitions/uuid'},
             'ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
             'events': {
               'type': 'array',
@@ -82,9 +82,9 @@ class EcosystemEventsController < JsonApiController
                 'type': 'object',
                 'properties': {
                   'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
-                  'event_uuid': {'$ref': '#standard_definitions/uuid'},
-                  'event_type': {'$ref': '#standard_definitions/ecosystem_event_type'},
-                  'event_data': {'$ref': '#standard_definitions/ecosystem_event_data'}
+                  'event_uuid':      {'$ref': '#standard_definitions/uuid'},
+                  'event_type':      {'$ref': '#standard_definitions/ecosystem_event_type'},
+                  'event_data':      {'$ref': '#standard_definitions/ecosystem_event_data'}
                 },
                 'required': ['sequence_number', 'event_uuid', 'event_type', 'event_data'],
                 'additionalProperties': false

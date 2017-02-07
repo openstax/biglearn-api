@@ -6,9 +6,9 @@ class EcosystemsController < JsonApiController
       ecosystem_data = json_parsed_request_payload
 
       service = Services::CreateEcosystem::Service.new
-      result = service.process(ecosystem_uuid: ecosystem_data[:ecosystem_uuid],
-                               book: ecosystem_data[:book],
-                               exercises: ecosystem_data[:exercises])
+      result = service.process(ecosystem_uuid: ecosystem_data.fetch(:ecosystem_uuid),
+                               book: ecosystem_data.fetch(:book),
+                               exercises: ecosystem_data.fetch(:exercises))
 
       response_payload = { created_ecosystem_uuid: result.fetch(:created_ecosystem_uuid) }
 

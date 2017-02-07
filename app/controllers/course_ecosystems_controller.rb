@@ -6,11 +6,11 @@ class CourseEcosystemsController < JsonApiController
       course_ecosystem_data = json_parsed_request_payload
 
       service = Services::PrepareCourseEcosystem::Service.new
-      result = service.process(preparation_uuid: course_ecosystem_data[:preparation_uuid],
-                               course_uuid: course_ecosystem_data[:course_uuid],
-                               sequence_number: course_ecosystem_data[:sequence_number],
-                               next_ecosystem_uuid: course_ecosystem_data[:next_ecosystem_uuid],
-                               ecosystem_map: course_ecosystem_data[:ecosystem_map])
+      result = service.process(preparation_uuid: course_ecosystem_data.fetch(:preparation_uuid),
+                               course_uuid: course_ecosystem_data.fetch(:course_uuid),
+                               sequence_number: course_ecosystem_data.fetch(:sequence_number),
+                               next_ecosystem_uuid: course_ecosystem_data.fetch(:next_ecosystem_uuid),
+                               ecosystem_map: course_ecosystem_data.fetch(:ecosystem_map))
 
       render json: result.slice(:status).to_json, status: 200
     end
@@ -20,13 +20,13 @@ class CourseEcosystemsController < JsonApiController
     with_json_apis(input_schema:  _update_request_payload_schema,
                    output_schema: _update_response_payload_schema) do
       request_payload = json_parsed_request_payload
-      update_requests_data = request_payload.deep_symbolize_keys[:update_requests]
+      update_requests_data = request_payload.deep_symbolize_keys.fetch(:update_requests)
 
       service = Services::UpdateCourseEcosystem::Service.new
       results = service.process(update_requests: update_requests_data)
 
       response_payload = {
-        update_responses: results[:update_responses].map do |result|
+        update_responses: results.fetch(:update_responses).map do |result|
           result.slice(:request_uuid, :update_status)
         end
       }
@@ -42,19 +42,19 @@ class CourseEcosystemsController < JsonApiController
       course_ecosystem_data = request_payload.deep_symbolize_keys
 
       service = Services::CourseEcosystemStatus::Service.new
-      results = service.process(request_uuid: course_ecosystem_data[:request_uuid],
-                                course_uuids: course_ecosystem_data[:course_uuids])
+      results = service.process(request_uuid: course_ecosystem_data.fetch(:request_uuid),
+                                course_uuids: course_ecosystem_data.fetch(:course_uuids))
 
       response_payload = {
-        course_statuses: results[:course_statuses].map do |result|
+        course_statuses: results.fetch(:course_statuses).map do |result|
           result.slice(
             :course_uuid, :course_is_known, :current_ecosystem_preparation_uuid
           ).merge(
-            current_ecosystem_status: result[:current_ecosystem_status].slice(
+            current_ecosystem_status: result.fetch(:current_ecosystem_status).slice(
               :ecosystem_uuid, :ecosystem_is_known,
               :ecosystem_is_prepared, :precompute_is_complete
             ),
-            next_ecosystem_status: result[:next_ecosystem_status].slice(
+            next_ecosystem_status: result.fetch(:next_ecosystem_status).slice(
               :ecosystem_uuid, :ecosystem_is_known,
               :ecosystem_is_prepared, :precompute_is_complete
             )
@@ -164,6 +164,8 @@ class CourseEcosystemsController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid':      {'$ref': '#standard_definitions/uuid'},
+            'course_uuid':       {'$ref': '#standard_definitions/uuid'},
+            'sequence_number':   {'$ref': '#standard_definitions/non_negative_integer'},
             'preparation_uuid':  {'$ref': '#standard_definitions/uuid'},
           },
           'required': ['request_uuid', 'preparation_uuid'],

@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
   let(:service)               { described_class.new }
 
+  let(:given_request_uuid)    { SecureRandom.uuid }
   let(:given_course_uuid)     { SecureRandom.uuid }
   let(:given_sequence_number) { rand(10) }
   let(:given_starts_at)       { Time.now.yesterday.utc.iso8601(6) }
@@ -10,6 +11,7 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
 
   let(:action)                do
     service.process(
+      request_uuid: given_request_uuid,
       course_uuid: given_course_uuid,
       sequence_number: given_sequence_number,
       starts_at: given_starts_at,
@@ -35,8 +37,8 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
       course_active_date = CourseEvent.find_by(course_uuid: given_course_uuid,
                                                sequence_number: given_sequence_number)
       data = course_active_date.data.deep_symbolize_keys
-      expect(data[:starts_at]).to eq given_starts_at
-      expect(data[:ends_at]).to eq given_ends_at
+      expect(data.fetch(:starts_at)).to eq given_starts_at
+      expect(data.fetch(:ends_at)).to eq given_ends_at
     end
 
     it "the course_uuid is returned" do

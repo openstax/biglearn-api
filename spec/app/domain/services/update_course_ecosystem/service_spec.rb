@@ -64,7 +64,7 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
           expect{action}.to change{CourseEvent.count}.by(1)
           ecosystem_update = CourseEvent.find_by(uuid: given_request_uuid)
           data = ecosystem_update.data.deep_symbolize_keys
-          expect(data[:preparation_uuid]).to eq given_preparation_uuid
+          expect(data.fetch(:preparation_uuid)).to eq given_preparation_uuid
         end
 
         it "the request_uuid is returned with update_status: 'updated_and_ready'" do
@@ -81,7 +81,7 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
           expect(ecosystem_update.course_uuid).to eq(given_course_uuid)
           expect(ecosystem_update.sequence_number).to eq(given_sequence_number)
           data = ecosystem_update.data.deep_symbolize_keys
-          expect(data[:preparation_uuid]).to eq given_preparation_uuid
+          expect(data.fetch(:preparation_uuid)).to eq given_preparation_uuid
         end
 
         it "the request_uuid is returned with update_status: 'updated_but_unready'" do

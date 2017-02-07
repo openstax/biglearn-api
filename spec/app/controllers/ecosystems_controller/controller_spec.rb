@@ -1,13 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe CourseActiveDatesController, type: :request do
+  let(:given_request_uuid)    { SecureRandom.uuid }
   let(:given_course_uuid)     { SecureRandom.uuid }
   let(:given_sequence_number) { rand(10) }
   let(:given_starts_at)       { Time.now.yesterday.utc.iso8601(6) }
   let(:given_ends_at)         { Time.now.tomorrow.utc.iso8601(6) }
 
-  let(:request_payload)      do
+  let(:request_payload)       do
     {
+      request_uuid: given_request_uuid,
       course_uuid: given_course_uuid,
       sequence_number: given_sequence_number,
       starts_at: given_starts_at,
@@ -15,16 +17,16 @@ RSpec.describe CourseActiveDatesController, type: :request do
     }
   end
 
-  let(:target_result)        { { updated_course_uuid: given_course_uuid } }
-  let(:target_response)      { target_result }
+  let(:target_result)         { { updated_course_uuid: given_course_uuid } }
+  let(:target_response)       { target_result }
 
-  let(:service_double)       do
+  let(:service_double)        do
     object_double(Services::UpdateCourseActiveDates::Service.new).tap do |dbl|
       allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
     end
   end
 
-  before(:each) do
+  before(:each)               do
     allow(Services::UpdateCourseActiveDates::Service).to receive(:new).and_return(service_double)
   end
 

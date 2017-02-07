@@ -6,12 +6,12 @@ class Services::FetchEcosystemEvents::Service
   def process(ecosystem_event_requests:)
     ee = EcosystemEvent.arel_table
     queries = ecosystem_event_requests.map do |request|
-      limit = request[:event_limit] || DEFAULT_EVENT_LIMIT_PER_ECOSYSTEM
+      limit = request.fetch(:event_limit) || DEFAULT_EVENT_LIMIT_PER_ECOSYSTEM
 
       ee[:ecosystem_uuid]
-        .eq(request[:ecosystem_uuid])
-        .and(ee[:sequence_number].gteq(request[:sequence_number_offset]))
-        .and(ee[:sequence_number].lt(request[:sequence_number_offset] + limit))
+        .eq(request.fetch(:ecosystem_uuid))
+        .and(ee[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
+        .and(ee[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
     end.reduce(:or)
 
     ecosystem_events_by_ecosystem_uuid = EcosystemEvent.where(queries)
@@ -19,10 +19,10 @@ class Services::FetchEcosystemEvents::Service
                                                        .group_by(&:ecosystem_uuid)
 
     responses = ecosystem_event_requests.map do |request|
-      ecosystem_events = ecosystem_events_by_ecosystem_uuid[request[:ecosystem_uuid]]
-      included_event_types = Set.new(request[:event_types])
+      ecosystem_events = ecosystem_events_by_ecosystem_uuid[request.fetch(:ecosystem_uuid)]
+      included_event_types = Set.new(request.fetch(:event_types))
 
-      current_sequence_number = request[:sequence_number_offset]
+      current_sequence_number = request.fetch(:sequence_number_offset)
       is_gap = false
       gapless_event_hashes = []
       ecosystem_events.each do |event|
@@ -43,8 +43,8 @@ class Services::FetchEcosystemEvents::Service
       end
 
       {
-        request_uuid: request[:request_uuid],
-        ecosystem_uuid: request[:ecosystem_uuid],
+        request_uuid: request.fetch(:request_uuid),
+        ecosystem_uuid: request.fetch(:ecosystem_uuid),
         events: gapless_event_hashes,
         is_stopped_at_gap: is_gap
       }

@@ -27,7 +27,7 @@ class Services::CourseEcosystemStatus::Service
       current_ecosystem_update = (sorted_ecosystem_updates_by_course_uuid[course_uuid] || []).last
 
       if current_ecosystem_update.present?
-        prep_uuid = current_ecosystem_update.data.symbolize_keys[:preparation_uuid]
+        prep_uuid = current_ecosystem_update.data.symbolize_keys.fetch(:preparation_uuid)
         current_ecosystem_preparation = \
           (sorted_ecosystem_preparations_by_preparation_uuid[prep_uuid] || []).last
         current_update_sequence_number = current_ecosystem_update.sequence_number
@@ -39,9 +39,9 @@ class Services::CourseEcosystemStatus::Service
         current_preparation_uuids_by_course_uuid[course_uuid] = current_ecosystem_preparation.uuid
 
         current_ecosystem_uuid = \
-          current_ecosystem_preparation.data.symbolize_keys[:next_ecosystem_uuid]
+          current_ecosystem_preparation.data.symbolize_keys.fetch(:next_ecosystem_uuid)
       else
-        current_ecosystem_uuid = create_course.data.symbolize_keys[:ecosystem_uuid] \
+        current_ecosystem_uuid = create_course.data.symbolize_keys.fetch(:ecosystem_uuid) \
           if create_course.present?
       end
 
@@ -55,7 +55,7 @@ class Services::CourseEcosystemStatus::Service
         next_preparation_uuids_by_course_uuid[course_uuid] = next_ecosystem_preparation.uuid
 
         next_ecosystem_uuids_by_course_uuid[course_uuid] = \
-          next_ecosystem_preparation.data.symbolize_keys[:next_ecosystem_uuid]
+          next_ecosystem_preparation.data.symbolize_keys.fetch(:next_ecosystem_uuid)
       end
     end
 

@@ -3,15 +3,18 @@ class Services::CreateUpdateAssignments::Service
     assignment_attributes = []
     course_event_attributes = []
     updated_assignments = assignments.map do |assignment|
-      assignment_attributes << { uuid: assignment[:assignment_uuid] }
+      assignment_attributes << { uuid: assignment.fetch(:assignment_uuid) }
       course_event_attributes << {
         # Can't use the assignment_uuid here because
         # there can be multiple updates for the same assignment_uuid
-        uuid: SecureRandom.uuid,
+        uuid: assignment.fetch(:request_uuid),
         type: :create_update_assignment,
-        course_uuid: assignment[:course_uuid],
-        sequence_number: assignment[:sequence_number],
+        course_uuid: assignment.fetch(:course_uuid),
+        sequence_number: assignment.fetch(:sequence_number),
         data: assignment.slice(
+          :request_uuid,
+          :course_uuid,
+          :sequence_number,
           :assignment_uuid,
           :is_deleted,
           :ecosystem_uuid,

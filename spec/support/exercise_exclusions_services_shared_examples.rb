@@ -85,7 +85,7 @@ module ExerciseExclusionsServicesSharedExamples
       new_event = CourseEvent.find_by(uuid: given_request_uuid)
       expect(new_event.course_uuid).to eq given_course_uuid
       expect(new_event.sequence_number).to eq given_sequence_number
-      expect(new_event.data.deep_symbolize_keys[:exclusions]).to eq given_exclusions
+      expect(new_event.data.deep_symbolize_keys.fetch(:exclusions)).to eq given_exclusions
     end
 
     it "status: 'success' is returned" do

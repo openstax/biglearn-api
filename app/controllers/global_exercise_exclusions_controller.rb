@@ -18,7 +18,7 @@ class GlobalExerciseExclusionsController < JsonApiController
         exclusions:      exclusions
       )
 
-      render json: { status: result[:status] }.to_json, status: 200
+      render json: { status: result.fetch(:status) }.to_json, status: 200
     end
   end
 

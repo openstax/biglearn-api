@@ -75,16 +75,16 @@ class CourseEventsController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
-            'course_uuid': {'$ref': '#standard_definitions/uuid'},
+            'course_uuid':  {'$ref': '#standard_definitions/uuid'},
             'events': {
               'type': 'array',
               'items': {
                 'type': 'object',
                 'properties': {
                   'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
-                  'event_uuid': {'$ref': '#standard_definitions/uuid'},
-                  'event_type': {'$ref': '#standard_definitions/course_event_type'},
-                  'event_data': {'$ref': '#standard_definitions/course_event_data'}
+                  'event_uuid':      {'$ref': '#standard_definitions/uuid'},
+                  'event_type':      {'$ref': '#standard_definitions/course_event_type'},
+                  'event_data':      {'$ref': '#standard_definitions/course_event_data'}
                 },
                 'required': ['sequence_number', 'event_uuid', 'event_type', 'event_data'],
                 'additionalProperties': false

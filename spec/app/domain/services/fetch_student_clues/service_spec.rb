@@ -59,10 +59,10 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
   context "when non-existing book_container uuids are given" do
     it "the request_uuid is returned with clue_status: 'book_container_unknown'" do
       action.fetch(:student_clue_responses).each do |response|
-        expect(book_container_uuids_by_request_uuid.keys).to include(response[:request_uuid])
-        book_container_uuid = book_container_uuids_by_request_uuid[response[:request_uuid]]
-        expect(response[:clue_data]).to eq default_clue_data.call(book_container_uuid)
-        expect(response[:clue_status]).to eq 'book_container_unknown'
+        expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
+        book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
+        expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+        expect(response.fetch(:clue_status)).to eq 'book_container_unknown'
       end
     end
   end
@@ -78,10 +78,10 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
     context "when non-existing student uuids are given" do
       it "the request_uuid is returned with clue_status: 'student_unknown'" do
         action.fetch(:student_clue_responses).each do |response|
-          expect(book_container_uuids_by_request_uuid.keys).to include(response[:request_uuid])
-          book_container_uuid = book_container_uuids_by_request_uuid[response[:request_uuid]]
-          expect(response[:clue_data]).to eq default_clue_data.call(book_container_uuid)
-          expect(response[:clue_status]).to eq 'student_unknown'
+          expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
+          book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
+          expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+          expect(response.fetch(:clue_status)).to eq 'student_unknown'
         end
       end
     end
@@ -97,10 +97,10 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
       context "when the CLUe is not yet ready" do
         it "the request_uuid is returned with clue_status: 'clue_unready'" do
           action.fetch(:student_clue_responses).each do |response|
-            expect(book_container_uuids_by_request_uuid.keys).to include(response[:request_uuid])
-            book_container_uuid = book_container_uuids_by_request_uuid[response[:request_uuid]]
-            expect(response[:clue_data]).to eq default_clue_data.call(book_container_uuid)
-            expect(response[:clue_status]).to eq 'clue_unready'
+            expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
+            book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
+            expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+            expect(response.fetch(:clue_status)).to eq 'clue_unready'
           end
         end
       end
@@ -119,10 +119,10 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
           clues = [ clue_1, clue_2 ]
 
           action.fetch(:student_clue_responses).each_with_index do |response, index|
-            expect(book_container_uuids_by_request_uuid.keys).to include(response[:request_uuid])
+            expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
 
             clue = clues[index]
-            expect(response[:clue_data]).to eq( {
+            expect(response.fetch(:clue_data)).to eq( {
               aggregate: clue.aggregate,
               confidence: {
                 left: clue.confidence_left,
@@ -138,7 +138,7 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
               pool_id: clue.book_container_uuid
             } )
 
-            expect(response[:clue_status]).to eq 'clue_ready'
+            expect(response.fetch(:clue_status)).to eq 'clue_ready'
           end
         end
       end

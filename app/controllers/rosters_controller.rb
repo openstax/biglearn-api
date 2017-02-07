@@ -8,7 +8,7 @@ class RostersController < JsonApiController
       service = Services::UpdateRoster::Service.new
       result = service.process(rosters: roster_data)
 
-      response_payload = { updated_course_uuids: roster_data.map { |roster| roster[:course_uuid] } }
+      response_payload = { updated_course_uuids: roster_data.map { |roster| roster.fetch(:course_uuid) } }
       render json: response_payload.to_json, status: 200
     end
   end
@@ -34,7 +34,8 @@ class RostersController < JsonApiController
         'roster': {
           'type': 'object',
           'properties': {
-            'course_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':    {'$ref': '#standard_definitions/uuid'},
+            'course_uuid':     {'$ref': '#standard_definitions/uuid'},
             'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
             'course_containers': {
               'type': 'array',
@@ -55,7 +56,7 @@ class RostersController < JsonApiController
         'course_container': {
           'type': 'object',
           'properties': {
-            'container_uuid': {'$ref': '#standard_definitions/uuid'},
+            'container_uuid':        {'$ref': '#standard_definitions/uuid'},
             'parent_container_uuid': {'$ref': '#standard_definitions/uuid'},
             'is_archived': {'type': 'boolean'}
           },
@@ -65,7 +66,7 @@ class RostersController < JsonApiController
         'student': {
           'type': 'object',
           'properties': {
-            'student_uuid': {'$ref': '#standard_definitions/uuid'},
+            'student_uuid':   {'$ref': '#standard_definitions/uuid'},
             'container_uuid': {'$ref': '#standard_definitions/uuid'},
           },
           'required': ['student_uuid', 'container_uuid'],

@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::UpdateRoster::Service, type: :service do
   let(:service)                                        { described_class.new }
 
+  let(:given_request_uuid)                             { SecureRandom.uuid }
   let(:given_course_uuid)                              { SecureRandom.uuid }
   let(:given_sequence_number)                          { rand(10) }
 
@@ -53,6 +54,7 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
   let(:given_rosters)                                  do
     [
       {
+        request_uuid: given_request_uuid,
         course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
         course_containers: given_course_containers,
@@ -86,15 +88,15 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
         course_uuid: given_course_uuid, sequence_number: given_sequence_number
       )
       data = update_roster.data.deep_symbolize_keys
-      expect(data[:course_containers]).to eq given_course_containers
-      expect(data[:students]).to eq given_students
+      expect(data.fetch(:course_containers)).to eq given_course_containers
+      expect(data.fetch(:students)).to eq given_students
 
-      new_container_uuids = given_course_containers.map { |container| container[:container_uuid] }
+      new_container_uuids = given_course_containers.map { |container| container.fetch(:container_uuid) }
       new_container_uuids.each do |container_uuid|
         expect(CourseContainer.exists?(uuid: container_uuid)).to eq true
       end
 
-      new_student_uuids = given_students.map { |student| student[:student_uuid] }
+      new_student_uuids = given_students.map { |student| student.fetch(:student_uuid) }
       new_student_uuids.each do |student_uuid|
         expect(Student.exists?(uuid: student_uuid)).to eq true
       end

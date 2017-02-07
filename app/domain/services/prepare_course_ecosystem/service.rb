@@ -8,6 +8,8 @@ class Services::PrepareCourseEcosystem::Service
       sequence_number: sequence_number,
       data: {
         preparation_uuid: preparation_uuid,
+        course_uuid: course_uuid,
+        sequence_number: sequence_number,
         ecosystem_uuid: next_ecosystem_uuid,
         ecosystem_map: ecosystem_map
       }
