@@ -1,7 +1,8 @@
 class Services::RecordResponses::Service
   def process(responses:)
     course_event_attributes = []
-    recorded_response_uuids = responses.map do |response|
+    recorded_response_uuids = responses.uniq{ |response| response[:response_uuid] }
+                                       .map do |response|
       course_event_attributes << {
         uuid: response[:response_uuid],
         type: :record_response,
@@ -10,9 +11,8 @@ class Services::RecordResponses::Service
         data: response.slice(
           :response_uuid,
           :trial_uuid,
-          :trial_sequence,
-          :learner_uuid,
-          :question_uuid,
+          :student_uuid,
+          :exercise_uuid,
           :is_correct,
           :responded_at
         )

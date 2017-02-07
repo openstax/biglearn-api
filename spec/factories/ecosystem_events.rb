@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence_number do
       (EcosystemEvent.where(ecosystem_uuid: ecosystem_uuid).maximum(:sequence_number) || -1) + 1
     end
-    event_type      { EcosystemEvent.event_types.keys.sample }
+    type            { EcosystemEvent.types.keys.sample }
     data            { {} }
   end
 end

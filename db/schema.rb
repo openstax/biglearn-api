@@ -66,13 +66,13 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",            null: false
     t.uuid     "course_uuid",     null: false
     t.integer  "sequence_number", null: false
-    t.integer  "event_type",      null: false
+    t.integer  "type",            null: false
     t.jsonb    "data",            null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
-  add_index "course_events", ["course_uuid", "event_type"], name: "index_course_events_on_course_uuid_and_event_type", using: :btree
+  add_index "course_events", ["course_uuid", "type"], name: "index_course_events_on_course_uuid_and_type", using: :btree
   add_index "course_events", ["sequence_number", "course_uuid"], name: "index_course_events_on_sequence_number_and_course_uuid", unique: true, using: :btree
   add_index "course_events", ["uuid"], name: "index_course_events_on_uuid", unique: true, using: :btree
 
@@ -80,25 +80,23 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",            null: false
     t.uuid     "ecosystem_uuid",  null: false
     t.integer  "sequence_number", null: false
-    t.integer  "event_type",      null: false
+    t.integer  "type",            null: false
     t.jsonb    "data",            null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
-  add_index "ecosystem_events", ["ecosystem_uuid", "event_type"], name: "index_ecosystem_events_on_ecosystem_uuid_and_event_type", using: :btree
+  add_index "ecosystem_events", ["ecosystem_uuid", "type"], name: "index_ecosystem_events_on_ecosystem_uuid_and_type", using: :btree
   add_index "ecosystem_events", ["sequence_number", "ecosystem_uuid"], name: "index_ecosystem_events_on_sequence_number_and_ecosystem_uuid", unique: true, using: :btree
   add_index "ecosystem_events", ["uuid"], name: "index_ecosystem_events_on_uuid", unique: true, using: :btree
 
-  create_table "ecosystem_update_readies", force: :cascade do |t|
-    t.uuid     "uuid",             null: false
-    t.uuid     "preparation_uuid", null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+  create_table "ecosystem_preparation_readies", force: :cascade do |t|
+    t.uuid     "uuid",       null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  add_index "ecosystem_update_readies", ["preparation_uuid"], name: "index_ecosystem_update_readies_on_preparation_uuid", unique: true, using: :btree
-  add_index "ecosystem_update_readies", ["uuid"], name: "index_ecosystem_update_readies_on_uuid", unique: true, using: :btree
+  add_index "ecosystem_preparation_readies", ["uuid"], name: "index_ecosystem_preparation_readies_on_uuid", unique: true, using: :btree
 
   create_table "student_clues", force: :cascade do |t|
     t.uuid     "uuid",                null: false

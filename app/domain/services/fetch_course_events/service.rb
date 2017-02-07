@@ -31,12 +31,12 @@ class Services::FetchCourseEvents::Service
 
         current_sequence_number += 1
 
-        next unless included_event_types.include? event.event_type # Skip non-included event types
+        next unless included_event_types.include? event.type # Skip non-included event types
 
         event_hash = {
           sequence_number: event.sequence_number,
           event_uuid: event.uuid,
-          event_type: event.event_type,
+          event_type: event.type,
           event_data: event.data
         }
         gapless_event_hashes << event_hash

@@ -1,8 +1,8 @@
 class Services::CreateEcosystem::Service
   def process(ecosystem_uuid:, book:, exercises:)
 
-    book_container_attributes = book[:book_containers].map do |book_container|
-      { uuid: book_container[:container_uuid] }
+    book_container_attributes = book[:contents].map do |content|
+      { uuid: content[:container_uuid] }
     end
 
     EcosystemEvent.transaction(isolation: :serializable) do

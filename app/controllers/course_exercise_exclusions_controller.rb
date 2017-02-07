@@ -34,16 +34,14 @@ class CourseExerciseExclusionsController < JsonApiController
         'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
         'exclusions': {
           'type': 'array',
-          'items': {'$ref': '#/definitions/exclusion'},
+          'items': {'$ref': '#/standard_definitions/exercise_exclusion'},
           'minItems': 0,
           'maxItems': 10000,
         },
       },
       'required': ['request_uuid', 'course_uuid', 'sequence_number', 'exclusions'],
       'additionalProperties': false,
-
-      'definitions': Schemas::ExerciseExclusions::definitions,
-      'standard_definitions': _standard_definitions,
+      'standard_definitions': _standard_definitions
     }
   end
 

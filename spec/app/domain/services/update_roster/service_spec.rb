@@ -65,54 +65,38 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
 
   context "when a previously-existing course_uuid and sequence_number combination is given" do
     before(:each) do
-      FactoryGirl.create :course_roster,
-                         course_uuid: given_course_uuid, sequence_number: given_sequence_number
+      FactoryGirl.create :course_event,
+                         course_uuid: given_course_uuid,
+                         sequence_number: given_sequence_number
     end
 
-    it "a CourseRoster is NOT created" do
-      expect{action}.not_to change{CourseRoster.count}
-    end
-
-    it "the Course's uuid is returned" do
-      expect(action.fetch(:updated_course_uuids)).to eq [given_course_uuid]
+    it "a CourseEvent is NOT created and an error is returned" do
+      expect{action}.to not_change{CourseEvent.count}
+                    .and raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 
   context "when a previously non-existing course_uuid and sequence_number combination is given" do
-    it "a CourseRoster is created, as well as associated records with the correct attributes" do
-      expect{action}.to change{CourseRoster.count}.by(given_rosters.size)
+    it "a CourseEvent is created, as well as associated records with the correct attributes" do
+      expect{action}.to change{CourseEvent.count}.by(given_rosters.size)
                     .and change{CourseContainer.count}.by(given_course_containers.size)
                     .and change{Student.count}.by(given_students.size)
-                    .and change{RosterContainer.count}.by(given_course_containers.size)
-                    .and change{RosterStudent.count}.by(given_students.size)
+
+      update_roster = CourseEvent.find_by(
+        course_uuid: given_course_uuid, sequence_number: given_sequence_number
+      )
+      data = update_roster.data.deep_symbolize_keys
+      expect(data[:course_containers]).to eq given_course_containers
+      expect(data[:students]).to eq given_students
 
       new_container_uuids = given_course_containers.map { |container| container[:container_uuid] }
       new_container_uuids.each do |container_uuid|
-        container = CourseContainer.find_by(uuid: container_uuid)
-
-        expect(container.course_uuid).to eq given_course_uuid
+        expect(CourseContainer.exists?(uuid: container_uuid)).to eq true
       end
 
       new_student_uuids = given_students.map { |student| student[:student_uuid] }
       new_student_uuids.each do |student_uuid|
-        student = Student.find_by(uuid: student_uuid)
-
-        expect(student.course_uuid).to eq given_course_uuid
-      end
-
-      course_roster = CourseRoster.find_by(course_uuid: given_course_uuid,
-                                           sequence_number: given_sequence_number)
-      roster_containers = course_roster.roster_containers
-      expect(roster_containers.length).to eq given_course_containers.size
-      roster_containers.each do |roster_container|
-        expect(new_container_uuids).to include(roster_container.container_uuid)
-      end
-
-      roster_students = course_roster.roster_students
-      expect(roster_students.length).to eq given_students.size
-      roster_students.each do |roster_student|
-        expect(new_container_uuids).to include(roster_student.roster_container.container_uuid)
-        expect(new_student_uuids).to include(roster_student.student_uuid)
+        expect(Student.exists?(uuid: student_uuid)).to eq true
       end
     end
 

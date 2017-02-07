@@ -1,10 +1,10 @@
 class Services::UpdateCourseEcosystem::Service
   def process(update_requests:)
     preparation_uuids = update_requests.map{ |request| request[:preparation_uuid] }
-    preparations_by_uuid = CourseEvent.ecosystem_preparation.where(uuid: preparation_uuids)
-                                                            .index_by(&:uuid)
+    preparations_by_uuid = CourseEvent.prepare_course_ecosystem.where(uuid: preparation_uuids)
+                                                               .index_by(&:uuid)
     ready_preparation_uuids_set = Set.new(
-      EcosystemUpdateReady.where(preparation_uuid: preparation_uuids).pluck(:preparation_uuid)
+      EcosystemPreparationReady.where(uuid: preparation_uuids).pluck(:uuid)
     )
 
     course_event_attributes = []
@@ -17,7 +17,7 @@ class Services::UpdateCourseEcosystem::Service
       else
         course_event_attributes << {
           uuid: request[:request_uuid],
-          type: :ecosystem_update,
+          type: :update_course_ecosystem,
           course_uuid: request[:course_uuid],
           sequence_number: request[:sequence_number],
           data: {

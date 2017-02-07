@@ -196,13 +196,43 @@ class JsonApiController < ApplicationController
           'required': ['aggregate', 'confidence', 'interpretation', 'pool_id'],
           'additionalProperties': false
         },
+        'ecosystem_event_type': {
+          'type': 'string',
+          'enum': EcosystemEvent.types.keys
+        },
+        'ecosystem_event_data': {
+          'type': 'object'
+          # TODO: Validate ecosystem_event_data contents
+        },
         'course_event_type': {
           'type': 'string',
-          'enum': CourseEvent.event_types.keys
+          'enum': CourseEvent.types.keys
         },
         'course_event_data': {
           'type': 'object'
           # TODO: Validate course_event_data contents
+        },
+        'exercise_exclusion': {
+          'oneOf': [
+            {'$ref': '#/standard_definitions/specific_version_exclusion'},
+            {'$ref': '#/standard_definitions/any_version_exclusion'},
+          ],
+        },
+        'specific_version_exclusion': {
+          'type': 'object',
+          'properties': {
+            'exercise_uuid': {'$ref': '#/standard_definitions/uuid'},
+          },
+          'required': ['exercise_uuid'],
+          'additionalProperties': false,
+        },
+        'any_version_exclusion': {
+          'type': 'object',
+          'properties': {
+            'exercise_group_uuid': {'$ref': '#/standard_definitions/uuid'},
+          },
+          'required': ['exercise_group_uuid'],
+          'additionalProperties': false,
         }
       }
     end

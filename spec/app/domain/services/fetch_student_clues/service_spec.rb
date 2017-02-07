@@ -107,10 +107,12 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
 
       context "when the CLUe is ready" do
         let!(:clue_1) do
-          FactoryGirl.create :student_clue, student: student_1, book_container: book_container_1
+          FactoryGirl.create :student_clue, student_uuid: given_student_1_uuid,
+                                            book_container_uuid: given_book_container_1_uuid
         end
         let!(:clue_2) do
-          FactoryGirl.create :student_clue, student: student_2, book_container: book_container_2
+          FactoryGirl.create :student_clue, student_uuid: given_student_2_uuid,
+                                            book_container_uuid: given_book_container_2_uuid
         end
 
         it "the request_uuid is returned with clue_status: 'clue_ready'" do

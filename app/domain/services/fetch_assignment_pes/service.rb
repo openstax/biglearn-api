@@ -1,14 +1,12 @@
 class Services::FetchAssignmentPes::Service
   def process(pe_requests:)
-    assignment_uuids = pe_requests.map{ |request| request[:assignment_uuid].downcase }
+    assignment_uuids = pe_requests.map { |request| request[:assignment_uuid].downcase }
     assignment_pes = AssignmentPe.where(assignment_uuid: assignment_uuids)
-    assignment_pes_by_assignment_uuid = assignment_pes.index_by{ |ap| ap.assignment_uuid.downcase }
+    assignment_pes_by_assignment_uuid = assignment_pes.index_by { |ap| ap.assignment_uuid.downcase }
 
     missing_pe_assignment_uuids = assignment_uuids - assignment_pes_by_assignment_uuid.keys
-    missing_pe_assignments = Assignment.where(assignment_uuid: missing_pe_assignment_uuids)
-    missing_pe_assignments_by_uuid = missing_pe_assignments.index_by do |mpa|
-      mpa.assignment_uuid.downcase
-    end
+    missing_pe_assignments = Assignment.where(uuid: missing_pe_assignment_uuids)
+    missing_pe_assignments_by_uuid = missing_pe_assignments.index_by { |mpa| mpa.uuid.downcase }
 
     pe_responses = pe_requests.map do |request|
       assignment_uuid = request[:assignment_uuid]

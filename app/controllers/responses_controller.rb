@@ -3,12 +3,12 @@ class ResponsesController < JsonApiController
   def record
     with_json_apis(input_schema:  _record_request_payload_schema,
                    output_schema: _record_response_payload_schema) do
-      response_data = json_parsed_request_payload.fetch(:responses)
+      responses = json_parsed_request_payload.fetch(:responses)
 
       service = Services::RecordResponses::Service.new
-      recorded_response_uuids = service.process(response_data: response_data)
+      recorded_response_uuids = service.process(responses: responses)
 
-      render json: {'recorded_response_uuids': recorded_response_uuids}.to_json, status: 200
+      render json: { recorded_response_uuids: recorded_response_uuids }.to_json, status: 200
     end
   end
 
@@ -16,7 +16,6 @@ class ResponsesController < JsonApiController
   def _record_request_payload_schema
     {
       '$schema': JSON_SCHEMA,
-
       'type': 'object',
       'properties': {
         'responses': {
@@ -28,27 +27,27 @@ class ResponsesController < JsonApiController
       },
       'required': ['responses'],
       'additionalProperties': false,
-
       'standard_definitions': _standard_definitions,
-
       'definitions': {
         'response': {
           'type': 'object',
           'properties': {
-            'response_uuid':  {'$ref': '#/standard_definitions/uuid'},
-            'trial_uuid':     {'$ref': '#/standard_definitions/uuid'},
-            'trial_sequence': {'$ref': '#/standard_definitions/non_negative_integer'},
-            'learner_uuid':   {'$ref': '#/standard_definitions/uuid'},
-            'question_uuid':  {'$ref': '#/standard_definitions/uuid'},
-            'is_correct':     {'type': 'boolean'},
-            'responded_at':   {'$ref': '#/standard_definitions/datetime'},
+            'response_uuid':   {'$ref': '#/standard_definitions/uuid'},
+            'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
+            'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
+            'trial_uuid':      {'$ref': '#/standard_definitions/uuid'},
+            'student_uuid':    {'$ref': '#/standard_definitions/uuid'},
+            'exercise_uuid':   {'$ref': '#/standard_definitions/uuid'},
+            'is_correct':      {'type': 'boolean'},
+            'responded_at':    {'$ref': '#/standard_definitions/datetime'},
           },
           'required': [
             'response_uuid',
+            'course_uuid',
+            'sequence_number',
             'trial_uuid',
-            'trial_sequence',
-            'learner_uuid',
-            'question_uuid',
+            'student_uuid',
+            'exercise_uuid',
             'is_correct',
             'responded_at',
           ],
@@ -62,7 +61,6 @@ class ResponsesController < JsonApiController
   def _record_response_payload_schema
     {
       '$schema': JSON_SCHEMA,
-
       'type': 'object',
       'properties': {
         'recorded_response_uuids': {
@@ -74,7 +72,6 @@ class ResponsesController < JsonApiController
       },
       'required': ['recorded_response_uuids'],
       'additionalProperties': false,
-
       'standard_definitions': _standard_definitions,
     }
   end

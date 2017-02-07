@@ -1,8 +1,8 @@
 class Services::PrepareCourseEcosystem::Service
   def process(preparation_uuid:, course_uuid:, sequence_number:,
               next_ecosystem_uuid:, ecosystem_map:)
-    CourseEvent.import(
-      type: :ecosystem_preparation,
+    CourseEvent.append(
+      type: :prepare_course_ecosystem,
       uuid: preparation_uuid,
       course_uuid: course_uuid,
       sequence_number: sequence_number,

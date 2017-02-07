@@ -4,7 +4,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   let(:service)                        { described_class.new }
 
   let(:given_request_1_uuid)           { SecureRandom.uuid }
-  let(:given_event_types_1)            { EcosystemEvent.event_types.keys.sample(1) }
+  let(:given_event_types_1)            { EcosystemEvent.types.keys.sample(1) }
   let(:given_ecosystem_1_uuid)         { SecureRandom.uuid }
   let(:given_sequence_number_offset_1) { rand(1000000) }
   let(:given_event_limit_1)            { rand(1000) + 1 }
@@ -19,7 +19,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   end
 
   let(:given_request_2_uuid)           { SecureRandom.uuid }
-  let(:given_event_types_2)            { EcosystemEvent.event_types.keys.sample(1) }
+  let(:given_event_types_2)            { EcosystemEvent.types.keys.sample(1) }
   let(:given_ecosystem_2_uuid)         { SecureRandom.uuid }
   let(:given_sequence_number_offset_2) { rand(1000000) }
   let(:given_event_limit_2)            { rand(1000) + 1 }
@@ -46,25 +46,12 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   let!(:target_event_1)                do
     FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
                                          sequence_number: given_sequence_number_offset_1,
-                                         event_type: given_event_types_1.sample
+                                         type: given_event_types_1.sample
   end
   let!(:target_event_2)                do
     FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
                                          sequence_number: given_sequence_number_offset_2,
-                                         event_type: given_event_types_2.sample
-  end
-
-  let(:unhandled_event_types_1)        { EcosystemEvent.event_types.keys - given_event_types_1 }
-  let!(:unhandled_event_1)             do
-    FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
-                                         sequence_number: given_sequence_number_offset_1 + 1,
-                                         event_type: unhandled_event_types_1.sample
-  end
-  let(:unhandled_event_types_2)        { EcosystemEvent.event_types.keys - given_event_types_2 }
-  let!(:unhandled_event_2)             do
-    FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
-                                         sequence_number: given_sequence_number_offset_2 + 1,
-                                         event_type: unhandled_event_types_2.sample
+                                         type: given_event_types_2.sample
   end
 
   let(:event_models_by_uuid)           { EcosystemEvent.all.index_by(&:uuid) }
@@ -72,13 +59,13 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   context "when there are no gaps in the EcosystemEvent sequence_numbers" do
     let!(:target_event_3)              do
       FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
-                                        sequence_number: given_sequence_number_offset_1 + 2,
-                                        event_type: given_event_types_1.sample
+                                           sequence_number: given_sequence_number_offset_1 + 1,
+                                           type: given_event_types_1.sample
     end
     let!(:target_event_4)              do
       FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
-                                        sequence_number: given_sequence_number_offset_2 + 2,
-                                        event_type: given_event_types_2.sample
+                                           sequence_number: given_sequence_number_offset_2 + 1,
+                                           type: given_event_types_2.sample
     end
 
     it "returns all events with is_stopped_at_gap: false" do
@@ -93,7 +80,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
           expect(event_model.ecosystem_uuid).to eq response[:ecosystem_uuid]
 
           expect(event[:sequence_number]).to eq event_model.sequence_number
-          expect(event[:event_type]).to eq event_model.event_type
+          expect(event[:event_type]).to eq event_model.type
           expect(event[:event_data]).to eq event_model.data
         end
         expect(response[:is_stopped_at_gap]).to eq false
@@ -104,13 +91,13 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   context "when there are gaps in the EcosystemEvent sequence_numbers" do
     let!(:gap_event_1)                 do
       FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
-                                        sequence_number: given_sequence_number_offset_1 + 3,
-                                        event_type: given_event_types_1.sample
+                                           sequence_number: given_sequence_number_offset_1 + 2,
+                                           type: given_event_types_1.sample
     end
     let!(:gap_event_2)                 do
       FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
-                                        sequence_number: given_sequence_number_offset_2 + 3,
-                                        event_type: given_event_types_2.sample
+                                           sequence_number: given_sequence_number_offset_2 + 2,
+                                           type: given_event_types_2.sample
     end
 
     let(:gap_events)                   { [ gap_event_1, gap_event_2 ] }
@@ -128,7 +115,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
           expect(event_model.ecosystem_uuid).to eq response[:ecosystem_uuid]
 
           expect(event[:sequence_number]).to eq event_model.sequence_number
-          expect(event[:event_type]).to eq event_model.event_type
+          expect(event[:event_type]).to eq event_model.type
           expect(event[:event_data]).to eq event_model.data
         end
         expect(response[:is_stopped_at_gap]).to eq true

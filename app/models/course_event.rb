@@ -1,7 +1,9 @@
 class CourseEvent < ActiveRecord::Base
+  self.inheritance_column = nil
+
   include AppendOnlyWithUniqueUuid
 
-  enum event_type: {
+  enum type: {
     create_course:                      0,
     prepare_course_ecosystem:           1,
     update_course_ecosystem:            2,
@@ -13,7 +15,7 @@ class CourseEvent < ActiveRecord::Base
     record_response:                    8
   }
 
-  validates :event_type,      presence: true
+  validates :type,            presence: true
   validates :course_uuid,     presence: true
   validates :sequence_number, presence: true,
                               uniqueness: { scope: :course_uuid },

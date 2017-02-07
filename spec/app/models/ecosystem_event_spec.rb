@@ -5,7 +5,7 @@ RSpec.describe EcosystemEvent, type: :model do
 
   it { is_expected.to validate_presence_of :ecosystem_uuid }
   it { is_expected.to validate_presence_of :sequence_number }
-  it { is_expected.to validate_presence_of :event_type }
+  it { is_expected.to validate_presence_of :type }
 
   it do
     is_expected.to(
