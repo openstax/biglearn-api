@@ -468,18 +468,18 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'spe_requests': {
+        'practice_worst_area_requests': {
           'type': 'array',
-          'items': {'$ref': '#definitions/spe_update'},
+          'items': {'$ref': '#definitions/practice_worst_area_update'},
           'minItems': 0,
           'maxItems': 1000,
         },
       },
-      'required': ['spe_updates'],
+      'required': ['practice_worst_area_updates'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'spe_update': {
+        'practice_worst_area_update': {
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
@@ -504,18 +504,18 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'spe_responses': {
+        'practice_worst_area_responses': {
           'type': 'array',
-          'items': {'$ref': '#definitions/spe_update_response'},
+          'items': {'$ref': '#definitions/practice_worst_area_update_response'},
           'minItems': 0,
           'maxItems': 1000,
         },
       },
-      'required': ['spe_update_responses'],
+      'required': ['practice_worst_area_update_responses'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'spe_update_response': {
+        'practice_worst_area_update_response': {
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
