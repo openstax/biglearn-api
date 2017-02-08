@@ -25,6 +25,12 @@ Rails.application.routes.draw do
 
   post '/fetch_practice_worst_areas_exercises' => 'exercises#fetch_practice_worst_areas'
 
+  post '/update_assignment_pes' => 'exercises#update_assignment_pes'
+
+  post '/update_assignment_spes' => 'exercises#update_assignment_spes'
+
+  post '/update_practice_worst_areas_exercises' => 'exercises#update_practice_worst_areas'
+
   post '/record_responses' => 'responses#record'
 
   post '/fetch_response_bundles' => 'response_bundles#fetch'

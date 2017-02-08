@@ -20,4 +20,24 @@ RSpec.describe AssignmentsController, type: :routing do
       )
     end
   end
+
+  context "POST /update_assignment_pes" do
+    it "routes to #update_assignment_pes" do
+      expect(post '/update_assignment_pes').to route_to('exercises#update_assignment_pes')
+    end
+  end
+
+  context "POST /update_assignment_spes" do
+    it "routes to #update_assignment_spes" do
+      expect(post '/update_assignment_spes').to route_to('exercises#update_assignment_spes')
+    end
+  end
+
+  context "POST /update_practice_worst_areas_exercises" do
+    it "routes to #update_practice_worst_areas" do
+      expect(post '/update_practice_worst_areas_exercises').to(
+        route_to('exercises#update_practice_worst_areas')
+      )
+    end
+  end
 end
