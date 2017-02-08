@@ -329,7 +329,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'pe_requests': {
+        'pe_updates': {
           'type': 'array',
           'items': {'$ref': '#definitions/pe_update'},
           'minItems': 0,
@@ -365,7 +365,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'pe_responses': {
+        'pe_update_responses': {
           'type': 'array',
           'items': {'$ref': '#definitions/pe_update_response'},
           'minItems': 0,
@@ -398,7 +398,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'spe_requests': {
+        'spe_updates': {
           'type': 'array',
           'items': {'$ref': '#definitions/spe_update'},
           'minItems': 0,
@@ -434,7 +434,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'spe_responses': {
+        'spe_update_responses': {
           'type': 'array',
           'items': {'$ref': '#definitions/spe_update_response'},
           'minItems': 0,
@@ -468,7 +468,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'practice_worst_area_requests': {
+        'practice_worst_area_updates': {
           'type': 'array',
           'items': {'$ref': '#definitions/practice_worst_area_update'},
           'minItems': 0,
@@ -504,7 +504,7 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'practice_worst_area_responses': {
+        'practice_worst_area_update_responses': {
           'type': 'array',
           'items': {'$ref': '#definitions/practice_worst_area_update_response'},
           'minItems': 0,
