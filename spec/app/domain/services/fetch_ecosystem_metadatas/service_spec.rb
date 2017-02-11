@@ -6,7 +6,7 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
 
   context "when there are no ecosystems" do
     it "returns an empty array" do
-      expect(action.fetch(:ecosystem_metadatas)).to eq([])
+      expect(action.fetch(:ecosystem_responses)).to eq([])
     end
   end
 
@@ -18,7 +18,7 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
     end
 
     it "all ecosystem uuids are returned in hashes" do
-      expect(action.fetch(:ecosystem_metadatas)).to eq(ecosystems.map{ |ecosystem| {uuid: ecosystem[:uuid]} })
+      expect(action.fetch(:ecosystem_responses)).to eq(ecosystems.map{ |ecosystem| {uuid: ecosystem[:uuid]} })
     end
   end
 end

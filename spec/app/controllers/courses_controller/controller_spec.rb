@@ -56,7 +56,7 @@ RSpec.describe CoursesController, type: :request do
 
     let(:target_result)           do
       {
-        course_metadatas: courses_count.times.map{
+        course_responses: courses_count.times.map{
           {
             uuid: SecureRandom.uuid
           }

@@ -6,7 +6,7 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
 
   context "when there are no courses" do
     it "returns an empty array" do
-      expect(action.fetch(:course_metadatas)).to eq([])
+      expect(action.fetch(:course_responses)).to eq([])
     end
   end
 
@@ -18,7 +18,7 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
     end
 
     it "all course uuids are returned in hashes" do
-      expect(action.fetch(:course_metadatas)).to eq(courses.map{ |course| {uuid: course[:uuid]} })
+      expect(action.fetch(:course_responses)).to eq(courses.map{ |course| {uuid: course[:uuid]} })
     end
   end
 end

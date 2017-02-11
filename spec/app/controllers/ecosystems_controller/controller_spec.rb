@@ -55,7 +55,7 @@ RSpec.describe EcosystemsController, type: :request do
 
     let(:target_result)           do
       {
-        ecosystem_metadatas: ecosystems_count.times.map{
+        ecosystem_responses: ecosystems_count.times.map{
           {
             uuid: SecureRandom.uuid
           }

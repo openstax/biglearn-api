@@ -17,12 +17,12 @@ class EcosystemsController < JsonApiController
   end
 
   def fetch_metadatas
-    with_json_apis(output_schema: _fetch_response_payload_schema) do
+    with_json_apis(output_schema: _fetch_metadatas_response_payload_schema) do
 
       service = Services::FetchEcosystemMetadatas::Service.new
       result = service.process()
 
-      response_payload = { ecosystem_metadatas: result.fetch(:ecosystem_metadatas) }
+      response_payload = { ecosystem_responses: result.fetch(:ecosystem_responses) }
       render json: response_payload.to_json, status: 200
     end
   end
@@ -138,20 +138,20 @@ class EcosystemsController < JsonApiController
     }
   end
 
-  def _fetch_response_payload_schema
+  def _fetch_metadatas_response_payload_schema
     {
       '$schema': JSON_SCHEMA,
 
       'type': 'object',
       'properties': {
-        'ecosystem_metadatas': {
+        'ecosystem_responses': {
           'type': 'array',
           'items': {'$ref': '#definitions/ecosystem_metadata'},
           'minItems': 0,
           'maxItems': 1000,
         },
       },
-      'required': ['ecosystem_metadatas'],
+      'required': ['ecosystem_responses'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
