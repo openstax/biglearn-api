@@ -19,10 +19,10 @@ class JsonApiController < ApplicationController
     end
   end
 
-  def with_json_apis(input_schema:, output_schema:, &block)
-    _validate_request(input_schema)
+  def with_json_apis(input_schema: nil, output_schema: nil, &block)
+    _validate_request(input_schema) unless input_schema.nil?
     block.call
-    _validate_response(output_schema)
+    _validate_response(output_schema) unless output_schema.nil?
   end
 
 

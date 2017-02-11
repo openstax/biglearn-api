@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   post '/create_ecosystem' => 'ecosystems#create'
 
   post '/create_course' => 'courses#create'
+
+  post '/fetch_ecosystem_metadatas' => 'ecosystems#fetch_metadatas'
+  post '/fetch_course_metadatas' => 'courses#fetch_metadatas'
+
   post '/update_roster' => 'rosters#update'
   post '/update_course_active_dates' => 'course_active_dates#update'
 
