@@ -9,6 +9,7 @@ RSpec.describe CourseActiveDatesController, type: :request do
 
   let(:request_payload)       do
     {
+      request_uuid: given_request_uuid,
       course_uuid: given_course_uuid,
       sequence_number: given_sequence_number,
       starts_at: given_starts_at,
