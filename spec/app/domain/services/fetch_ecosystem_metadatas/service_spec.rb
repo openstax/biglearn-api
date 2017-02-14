@@ -18,7 +18,10 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
     end
 
     it "all ecosystem uuids are returned in hashes" do
-      expect(action.fetch(:ecosystem_responses)).to eq(ecosystems.map{ |ecosystem| {uuid: ecosystem[:uuid]} })
+      expect(action.fetch(:ecosystem_responses)).to eq(ecosystems.map{ |ecosystem| {
+        uuid: ecosystem[:uuid],
+        book_uuid: ecosystem[:book_uuid]
+      } })
     end
   end
 end

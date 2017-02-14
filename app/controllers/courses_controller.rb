@@ -83,7 +83,8 @@ class CoursesController < JsonApiController
         'course_metadata': {
           'type': 'object',
           'properties': {
-            'uuid': {'$ref': '#standard_definitions/uuid'}
+            'uuid': {'$ref': '#standard_definitions/uuid'},
+            'initial_ecosystem_uuid': {'$ref': '#standard_definitions/uuid'}
           },
           'required': ['uuid'],
           'additionalProperties': false

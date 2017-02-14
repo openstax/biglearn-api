@@ -58,7 +58,8 @@ RSpec.describe CoursesController, type: :request do
       {
         course_responses: courses_count.times.map{
           {
-            uuid: SecureRandom.uuid
+            uuid: SecureRandom.uuid,
+            initial_ecosystem_uuid: SecureRandom.uuid,
           }
         }
       }

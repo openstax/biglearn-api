@@ -18,7 +18,10 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
     end
 
     it "all course uuids are returned in hashes" do
-      expect(action.fetch(:course_responses)).to eq(courses.map{ |course| {uuid: course[:uuid]} })
+      expect(action.fetch(:course_responses)).to eq(courses.map{ |course| {
+        uuid: course[:uuid],
+        initial_ecosystem_uuid: course[:ecosystem_uuid]
+      } })
     end
   end
 end

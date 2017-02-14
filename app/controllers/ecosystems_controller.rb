@@ -158,7 +158,8 @@ class EcosystemsController < JsonApiController
         'ecosystem_metadata': {
           'type': 'object',
           'properties': {
-            'uuid': {'$ref': '#standard_definitions/uuid'}
+            'uuid': {'$ref': '#standard_definitions/uuid'},
+            'book_uuid': {'$ref': '#standard_definitions/uuid'}
           },
           'required': ['uuid'],
           'additionalProperties': false
