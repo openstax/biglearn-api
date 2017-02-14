@@ -51,6 +51,57 @@ class ExercisesController < JsonApiController
     end
   end
 
+  def update_assignment_pes
+    with_json_apis(input_schema:  _update_assignment_pes_request_payload_schema,
+                   output_schema: _update_assignment_pes_response_payload_schema) do
+      request_payload = json_parsed_request_payload
+      pe_updates = request_payload.deep_symbolize_keys.fetch(:pe_updates)
+
+      service = Services::UpdateAssignmentPes::Service.new
+      result = service.process(pe_updates: pe_updates)
+
+      response_data = result.fetch(:pe_update_responses).map do |response|
+        response.slice(:request_uuid, :update_status)
+      end
+
+      render json: { pe_update_responses: response_data }.to_json, status: 200
+    end
+  end
+
+  def update_assignment_spes
+    with_json_apis(input_schema:  _update_assignment_spes_request_payload_schema,
+                   output_schema: _update_assignment_spes_response_payload_schema) do
+      request_payload = json_parsed_request_payload
+      spe_updates = request_payload.deep_symbolize_keys.fetch(:spe_updates)
+
+      service = Services::UpdateAssignmentSpes::Service.new
+      result = service.process(spe_updates: spe_updates)
+
+      response_data = result.fetch(:spe_update_responses).map do |response|
+        response.slice(:request_uuid, :update_status)
+      end
+
+      render json: { spe_update_responses: response_data }.to_json, status: 200
+    end
+  end
+
+  def update_practice_worst_areas
+    with_json_apis(input_schema:  _update_practice_worst_areas_request_payload_schema,
+                   output_schema: _update_practice_worst_areas_response_payload_schema) do
+      request_payload = json_parsed_request_payload
+      practice_worst_area_updates = request_payload.deep_symbolize_keys.fetch(:practice_worst_area_updates)
+
+      service = Services::UpdatePracticeWorstAreasExercises::Service.new
+      result = service.process(practice_worst_area_updates: practice_worst_area_updates)
+
+      response_data = result.fetch(:practice_worst_area_update_responses).map do |response|
+        response.slice(:request_uuid, :update_status)
+      end
+
+      render json: { practice_worst_area_update_responses: response_data }.to_json, status: 200
+    end
+  end
+
   protected
 
   def _fetch_assignment_pes_request_payload_schema
@@ -268,6 +319,214 @@ class ExercisesController < JsonApiController
           'required': ['student_uuid', 'exercise_uuids', 'student_status'],
           'additionalProperties': false,
         },
+      },
+    }
+  end
+
+  def _update_assignment_pes_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'pe_updates': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/pe_update'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['pe_updates'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'pe_update': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
+            'exercise_uuids': {
+              'type': 'array',
+              'items': {'$ref': '#standard_definitions/uuid'},
+              'minItems': 0,
+              'maxItems': 100,
+            }
+          },
+          'required': ['request_uuid' , 'assignment_uuid', 'exercise_uuids'],
+          'additionalProperties': false,
+        },
+      },
+    }
+  end
+
+  def _update_assignment_pes_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'pe_update_responses': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/pe_update_response'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['pe_update_responses'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'pe_update_response': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'update_status': {
+              'type': 'string',
+              'enum': ['accepted'],
+            }
+          },
+          'required': ['request_uuid', 'update_status'],
+          'additionalProperties': false,
+        }
+      },
+    }
+  end
+
+  def _update_assignment_spes_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'spe_updates': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/spe_update'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['spe_updates'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'spe_update': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
+            'exercise_uuids': {
+              'type': 'array',
+              'items': {'$ref': '#standard_definitions/uuid'},
+              'minItems': 0,
+              'maxItems': 100,
+            }
+          },
+          'required': ['request_uuid' , 'assignment_uuid', 'exercise_uuids'],
+          'additionalProperties': false,
+        },
+      },
+    }
+  end
+
+  def _update_assignment_spes_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'spe_update_responses': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/spe_update_response'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['spe_update_responses'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'spe_update_response': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'update_status': {
+              'type': 'string',
+              'enum': ['accepted'],
+            }
+          },
+          'required': ['request_uuid', 'update_status'],
+          'additionalProperties': false,
+        }
+      },
+    }
+  end
+
+
+  def _update_practice_worst_areas_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'practice_worst_area_updates': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/practice_worst_area_update'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['practice_worst_area_updates'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'practice_worst_area_update': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'student_uuid': {'$ref': '#standard_definitions/uuid'},
+            'exercise_uuids': {
+              'type': 'array',
+              'items': {'$ref': '#standard_definitions/uuid'},
+              'minItems': 0,
+              'maxItems': 100,
+            }
+          },
+          'required': ['request_uuid' , 'student_uuid', 'exercise_uuids'],
+          'additionalProperties': false,
+        },
+      },
+    }
+  end
+
+  def _update_practice_worst_areas_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'practice_worst_area_update_responses': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/practice_worst_area_update_response'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['practice_worst_area_update_responses'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'practice_worst_area_update_response': {
+          'type': 'object',
+          'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'update_status': {
+              'type': 'string',
+              'enum': ['accepted'],
+            }
+          },
+          'required': ['request_uuid', 'update_status'],
+          'additionalProperties': false,
+        }
       },
     }
   end
