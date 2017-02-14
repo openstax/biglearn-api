@@ -29,9 +29,11 @@ Rails.application.routes.draw do
 
   post '/fetch_response_bundles' => 'response_bundles#fetch'
 
-  post '/fetch_student_clues' => 'clues#student'
+  post '/fetch_student_clues' => 'clues#fetch_student'
+  post '/fetch_teacher_clues' => 'clues#fetch_teacher'
 
-  post '/fetch_teacher_clues' => 'clues#teacher'
+  post '/update_student_clues' => 'clues#update_student'
+  post '/update_teacher_clues' => 'clues#update_teacher'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
