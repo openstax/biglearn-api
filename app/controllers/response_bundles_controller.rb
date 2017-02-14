@@ -5,11 +5,11 @@ class ResponseBundlesController < JsonApiController
                    output_schema: _fetch_response_payload_schema) do
       request_payload = json_parsed_request_payload
 
-      goal_max_responses_to_return = request_payload.fetch('goal_max_responses_to_return')
-      bundle_uuids_to_confirm      = request_payload.fetch('bundle_uuids_to_confirm')
-      receiver_uuid                = request_payload.fetch('receiver_info').fetch('receiver_uuid')
-      partition_count              = request_payload.fetch('receiver_info').fetch('partition_count')
-      partition_modulo             = request_payload.fetch('receiver_info').fetch('partition_modulo')
+      goal_max_responses_to_return = request_payload.fetch(:goal_max_responses_to_return)
+      bundle_uuids_to_confirm      = request_payload.fetch(:bundle_uuids_to_confirm)
+      receiver_uuid                = request_payload.fetch(:receiver_info).fetch(:receiver_uuid)
+      partition_count              = request_payload.fetch(:receiver_info).fetch(:partition_count)
+      partition_modulo             = request_payload.fetch(:receiver_info).fetch(:partition_modulo)
 
       service = Services::FetchResponseBundles::Service.new
 

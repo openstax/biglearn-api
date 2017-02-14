@@ -3,8 +3,7 @@ class EcosystemsController < JsonApiController
   def create
     with_json_apis(input_schema:  _create_request_payload_schema,
                    output_schema: _create_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      ecosystem_data = request_payload.deep_symbolize_keys
+      ecosystem_data = json_parsed_request_payload
 
       service = Services::CreateEcosystem::Service.new
       result = service.process(ecosystem_uuid: ecosystem_data[:ecosystem_uuid],

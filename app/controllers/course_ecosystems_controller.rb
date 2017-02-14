@@ -3,8 +3,7 @@ class CourseEcosystemsController < JsonApiController
   def prepare
     with_json_apis(input_schema:  _prepare_request_payload_schema,
                    output_schema: _prepare_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      course_ecosystem_data = request_payload.deep_symbolize_keys
+      course_ecosystem_data = json_parsed_request_payload
 
       service = Services::PrepareCourseEcosystem::Service.new
       result = service.process(preparation_uuid: course_ecosystem_data[:preparation_uuid],

@@ -3,8 +3,7 @@ class ResponsesController < JsonApiController
   def record
     with_json_apis(input_schema:  _record_request_payload_schema,
                    output_schema: _record_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      response_data = request_payload.deep_symbolize_keys.fetch(:responses)
+      response_data = json_parsed_request_payload.fetch(:responses)
 
       service = Services::RecordResponses::Service.new
       recorded_response_uuids = service.process(response_data: response_data)

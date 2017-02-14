@@ -28,7 +28,7 @@ class JsonApiController < ApplicationController
 
   def json_parsed_request_payload
     request.body.rewind
-    JSON.parse(request.body.read)
+    JSON.parse(request.body.read).deep_symbolize_keys
   rescue StandardError => ex
     fail Errors::AppRequestValidationError.new('could not parse request json payload')
   end
@@ -195,6 +195,14 @@ class JsonApiController < ApplicationController
           },
           'required': ['aggregate', 'confidence', 'interpretation', 'pool_id'],
           'additionalProperties': false
+        },
+        'course_event_type': {
+          'type': 'string',
+          'enum': CourseEvent.event_types.keys
+        },
+        'course_event_data': {
+          'type': 'object'
+          # TODO: Validate course_event_data contents
         }
       }
     end

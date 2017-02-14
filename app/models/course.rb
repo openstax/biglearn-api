@@ -6,6 +6,10 @@ class Course < ActiveRecord::Base
   belongs_to :ecosystem, primary_key: :uuid,
                          foreign_key: :ecosystem_uuid
 
+  has_many :course_events, primary_key: :uuid,
+                           foreign_key: :course_uuid,
+                           inverse_of: :course
+
   has_many :ecosystem_preparations, primary_key: :uuid,
                                     foreign_key: :course_uuid,
                                     inverse_of: :course

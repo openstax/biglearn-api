@@ -3,8 +3,7 @@ class RostersController < JsonApiController
   def update
     with_json_apis(input_schema:  _update_request_payload_schema,
                    output_schema: _update_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      roster_data = request_payload.deep_symbolize_keys.fetch(:rosters)
+      roster_data = json_parsed_request_payload.fetch(:rosters)
 
       service = Services::UpdateRoster::Service.new
       result = service.process(rosters: roster_data)

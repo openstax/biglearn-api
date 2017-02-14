@@ -3,8 +3,7 @@ class CluesController < JsonApiController
   def fetch_student
     with_json_apis(input_schema:  _fetch_student_request_payload_schema,
                    output_schema: _fetch_student_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      student_clue_requests_data = request_payload.deep_symbolize_keys.fetch(:student_clue_requests)
+      student_clue_requests_data = json_parsed_request_payload.fetch(:student_clue_requests)
 
       service = Services::FetchStudentClues::Service.new
       result = service.process(student_clue_requests: student_clue_requests_data)
