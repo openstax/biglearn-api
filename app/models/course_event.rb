@@ -1,24 +1,21 @@
 class CourseEvent < ActiveRecord::Base
-  include AppendOnly
-  include HasUniqueUuid
+  self.inheritance_column = nil
 
-  enum event_type: {
+  include AppendOnlyWithUniqueUuid
+
+  enum type: {
     create_course:                      0,
     prepare_course_ecosystem:           1,
-    update_course_ecosystems:           2,
-    update_rosters:                     3,
+    update_course_ecosystem:            2,
+    update_roster:                      3,
     update_course_active_dates:         4,
     update_globally_excluded_exercises: 5,
     update_course_excluded_exercises:   6,
-    create_update_assignments:          7,
-    record_responses:                   8
+    create_update_assignment:           7,
+    record_response:                    8
   }
 
-  belongs_to :course, primary_key: :uuid,
-                      foreign_key: :course_uuid,
-                      inverse_of: :course_events
-
-  validates :event_type,      presence: true
+  validates :type,            presence: true
   validates :course_uuid,     presence: true
   validates :sequence_number, presence: true,
                               uniqueness: { scope: :course_uuid },

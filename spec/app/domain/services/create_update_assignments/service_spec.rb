@@ -3,8 +3,10 @@ require 'rails_helper'
 RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
   let(:service)                                 { described_class.new }
 
-  let(:given_assignment_uuid)                   { SecureRandom.uuid }
+  let(:given_request_uuid)                      { SecureRandom.uuid }
+  let(:given_course_uuid)                       { SecureRandom.uuid }
   let(:given_sequence_number)                   { rand(10) }
+  let(:given_assignment_uuid)                   { SecureRandom.uuid }
   let(:given_is_deleted)                        { false }
   let(:given_ecosystem_uuid)                    { SecureRandom.uuid }
   let(:given_student_uuid)                      { SecureRandom.uuid }
@@ -46,8 +48,10 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
   let(:given_assignments)                       do
     [
       {
-        assignment_uuid: given_assignment_uuid,
+        request_uuid: given_request_uuid,
+        course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
+        assignment_uuid: given_assignment_uuid,
         is_deleted: given_is_deleted,
         ecosystem_uuid: given_ecosystem_uuid,
         student_uuid: given_student_uuid,
@@ -64,60 +68,55 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
 
   let(:action)                                  { service.process(assignments: given_assignments) }
 
-  context "when a previously-existing assignment_uuid and sequence_number combo is given" do
+  context "when a previously-existing course_uuid and sequence_number combo is given" do
     before(:each) do
-      FactoryGirl.create(:assignment, assignment_uuid: given_assignment_uuid,
-                                      sequence_number: given_sequence_number)
+      FactoryGirl.create(:course_event, course_uuid: given_course_uuid,
+                                        sequence_number: given_sequence_number)
     end
 
-    it "an Assignment is NOT created" do
-      expect{action}.not_to change{Assignment.count}
-    end
-
-    it "the Assignment's assignment_uuid and sequence_number are returned" do
-      expect(action.fetch(:updated_assignments)).to eq(
-        [
-          {
-            assignment_uuid: given_assignment_uuid,
-            sequence_number: given_sequence_number
-          }
-        ]
-      )
+    it "a CourseEvent and an Assignment are NOT created and an error is returned" do
+      expect{action}.to not_change{CourseEvent.count}
+                    .and not_change{Assignment.count}
+                    .and raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 
-  context "when a previously non-existing assignment_uuid and sequence_number combo is given" do
-    it "an Assignment is created, as well as associated records with the correct attributes" do
+  context "when a previously non-existing course_uuid and sequence_number combo is given" do
+    it "a CourseEvent and an Assignment are created with the correct attributes" do
       given_assigned_exercises_by_trial_uuid = given_assigned_exercises.index_by do |hash|
-        hash[:trial_uuid]
+        hash.fetch(:trial_uuid)
       end
 
-      expect{action}.to change{Assignment.count}.by(given_assignments.size)
-                    .and change{AssignedExercise.count}.by(given_assigned_exercises.size)
+      expect{action}.to change{CourseEvent.count}.by(given_assignments.size)
+                    .and change{Assignment.count}.by(given_assignments.size)
 
-      assignment = Assignment.find_by(assignment_uuid: given_assignment_uuid,
-                                      sequence_number: given_sequence_number)
-      expect(assignment.is_deleted).to eq given_is_deleted
-      expect(assignment.ecosystem_uuid).to eq given_ecosystem_uuid
-      expect(assignment.student_uuid).to eq given_student_uuid
-      expect(assignment.assignment_type).to eq given_assignment_type
-      expect(assignment.assigned_book_container_uuids).to eq given_assigned_book_container_uuids
-      expect(assignment.goal_num_tutor_assigned_spes).to eq given_goal_num_tutor_assigned_spes
-      expect(assignment.spes_are_assigned).to eq given_spes_are_assigned
-      expect(assignment.goal_num_tutor_assigned_pes).to eq given_goal_num_tutor_assigned_pes
-      expect(assignment.pes_are_assigned).to eq given_pes_are_assigned
+      event = CourseEvent.find_by(course_uuid: given_course_uuid,
+                                  sequence_number: given_sequence_number)
+      data = event.data.deep_symbolize_keys
+      expect(data.fetch(:assignment_uuid)).to eq given_assignment_uuid
+      expect(data.fetch(:is_deleted)).to eq given_is_deleted
+      expect(data.fetch(:ecosystem_uuid)).to eq given_ecosystem_uuid
+      expect(data.fetch(:student_uuid)).to eq given_student_uuid
+      expect(data.fetch(:assignment_type)).to eq given_assignment_type
+      expect(data.fetch(:assigned_book_container_uuids)).to eq given_assigned_book_container_uuids
+      expect(data.fetch(:goal_num_tutor_assigned_spes)).to eq given_goal_num_tutor_assigned_spes
+      expect(data.fetch(:spes_are_assigned)).to eq given_spes_are_assigned
+      expect(data.fetch(:goal_num_tutor_assigned_pes)).to eq given_goal_num_tutor_assigned_pes
+      expect(data.fetch(:pes_are_assigned)).to eq given_pes_are_assigned
 
-      assignment.assigned_exercises.each do |assigned_exercise|
-        trial_uuid = assigned_exercise[:trial_uuid]
+      data.fetch(:assigned_exercises).each do |assigned_exercise|
+        trial_uuid = assigned_exercise.fetch(:trial_uuid)
         given_assigned_exercise = given_assigned_exercises_by_trial_uuid[trial_uuid]
 
-        expect(assigned_exercise.exercise_uuid).to eq given_assigned_exercise[:exercise_uuid]
-        expect(assigned_exercise.exercise_uuid).to eq given_assigned_exercise[:exercise_uuid]
-        expect(assigned_exercise.exercise_uuid).to eq given_assigned_exercise[:exercise_uuid]
+        expect(assigned_exercise.fetch(:exercise_uuid)).to eq given_assigned_exercise.fetch(:exercise_uuid)
+        expect(assigned_exercise.fetch(:is_spe)).to eq given_assigned_exercise.fetch(:is_spe)
+        expect(assigned_exercise.fetch(:is_pe)).to eq given_assigned_exercise.fetch(:is_pe)
       end
+
+      expect(Assignment.exists?(uuid: given_assignment_uuid)).to eq true
     end
 
-    it "the Assignment's assignment_uuid and sequence_number are returned" do
+    it "the assignment_uuid and sequence_number are returned" do
       expect(action.fetch(:updated_assignments)).to eq(
         [
           {

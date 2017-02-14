@@ -4,6 +4,7 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
   let(:request_payload) do
     {
       request_uuid:    given_request_uuid,
+      course_uuid:     given_course_uuid,
       sequence_number: given_sequence_number,
       exclusions:      given_exclusions
     }
@@ -22,6 +23,7 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
   end
 
   let(:given_request_uuid)    { SecureRandom.uuid }
+  let(:given_course_uuid)     { SecureRandom.uuid }
   let(:given_sequence_number) { rand(10) }
   let(:number_of_exclusions)  { 10 }
 
@@ -32,6 +34,7 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
       allow(dbl).to receive(:process)
                 .with(
                   request_uuid:    given_request_uuid,
+                  course_uuid:     given_course_uuid,
                   sequence_number: given_sequence_number,
                   exclusions:      given_exclusions
                 )
@@ -52,18 +55,21 @@ RSpec.describe GlobalExerciseExclusionsController, type: :request do
         request_payload: request_payload
       )
     end
+
     it "the response has status 200 (success)" do
       response_status, response_body = update_globally_excluded_exercises(
         request_payload: request_payload
       )
       expect(response_status).to eq(200)
     end
+
     it "the UpdateGlobalExerciseExclusions service is called with the correct exclusions data" do
       response_status, response_body = update_globally_excluded_exercises(
         request_payload: request_payload
       )
       expect(service_double).to have_received(:process)
     end
+
     it "the response contains the status" do
       response_status, response_body = update_globally_excluded_exercises(
         request_payload: request_payload

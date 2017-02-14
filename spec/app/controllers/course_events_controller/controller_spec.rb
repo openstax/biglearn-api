@@ -4,7 +4,7 @@ RSpec.describe CourseEventsController, type: :request do
   context '#fetch' do
     let(:given_request_1_uuid)           { SecureRandom.uuid }
     let(:given_event_types_1)            do
-      CourseEvent.event_types.keys.sample(rand(CourseEvent.event_types.size) + 1)
+      CourseEvent.types.keys.sample(rand(CourseEvent.types.size) + 1)
     end
     let(:given_course_1_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_1) { rand(1000000) }
@@ -21,7 +21,7 @@ RSpec.describe CourseEventsController, type: :request do
 
     let(:given_request_2_uuid)           { SecureRandom.uuid }
     let(:given_event_types_2)            do
-      CourseEvent.event_types.keys.sample(rand(CourseEvent.event_types.size) + 1)
+      CourseEvent.types.keys.sample(rand(CourseEvent.types.size) + 1)
     end
     let(:given_course_2_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_2) { rand(1000000) }
@@ -41,7 +41,7 @@ RSpec.describe CourseEventsController, type: :request do
     let(:request_payload)               { { course_event_requests: given_event_requests } }
 
     let(:target_event_uuid_1)           { SecureRandom.uuid }
-    let(:target_event_type_1)           { CourseEvent.event_types.keys.sample }
+    let(:target_event_type_1)           { CourseEvent.types.keys.sample }
     let(:target_event_data_1)           { {} }
     let(:target_event_1)                do
       [
@@ -64,7 +64,7 @@ RSpec.describe CourseEventsController, type: :request do
     end
 
     let(:target_event_uuid_2)           { SecureRandom.uuid }
-    let(:target_event_type_2)           { CourseEvent.event_types.keys.sample }
+    let(:target_event_type_2)           { CourseEvent.types.keys.sample }
     let(:target_event_data_2)           { {} }
     let(:target_event_2)                do
       [
@@ -112,7 +112,7 @@ RSpec.describe CourseEventsController, type: :request do
         expect(response_status).to eq(200)
       end
 
-      it "the PrepareCourseEcosystem service is called with the correct course data" do
+      it "the FetchCourseEvents service is called with the correct course data" do
         response_status, response_body = fetch_course_events(request_payload: request_payload)
         expect(service_double).to have_received(:process)
       end

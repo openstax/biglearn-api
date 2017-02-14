@@ -6,17 +6,19 @@ class GlobalExerciseExclusionsController < JsonApiController
       request_payload = json_parsed_request_payload
 
       request_uuid = request_payload.fetch(:request_uuid)
+      course_uuid = request_payload.fetch(:course_uuid)
       sequence_number = request_payload.fetch(:sequence_number)
       exclusions = request_payload.fetch(:exclusions)
 
       service = Services::UpdateGlobalExerciseExclusions::Service.new
       result = service.process(
         request_uuid:    request_uuid,
+        course_uuid:     course_uuid,
         sequence_number: sequence_number,
         exclusions:      exclusions
       )
 
-      render json: { status: result[:status] }.to_json, status: 200
+      render json: { status: result.fetch(:status) }.to_json, status: 200
     end
   end
 
@@ -28,19 +30,18 @@ class GlobalExerciseExclusionsController < JsonApiController
       'type': 'object',
       'properties': {
         'request_uuid':    {'$ref': '#/standard_definitions/uuid'},
+        'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
         'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
         'exclusions': {
           'type': 'array',
-          'items': {'$ref': '#/definitions/exclusion'},
+          'items': {'$ref': '#/standard_definitions/exercise_exclusion'},
           'minItems': 0,
           'maxItems': 10000,
         },
       },
       'required': ['request_uuid', 'sequence_number', 'exclusions'],
       'additionalProperties': false,
-
-      'definitions': Schemas::ExerciseExclusions::definitions,
-      'standard_definitions': _standard_definitions,
+      'standard_definitions': _standard_definitions
     }
   end
 

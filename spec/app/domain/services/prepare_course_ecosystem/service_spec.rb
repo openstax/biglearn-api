@@ -29,30 +29,33 @@ RSpec.describe Services::PrepareCourseEcosystem::Service, type: :service do
     )
   end
 
-  it "an EcosystemMap is NOT created if it already exists" do
-    FactoryGirl.create :ecosystem_map, given_ecosystem_map
-    expect{action}.not_to change{EcosystemMap.count}
+  context "when a previously-existing preparation_uuid is given" do
+    before do
+      FactoryGirl.create :course_event, uuid: given_preparation_uuid
+    end
+
+    it "a CourseEvent is NOT created" do
+      expect{action}.not_to change{CourseEvent.count}
+    end
+
+    it "status: 'accepted' is returned" do
+      expect(action.fetch(:status)).to eq('accepted')
+    end
   end
 
-  it "an EcosystemMap is created with the correct attributes if it does not yet exist" do
-    expect{action}.to change{EcosystemMap.count}.by(1)
-    ecosystem_map = EcosystemMap.find_by(
-      from_ecosystem_uuid: given_course_ecosystem_uuid,
-      to_ecosystem_uuid: given_next_ecosystem_uuid
-    )
-    expect(ecosystem_map.cnx_pagemodule_mappings).to eq given_cnx_pagemodule_mappings
-    expect(ecosystem_map.exercise_mappings).to eq given_exercise_mappings
-  end
+  context "when a previously non-existing course_uuid and sequence_number combination is given" do
+    it "a CourseEvent is created with the correct attributes" do
+      expect{action}.to change{CourseEvent.count}.by(1)
+      ecosystem_preparation = CourseEvent.find_by(uuid: given_preparation_uuid)
+      expect(ecosystem_preparation.course_uuid).to eq given_course_uuid
+      expect(ecosystem_preparation.sequence_number).to eq given_sequence_number
+      data = ecosystem_preparation.data.deep_symbolize_keys
+      expect(data.fetch(:ecosystem_uuid)).to eq given_next_ecosystem_uuid
+      expect(data.fetch(:ecosystem_map)).to eq given_ecosystem_map
+    end
 
-  it "an EcosystemPreparation is created with the correct attributes" do
-    expect{action}.to change{EcosystemPreparation.count}.by(1)
-    ecosystem_preparation = EcosystemPreparation.find_by(uuid: given_preparation_uuid)
-    expect(ecosystem_preparation.course_uuid).to eq given_course_uuid
-    expect(ecosystem_preparation.sequence_number).to eq given_sequence_number
-    expect(ecosystem_preparation.ecosystem_uuid).to eq given_next_ecosystem_uuid
-  end
-
-  it "status: 'accepted' is returned" do
-    expect(action.fetch(:status)).to eq('accepted')
+    it "status: 'accepted' is returned" do
+      expect(action.fetch(:status)).to eq('accepted')
+    end
   end
 end

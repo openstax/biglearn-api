@@ -2,8 +2,8 @@ class Services::FetchStudentClues::Service
   def process(student_clue_requests:)
     sc = StudentClue.arel_table
     queries = student_clue_requests.map do |request|
-      sc[:student_uuid].eq(request[:student_uuid]).and(
-        sc[:book_container_uuid].eq(request[:book_container_uuid])
+      sc[:student_uuid].eq(request.fetch(:student_uuid)).and(
+        sc[:book_container_uuid].eq(request.fetch(:book_container_uuid))
       )
     end.reduce(:or)
     clues = queries.nil? ? StudentClue.none : StudentClue.where(queries)
@@ -14,18 +14,18 @@ class Services::FetchStudentClues::Service
     end
 
     missing_clue_requests = student_clue_requests.reject do |request|
-      clues_map[request[:student_uuid].downcase][request[:book_container_uuid].downcase]
+      clues_map[request.fetch(:student_uuid).downcase][request.fetch(:book_container_uuid).downcase]
     end
-    missing_clue_student_uuids = missing_clue_requests.map { |request| request[:student_uuid] }
+    missing_clue_student_uuids = missing_clue_requests.map { |request| request.fetch(:student_uuid) }
     missing_clue_students_by_uuid = Student.where(uuid: missing_clue_student_uuids).index_by(&:uuid)
     missing_clue_book_container_uuids = missing_clue_requests.map do |request|
-      request[:book_container_uuid]
+      request.fetch(:book_container_uuid)
     end
     missing_clue_book_containers_by_uuid = \
       BookContainer.where(uuid: missing_clue_book_container_uuids).index_by(&:uuid)
 
     responses = student_clue_requests.map do |request|
-      clue = clues_map[request[:student_uuid].downcase][request[:book_container_uuid].downcase]
+      clue = clues_map[request.fetch(:student_uuid).downcase][request.fetch(:book_container_uuid).downcase]
 
       if clue.nil?
         clue_data = {
@@ -41,12 +41,12 @@ class Services::FetchStudentClues::Service
             level: 'low',
             threshold: 'below'
           },
-          pool_id: request[:book_container_uuid]
+          pool_id: request.fetch(:book_container_uuid)
         }
 
-        clue_status = if missing_clue_book_containers_by_uuid[request[:book_container_uuid]].nil?
+        clue_status = if missing_clue_book_containers_by_uuid[request.fetch(:book_container_uuid)].nil?
           'book_container_unknown'
-        elsif missing_clue_students_by_uuid[request[:student_uuid]].nil?
+        elsif missing_clue_students_by_uuid[request.fetch(:student_uuid)].nil?
           'student_unknown'
         else
           'clue_unready'
@@ -65,13 +65,13 @@ class Services::FetchStudentClues::Service
             level: clue.is_high_level ? 'high' : 'low',
             threshold: clue.is_above_threshold ? 'above' : 'below'
           },
-          pool_id: request[:book_container_uuid]
+          pool_id: request.fetch(:book_container_uuid)
         }
 
         clue_status = 'clue_ready'
       end
 
-      { request_uuid: request[:request_uuid], clue_data: clue_data, clue_status: clue_status }
+      { request_uuid: request.fetch(:request_uuid), clue_data: clue_data, clue_status: clue_status }
     end
 
     { student_clue_responses: responses }

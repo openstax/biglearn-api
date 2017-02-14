@@ -6,12 +6,12 @@ class Services::FetchCourseEvents::Service
   def process(course_event_requests:)
     ce = CourseEvent.arel_table
     queries = course_event_requests.map do |request|
-      limit = request[:event_limit] || DEFAULT_EVENT_LIMIT_PER_COURSE
+      limit = request.fetch(:event_limit) || DEFAULT_EVENT_LIMIT_PER_COURSE
 
       ce[:course_uuid]
-        .eq(request[:course_uuid])
-        .and(ce[:sequence_number].gteq(request[:sequence_number_offset]))
-        .and(ce[:sequence_number].lt(request[:sequence_number_offset] + limit))
+        .eq(request.fetch(:course_uuid))
+        .and(ce[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
+        .and(ce[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
     end.reduce(:or)
 
     course_events_by_course_uuid = CourseEvent.where(queries)
@@ -19,10 +19,10 @@ class Services::FetchCourseEvents::Service
                                               .group_by(&:course_uuid)
 
     responses = course_event_requests.map do |request|
-      course_events = course_events_by_course_uuid[request[:course_uuid]]
-      included_event_types = Set.new(request[:event_types])
+      course_events = course_events_by_course_uuid[request.fetch(:course_uuid)]
+      included_event_types = Set.new(request.fetch(:event_types))
 
-      current_sequence_number = request[:sequence_number_offset]
+      current_sequence_number = request.fetch(:sequence_number_offset)
       is_gap = false
       gapless_event_hashes = []
       course_events.each do |event|
@@ -31,20 +31,20 @@ class Services::FetchCourseEvents::Service
 
         current_sequence_number += 1
 
-        next unless included_event_types.include? event.event_type # Skip non-included event types
+        next unless included_event_types.include? event.type # Skip non-included event types
 
         event_hash = {
           sequence_number: event.sequence_number,
           event_uuid: event.uuid,
-          event_type: event.event_type,
+          event_type: event.type,
           event_data: event.data
         }
         gapless_event_hashes << event_hash
       end
 
       {
-        request_uuid: request[:request_uuid],
-        course_uuid: request[:course_uuid],
+        request_uuid: request.fetch(:request_uuid),
+        course_uuid: request.fetch(:course_uuid),
         events: gapless_event_hashes,
         is_stopped_at_gap: is_gap
       }

@@ -2,93 +2,90 @@ module ExerciseExclusionsServicesSharedExamples
   SOME_EXCLUSIONS_NUMBER = 10
   MANY_EXCLUSIONS_NUMBER = 100
 
-  RSpec.shared_examples "update exercise exclusions services" do |model, action_proc, attr_proc|
-    let(:given_request_uuid)                  { SecureRandom.uuid }
-    let(:given_sequence_number)               { rand(10) + 1 }
-    let(:generated_exclusions)                { generate_exclusions(number_of_exclusions) }
-    let(:given_exclusions)                    { generated_exclusions.fetch(:exclusions) }
-    let(:given_excluded_exercise_uuids)       do
-      generated_exclusions.fetch(:excluded_exercise_uuids)
-    end
-    let(:given_excluded_exercise_group_uuids) do
-      generated_exclusions.fetch(:excluded_exercise_group_uuids)
-    end
+  RSpec.shared_examples "update exercise exclusions services" do |type|
+    let(:service)               { described_class.new }
 
-    context "with no preexisting exclusions" do
-      include_examples "update exercise exclusions internal 1", model, action_proc, attr_proc
-    end
+    let(:given_request_uuid)    { SecureRandom.uuid }
+    let(:given_course_uuid)     { SecureRandom.uuid }
+    let(:given_sequence_number) { rand(10) + 1 }
+    let(:given_exclusions)      { generate_exclusions(number_of_exclusions) }
 
-    context "with one preexisting exclusion" do
-      before { save_preexisting_exclusions(action_proc, generate_exclusions(1)) }
-
-      include_examples "update exercise exclusions internal 1", model, action_proc, attr_proc
-    end
-
-    context "with some preexisting exclusions" do
-      before do
-        save_preexisting_exclusions(action_proc, generate_exclusions(SOME_EXCLUSIONS_NUMBER))
-      end
-
-      include_examples "update exercise exclusions internal 1", model, action_proc, attr_proc
-    end
-
-    context "with many preexisting exclusions" do
-      before do
-        save_preexisting_exclusions(action_proc, generate_exclusions(MANY_EXCLUSIONS_NUMBER))
-      end
-
-      include_examples "update exercise exclusions internal 1", model, action_proc, attr_proc
-    end
-  end
-
-  protected
-
-  RSpec.shared_examples "update exercise exclusions internal 1" do |model, action_proc, attr_proc|
-    context "with no exclusions" do
-      let(:number_of_exclusions) { 0 }
-
-      include_examples "update exercise exclusions internal 2", model, action_proc, attr_proc
-    end
-
-    context "with one exclusion" do
-      let(:number_of_exclusions) { 1 }
-
-      include_examples "update exercise exclusions internal 2", model, action_proc, attr_proc
-    end
-
-    context "with some exclusions" do
-      let(:number_of_exclusions) { SOME_EXCLUSIONS_NUMBER }
-
-      include_examples "update exercise exclusions internal 2", model, action_proc, attr_proc
-    end
-
-    context "with many exclusions" do
-      let(:number_of_exclusions) { MANY_EXCLUSIONS_NUMBER }
-
-      include_examples "update exercise exclusions internal 2", model, action_proc, attr_proc
-    end
-  end
-
-  RSpec.shared_examples "update exercise exclusions internal 2" do |model, action_proc, attr_proc|
-    let(:action) do
-      action_proc.call(
+    let(:action)                do
+      service.process(
         request_uuid: given_request_uuid,
+        course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
         exclusions: given_exclusions
       )
     end
 
-    it "the #{model.name} is created with the correct attributes" do
-      expect{action}.to change{model.count}.by(1)
+    context "with no preexisting exclusions" do
+      include_examples "update exercise exclusions internal 1", type
+    end
 
-      new_model = model.order(:created_at).last
-      expect(new_model.uuid).to eq given_request_uuid
-      expect(new_model.sequence_number).to eq given_sequence_number
+    context "with one preexisting exclusion" do
+      before { save_preexisting_exclusions(type, given_course_uuid, generate_exclusions(1)) }
 
-      expect(new_model.excluded_exercise_uuids).to eq given_excluded_exercise_uuids
-      expect(new_model.excluded_exercise_group_uuids).to eq given_excluded_exercise_group_uuids
+      include_examples "update exercise exclusions internal 1", type
+    end
 
-      expect(attr_proc.call(new_model)).not_to(eq(false)) unless attr_proc.nil?
+    context "with some preexisting exclusions" do
+      before do
+        save_preexisting_exclusions(
+          type, given_course_uuid, generate_exclusions(SOME_EXCLUSIONS_NUMBER)
+        )
+      end
+
+      include_examples "update exercise exclusions internal 1", type
+    end
+
+    context "with many preexisting exclusions" do
+      before do
+        save_preexisting_exclusions(
+          type, given_course_uuid, generate_exclusions(MANY_EXCLUSIONS_NUMBER)
+        )
+      end
+
+      include_examples "update exercise exclusions internal 1", type
+    end
+  end
+
+  protected
+
+  RSpec.shared_examples "update exercise exclusions internal 1" do |type|
+    context "with no exclusions" do
+      let(:number_of_exclusions) { 0 }
+
+      include_examples "update exercise exclusions internal 2", type
+    end
+
+    context "with one exclusion" do
+      let(:number_of_exclusions) { 1 }
+
+      include_examples "update exercise exclusions internal 2", type
+    end
+
+    context "with some exclusions" do
+      let(:number_of_exclusions) { SOME_EXCLUSIONS_NUMBER }
+
+      include_examples "update exercise exclusions internal 2", type
+    end
+
+    context "with many exclusions" do
+      let(:number_of_exclusions) { MANY_EXCLUSIONS_NUMBER }
+
+      include_examples "update exercise exclusions internal 2", type
+    end
+  end
+
+  RSpec.shared_examples "update exercise exclusions internal 2" do |type|
+    it "the CourseEvent is created with the correct attributes" do
+      expect{action}.to change{CourseEvent.count}.by(1)
+
+      new_event = CourseEvent.find_by(uuid: given_request_uuid)
+      expect(new_event.course_uuid).to eq given_course_uuid
+      expect(new_event.sequence_number).to eq given_sequence_number
+      expect(new_event.data.deep_symbolize_keys.fetch(:exclusions)).to eq given_exclusions
     end
 
     it "status: 'success' is returned" do
@@ -117,26 +114,21 @@ module ExerciseExclusionsServicesSharedExamples
       { exercise_uuid: exercise_uuid }
     end
 
-    given_exclusions = (given_specific_version_exclusions + given_any_version_exclusions).shuffle
-    given_excluded_exercise_uuids = given_exclusions.map do |exclusion_hash|
-      exclusion_hash[:exercise_uuid]
-    end.compact
-    given_excluded_exercise_group_uuids = given_exclusions.map do |exclusion_hash|
-      exclusion_hash[:exercise_group_uuid]
-    end.compact
-
-    {
-      exclusions: given_exclusions,
-      excluded_exercise_uuids: given_excluded_exercise_uuids,
-      excluded_exercise_group_uuids: given_excluded_exercise_group_uuids
-    }
+    (given_specific_version_exclusions + given_any_version_exclusions).shuffle
   end
 
-  def save_preexisting_exclusions(action_proc, generated_exclusions)
-    action_proc.call(
-      request_uuid: SecureRandom.uuid,
+  def save_preexisting_exclusions(type, course_uuid, generated_exclusions)
+    request_uuid = SecureRandom.uuid
+
+    CourseEvent.append(
+      uuid: request_uuid,
+      type: type,
+      course_uuid: course_uuid,
       sequence_number: 0,
-      exclusions: generated_exclusions.fetch(:exclusions)
+      data: {
+        request_uuid: request_uuid,
+        exclusions: generated_exclusions
+      }
     )
   end
 

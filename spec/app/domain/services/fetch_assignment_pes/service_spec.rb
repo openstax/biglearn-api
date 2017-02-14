@@ -33,7 +33,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
     context "when previously-existing Assignment uuids are given" do
       before do
         given_assignment_uuids.each do |assignment_uuid|
-          FactoryGirl.create :assignment, assignment_uuid: assignment_uuid
+          FactoryGirl.create :assignment, uuid: assignment_uuid
         end
       end
 
