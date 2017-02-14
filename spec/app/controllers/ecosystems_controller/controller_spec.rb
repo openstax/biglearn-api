@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe EcosystemsController, type: :request do
-  context '#create_ecosystem' do
-    let(:given_ecosystem_uuid) { SecureRandom.uuid }
-    let(:given_book)           { {} }
-    let(:given_exercises)      { [] }
+  context '#create_ecosystem'   do
+    let(:given_ecosystem_uuid)  { SecureRandom.uuid }
+    let(:given_book)            { {} }
+    let(:given_exercises)       { [] }
 
-    let(:request_payload)      do
+    let(:request_payload)       do
       {
         ecosystem_uuid: given_ecosystem_uuid,
         book: given_book,
@@ -14,16 +14,16 @@ RSpec.describe EcosystemsController, type: :request do
       }
     end
 
-    let(:target_result)        { { created_ecosystem_uuid: given_ecosystem_uuid } }
-    let(:target_response)      { target_result }
+    let(:target_result)         { { created_ecosystem_uuid: given_ecosystem_uuid } }
+    let(:target_response)       { target_result }
 
-    let(:service_double)       do
+    let(:service_double)        do
       object_double(Services::CreateEcosystem::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
     end
 
-    before(:each) do
+    before(:each)               do
       allow(Services::CreateEcosystem::Service).to receive(:new).and_return(service_double)
     end
 
@@ -51,9 +51,9 @@ RSpec.describe EcosystemsController, type: :request do
   end
 
   context '#fetch_ecosystem_metadatas' do
-    let(:ecosystems_count)        { rand(10) + 1 }
+    let(:ecosystems_count)      { rand(10) + 1 }
 
-    let(:target_result)           do
+    let(:target_result)         do
       {
         ecosystem_responses: ecosystems_count.times.map{
           {
@@ -64,13 +64,13 @@ RSpec.describe EcosystemsController, type: :request do
       }
     end
 
-    let(:service_double)          do
+    let(:service_double)        do
       object_double(Services::FetchEcosystemMetadatas::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).and_return(target_result)
       end
     end
 
-    before(:each) do
+    before(:each)               do
       allow(Services::FetchEcosystemMetadatas::Service).to receive(:new).and_return(service_double)
     end
 
