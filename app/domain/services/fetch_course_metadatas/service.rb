@@ -1,8 +1,15 @@
 class Services::FetchCourseMetadatas::Service
   def process
-    { course_responses: Course.pluck_with_keys({
-      uuid: :uuid,
-      ecosystem_uuid: :initial_ecosystem_uuid
-    }) }
+    courses = CourseEvent.create_course.uniq.order(:created_at)
+                                .pluck_with_keys(:course_uuid, :data, :created_at)
+
+    course_responses = courses.map{ |course|
+      {
+        :uuid => course[:course_uuid],
+        :initial_ecosystem_uuid => course[:data].deep_symbolize_keys.fetch(:ecosystem_uuid)
+      }
+    }
+
+    { course_responses:  course_responses}
   end
 end

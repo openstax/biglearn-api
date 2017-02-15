@@ -204,6 +204,13 @@ class JsonApiController < ApplicationController
           'type': 'object'
           # TODO: Validate ecosystem_event_data contents
         },
+        'cnx_identity': {
+          'type': 'string',
+          'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
+                     '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
+                     '[a-fA-F0-9]{12}' +
+                     '@([1-9]{1,3})\.([0-9]{1,3})$',
+        },
         'course_event_type': {
           'type': 'string',
           'enum': CourseEvent.types.keys

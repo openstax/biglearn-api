@@ -14,13 +14,20 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
     let(:ecosystems_count)           { rand(10) + 1 }
 
     let!(:ecosystems) do
-      FactoryGirl.create_list :ecosystem, ecosystems_count
+      FactoryGirl.create_list :ecosystem_event, ecosystems_count, {
+        data: {
+          book: {
+            cnx_identity: "#{SecureRandom.uuid}@#{rand(10)}.#{rand(10)}"
+          }
+        }
+      }
     end
 
     it "all ecosystem uuids are returned in hashes" do
       expect(action.fetch(:ecosystem_responses)).to eq(ecosystems.map{ |ecosystem| {
-        uuid: ecosystem[:uuid],
-        book_uuid: ecosystem[:book_uuid]
+        uuid: ecosystem[:ecosystem_uuid],
+        initial_book_cnx_identity: ecosystem[:data].deep_symbolize_keys
+                                .fetch(:book).fetch(:cnx_identity)
       } })
     end
   end
