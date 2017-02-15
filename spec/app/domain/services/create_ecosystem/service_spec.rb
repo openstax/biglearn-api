@@ -23,7 +23,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
       {
         container_uuid: SecureRandom.uuid,
         container_parent_uuid: given_book_chapters.sample.fetch(:container_uuid),
-        container_cnx_identity: "#{SecureRandom.uuid}@#{rand(10)}.#{rand(10)}",
+        container_cnx_identity: "#{SecureRandom.uuid}@#{rand(99) + 1}.#{rand(99) + 1}",
         pools: 3.times.map do
           {
             use_for_clue: [true, false].sample,
@@ -39,7 +39,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
       {
         container_uuid: SecureRandom.uuid,
         container_parent_uuid: nil,
-        container_cnx_identity: "#{SecureRandom.uuid}@#{rand(10)}.#{rand(10)}",
+        container_cnx_identity: "#{SecureRandom.uuid}@#{rand(99) + 1}.#{rand(99) + 1}",
         pools: [
           {
             use_for_clue: true,
@@ -54,7 +54,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
 
   let(:given_book)           do
     {
-      cnx_identity: "#{SecureRandom.uuid}@#{rand(10)}.#{rand(10)}",
+      cnx_identity: "#{SecureRandom.uuid}@#{rand(99) + 1}.#{rand(99) + 1}",
       contents: given_book_contents
     }
   end

@@ -58,7 +58,7 @@ RSpec.describe EcosystemsController, type: :request do
         ecosystem_responses: ecosystems_count.times.map{
           {
             uuid: SecureRandom.uuid,
-            initial_book_cnx_identity: "#{SecureRandom.uuid}@#{rand(10)}.#{rand(10)}"
+            cnx_identity: "#{SecureRandom.uuid}@#{rand(99) + 1}.#{rand(99) + 1}"
           }
         }
       }

@@ -5,8 +5,8 @@ class Services::FetchEcosystemMetadatas::Service
 
     ecosystem_responses = ecosystems.map{ |ecosystem|
       {
-        :uuid => ecosystem[:ecosystem_uuid],
-        :initial_book_cnx_identity => ecosystem[:data].deep_symbolize_keys
+        uuid: ecosystem[:ecosystem_uuid],
+        cnx_identity: ecosystem[:data].deep_symbolize_keys
                                 .fetch(:book).fetch(:cnx_identity)
       }
     }

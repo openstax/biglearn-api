@@ -209,7 +209,7 @@ class JsonApiController < ApplicationController
           'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
                      '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
                      '[a-fA-F0-9]{12}' +
-                     '@([0-9]{1,3})\.([0-9]{1,3})$',
+                     '@([1-9]{1,}[0-9]|[1-9])\.([1-9]{1,}[0-9]|[1-9])$',
         },
         'course_event_type': {
           'type': 'string',

@@ -5,8 +5,8 @@ class Services::FetchCourseMetadatas::Service
 
     course_responses = courses.map{ |course|
       {
-        :uuid => course[:course_uuid],
-        :initial_ecosystem_uuid => course[:data].deep_symbolize_keys.fetch(:ecosystem_uuid)
+        uuid: course[:course_uuid],
+        initial_ecosystem_uuid: course[:data].deep_symbolize_keys.fetch(:ecosystem_uuid)
       }
     }
 
