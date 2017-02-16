@@ -19,10 +19,10 @@ class JsonApiController < ApplicationController
     end
   end
 
-  def with_json_apis(input_schema:, output_schema:, &block)
-    _validate_request(input_schema)
+  def with_json_apis(input_schema: nil, output_schema: nil, &block)
+    _validate_request(input_schema) unless input_schema.nil?
     block.call
-    _validate_response(output_schema)
+    _validate_response(output_schema) unless output_schema.nil?
   end
 
 
@@ -203,6 +203,13 @@ class JsonApiController < ApplicationController
         'ecosystem_event_data': {
           'type': 'object'
           # TODO: Validate ecosystem_event_data contents
+        },
+        'cnx_identity': {
+          'type': 'string',
+          'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
+                     '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
+                     '[a-fA-F0-9]{12}' +
+                     '@([1-9]{1,}[0-9]|[1-9])\.([1-9]{1,}[0-9]|[1-9])$',
         },
         'course_event_type': {
           'type': 'string',

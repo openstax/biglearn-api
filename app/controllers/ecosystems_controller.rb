@@ -16,6 +16,17 @@ class EcosystemsController < JsonApiController
     end
   end
 
+  def fetch_metadatas
+    with_json_apis(output_schema: _fetch_metadatas_response_payload_schema) do
+
+      service = Services::FetchEcosystemMetadatas::Service.new
+      result = service.process()
+
+      response_payload = { ecosystem_responses: result.fetch(:ecosystem_responses) }
+      render json: response_payload.to_json, status: 200
+    end
+  end
+
   protected
 
   def _create_request_payload_schema
@@ -124,6 +135,36 @@ class EcosystemsController < JsonApiController
       'required': ['created_ecosystem_uuid'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
+    }
+  end
+
+  def _fetch_metadatas_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'ecosystem_responses': {
+          'type': 'array',
+          'items': {'$ref': '#definitions/ecosystem_metadata'},
+          'minItems': 0,
+          'maxItems': 1000,
+        },
+      },
+      'required': ['ecosystem_responses'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions,
+      'definitions': {
+        'ecosystem_metadata': {
+          'type': 'object',
+          'properties': {
+            'uuid': {'$ref': '#/standard_definitions/uuid'},
+            'cnx_identity': {'$ref': '#/standard_definitions/cnx_identity'}
+          },
+          'required': ['uuid'],
+          'additionalProperties': false
+        }
+      }
     }
   end
 
