@@ -47,11 +47,13 @@ ActiveRecord::Schema.define(version: 20170206191822) do
   add_index "assignments", ["uuid"], name: "index_assignments_on_uuid", unique: true, using: :btree
 
   create_table "book_containers", force: :cascade do |t|
-    t.uuid     "uuid",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.uuid     "uuid",           null: false
+    t.uuid     "ecosystem_uuid", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
+  add_index "book_containers", ["ecosystem_uuid"], name: "index_book_containers_on_ecosystem_uuid", using: :btree
   add_index "book_containers", ["uuid"], name: "index_book_containers_on_uuid", unique: true, using: :btree
 
   create_table "course_containers", force: :cascade do |t|
@@ -102,13 +104,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                null: false
     t.uuid     "student_uuid",        null: false
     t.uuid     "book_container_uuid", null: false
-    t.decimal  "aggregate",           null: false
-    t.decimal  "confidence_left",     null: false
-    t.decimal  "confidence_right",    null: false
-    t.integer  "sample_size",         null: false
-    t.boolean  "is_good_confidence",  null: false
-    t.boolean  "is_high_level",       null: false
-    t.boolean  "is_above_threshold",  null: false
+    t.jsonb    "data",                null: false
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
   end
@@ -140,14 +136,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                  null: false
     t.uuid     "course_container_uuid", null: false
     t.uuid     "book_container_uuid",   null: false
-    t.decimal  "aggregate",             null: false
-    t.decimal  "confidence_left",       null: false
-    t.decimal  "confidence_right",      null: false
-    t.integer  "sample_size",           null: false
-    t.integer  "unique_learner_count",  null: false
-    t.boolean  "is_good_confidence",    null: false
-    t.boolean  "is_high_level",         null: false
-    t.boolean  "is_above_threshold",    null: false
+    t.jsonb    "data",                  null: false
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
   end

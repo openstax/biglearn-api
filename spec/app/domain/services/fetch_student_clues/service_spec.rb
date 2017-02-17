@@ -37,31 +37,20 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
   end
 
   let(:default_clue_data)                    do
-    lambda do |pool_id|
-      {
-        aggregate: 0.5,
-        confidence: {
-          left: 0,
-          right: 1,
-          sample_size: 0,
-          unique_learner_count: 0
-        },
-        interpretation: {
-          confidence: 'bad',
-          level: 'low',
-          threshold: 'below'
-        },
-        pool_id: pool_id
-      }
-    end
+    {
+      minimum: 0,
+      most_likely: 0.5,
+      maximum: 1,
+      is_real: false
+    }
   end
 
   context "when non-existing book_container uuids are given" do
     it "the request_uuid is returned with clue_status: 'book_container_unknown'" do
       action.fetch(:student_clue_responses).each do |response|
-        expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
-        book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
-        expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+        request_uuid = response.fetch(:request_uuid)
+        book_container_uuid = book_container_uuids_by_request_uuid.fetch request_uuid
+        expect(response.fetch(:clue_data)).to eq default_clue_data
         expect(response.fetch(:clue_status)).to eq 'book_container_unknown'
       end
     end
@@ -78,9 +67,12 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
     context "when non-existing student uuids are given" do
       it "the request_uuid is returned with clue_status: 'student_unknown'" do
         action.fetch(:student_clue_responses).each do |response|
-          expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
-          book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
-          expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+          request_uuid = response.fetch(:request_uuid)
+          book_container_uuid = book_container_uuids_by_request_uuid.fetch request_uuid
+          book_container = BookContainer.find_by uuid: book_container_uuid
+          expect(response.fetch(:clue_data)).to eq(
+            default_clue_data.merge(ecosystem_uuid: book_container.ecosystem_uuid)
+          )
           expect(response.fetch(:clue_status)).to eq 'student_unknown'
         end
       end
@@ -97,9 +89,12 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
       context "when the CLUe is not yet ready" do
         it "the request_uuid is returned with clue_status: 'clue_unready'" do
           action.fetch(:student_clue_responses).each do |response|
-            expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
-            book_container_uuid = book_container_uuids_by_request_uuid[response.fetch(:request_uuid)]
-            expect(response.fetch(:clue_data)).to eq default_clue_data.call(book_container_uuid)
+            request_uuid = response.fetch(:request_uuid)
+            book_container_uuid = book_container_uuids_by_request_uuid.fetch request_uuid
+            book_container = BookContainer.find_by uuid: book_container_uuid
+            expect(response.fetch(:clue_data)).to eq(
+              default_clue_data.merge(ecosystem_uuid: book_container.ecosystem_uuid)
+            )
             expect(response.fetch(:clue_status)).to eq 'clue_unready'
           end
         end
@@ -119,25 +114,8 @@ RSpec.describe Services::FetchStudentClues::Service, type: :service do
           clues = [ clue_1, clue_2 ]
 
           action.fetch(:student_clue_responses).each_with_index do |response, index|
-            expect(book_container_uuids_by_request_uuid.keys).to include(response.fetch(:request_uuid))
-
             clue = clues[index]
-            expect(response.fetch(:clue_data)).to eq( {
-              aggregate: clue.aggregate,
-              confidence: {
-                left: clue.confidence_left,
-                right: clue.confidence_right,
-                sample_size: clue.sample_size,
-                unique_learner_count: clue.unique_learner_count
-              },
-              interpretation: {
-                confidence: clue.is_good_confidence ? 'good' : 'bad',
-                level: clue.is_high_level ? 'high' : 'low',
-                threshold: clue.is_above_threshold ? 'above' : 'below'
-              },
-              pool_id: clue.book_container_uuid
-            } )
-
+            expect(response.fetch(:clue_data)).to eq clue.data
             expect(response.fetch(:clue_status)).to eq 'clue_ready'
           end
         end

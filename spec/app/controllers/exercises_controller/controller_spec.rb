@@ -397,9 +397,9 @@ RSpec.describe ExercisesController, type: :request do
       ]
     end
 
-    let(:request_payload)           { { practice_worst_area_updates: given_worst_areas_update_requests } }
+    let(:request_payload)           { { practice_worst_areas_updates: given_worst_areas_update_requests } }
 
-    let(:target_result)             { { practice_worst_area_update_responses: target_worst_areas_update_responses } }
+    let(:target_result)             { { practice_worst_areas_update_responses: target_worst_areas_update_responses } }
     let(:target_response)           { target_result }
 
     let(:service_double)            do

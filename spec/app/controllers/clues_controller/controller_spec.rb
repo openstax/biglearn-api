@@ -6,6 +6,8 @@ RSpec.describe CluesController, type: :request do
   let(:given_request_2_uuid)            { SecureRandom.uuid }
   let(:given_book_container_2_uuid)     { SecureRandom.uuid }
 
+  let(:target_ecosystem_uuid)           { SecureRandom.uuid }
+
   let(:target_response)                 { target_result }
 
   context '#fetch_student' do
@@ -29,44 +31,29 @@ RSpec.describe CluesController, type: :request do
 
     let(:request_payload)               { { student_clue_requests: given_clue_requests } }
 
+    let(:target_ecosystem_uuid)         { SecureRandom.uuid }
+
     let(:target_result)                 do
       {
         student_clue_responses: [
           {
             request_uuid: given_request_1_uuid,
             clue_data: {
-              aggregate: 0.8,
-              confidence: {
-                left: 0.7,
-                right: 0.9,
-                sample_size: 10,
-                unique_learner_count: 1
-              },
-              interpretation: {
-                confidence: 'good',
-                level: 'high',
-                threshold: 'above'
-              },
-              pool_id: given_book_container_1_uuid
+              minimum: 0.7,
+              most_likely: 0.8,
+              maximum: 0.9,
+              is_real: true,
+              ecosystem_uuid: target_ecosystem_uuid
             },
             clue_status: 'clue_ready'
           },
           {
             request_uuid: given_request_2_uuid,
             clue_data: {
-              aggregate: 0.5,
-              confidence: {
-                left: 0,
-                right: 1,
-                sample_size: 0,
-                unique_learner_count: 0
-              },
-              interpretation: {
-                confidence: 'bad',
-                level: 'low',
-                threshold: 'below'
-              },
-              pool_id: given_book_container_2_uuid
+              minimum: 0,
+              most_likely: 0.5,
+              maximum: 1,
+              is_real: false
             },
             clue_status: 'student_unknown'
           }
@@ -134,38 +121,21 @@ RSpec.describe CluesController, type: :request do
           {
             request_uuid: given_request_1_uuid,
             clue_data: {
-              aggregate: 0.8,
-              confidence: {
-                left: 0.7,
-                right: 0.9,
-                sample_size: 50,
-                unique_learner_count: 5
-              },
-              interpretation: {
-                confidence: 'good',
-                level: 'high',
-                threshold: 'above'
-              },
-              pool_id: given_book_container_1_uuid
+              minimum: 0.7,
+              most_likely: 0.8,
+              maximum: 0.9,
+              is_real: true,
+              ecosystem_uuid: target_ecosystem_uuid
             },
             clue_status: 'clue_ready'
           },
           {
             request_uuid: given_request_2_uuid,
             clue_data: {
-              aggregate: 0.5,
-              confidence: {
-                left: 0,
-                right: 1,
-                sample_size: 0,
-                unique_learner_count: 0
-              },
-              interpretation: {
-                confidence: 'bad',
-                level: 'low',
-                threshold: 'below'
-              },
-              pool_id: given_book_container_2_uuid
+              minimum: 0,
+              most_likely: 0.5,
+              maximum: 1,
+              is_real: false
             },
             clue_status: 'course_container_unknown'
           }
@@ -212,36 +182,19 @@ RSpec.describe CluesController, type: :request do
 
     let(:given_clue_data_1)             do
       {
-        aggregate: 0.8,
-        confidence: {
-          left: 0.7,
-          right: 0.9,
-          sample_size: 10,
-          unique_learner_count: 1
-        },
-        interpretation: {
-          confidence: 'good',
-          level: 'high',
-          threshold: 'above'
-        },
-        pool_id: given_book_container_1_uuid
+        minimum: 0.7,
+        most_likely: 0.8,
+        maximum: 0.9,
+        is_real: true,
+        ecosystem_uuid: target_ecosystem_uuid
       }
     end
     let(:given_clue_data_2)             do
       {
-        aggregate: 0.5,
-        confidence: {
-          left: 0,
-          right: 1,
-          sample_size: 0,
-          unique_learner_count: 0
-        },
-        interpretation: {
-          confidence: 'bad',
-          level: 'low',
-          threshold: 'below'
-        },
-        pool_id: given_book_container_2_uuid
+        minimum: 0,
+        most_likely: 0.5,
+        maximum: 1,
+        is_real: false
       }
     end
 
@@ -318,36 +271,19 @@ RSpec.describe CluesController, type: :request do
 
     let(:given_clue_data_1)             do
       {
-        aggregate: 0.8,
-        confidence: {
-          left: 0.7,
-          right: 0.9,
-          sample_size: 10,
-          unique_learner_count: 1
-        },
-        interpretation: {
-          confidence: 'good',
-          level: 'high',
-          threshold: 'above'
-        },
-        pool_id: given_book_container_1_uuid
+        minimum: 0.7,
+        most_likely: 0.8,
+        maximum: 0.9,
+        is_real: true,
+        ecosystem_uuid: target_ecosystem_uuid
       }
     end
     let(:given_clue_data_2)             do
       {
-        aggregate: 0.5,
-        confidence: {
-          left: 0,
-          right: 1,
-          sample_size: 0,
-          unique_learner_count: 0
-        },
-        interpretation: {
-          confidence: 'bad',
-          level: 'low',
-          threshold: 'below'
-        },
-        pool_id: given_book_container_2_uuid
+        minimum: 0,
+        most_likely: 0.5,
+        maximum: 1,
+        is_real: false
       }
     end
 

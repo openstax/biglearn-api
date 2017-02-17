@@ -160,40 +160,13 @@ class JsonApiController < ApplicationController
         'clue_data': {
           'type': 'object',
           'properties': {
-            'aggregate': {'$ref': '#/standard_definitions/number_between_0_and_1'},
-            'confidence': {
-              'type': 'object',
-              'properties': {
-                'left':                 {'$ref': '#/standard_definitions/number_between_0_and_1'},
-                'right':                {'$ref': '#/standard_definitions/number_between_0_and_1'},
-                'sample_size':          {'$ref': '#/standard_definitions/non_negative_integer'},
-                'unique_learner_count': {'$ref': '#/standard_definitions/non_negative_integer'}
-              },
-              'required': ['left', 'right', 'sample_size', 'unique_learner_count'],
-              'additionalProperties': false
-            },
-            'interpretation': {
-              'type': 'object',
-              'properties': {
-                'confidence': {
-                  'type': 'string',
-                  'enum': ['good', 'bad']
-                },
-                'level': {
-                  'type': 'string',
-                  'enum': ['high', 'low']
-                },
-                'threshold': {
-                  'type': 'string',
-                  'enum': ['above', 'below']
-                }
-              },
-              'required': ['confidence', 'level', 'threshold'],
-              'additionalProperties': false
-            },
-            'pool_id': {'$ref': '#/standard_definitions/uuid'}
+            'minimum': {'$ref': '#/standard_definitions/number_between_0_and_1'},
+            'most_likely': {'$ref': '#/standard_definitions/number_between_0_and_1'},
+            'maximum': {'$ref': '#/standard_definitions/number_between_0_and_1'},
+            'is_real': {'type': 'boolean'},
+            'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'}
           },
-          'required': ['aggregate', 'confidence', 'interpretation', 'pool_id'],
+          'required': ['minimum', 'most_likely', 'maximum', 'is_real'],
           'additionalProperties': false
         },
         'ecosystem_event_type': {
