@@ -8,19 +8,11 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   let(:given_book_container_1_uuid) { SecureRandom.uuid }
   let(:given_clue_data_1)           do
     {
-      aggregate: 0.8,
-      confidence: {
-        left: 0.7,
-        right: 0.9,
-        sample_size: 10,
-        unique_learner_count: 1
-      },
-      interpretation: {
-        confidence: 'good',
-        level: 'high',
-        threshold: 'above'
-      },
-      pool_id: given_book_container_1_uuid
+      minimum: 0.7,
+      most_likely: 0.8,
+      maximum: 0.9,
+      is_real: true,
+      ecosystem_uuid: SecureRandom.uuid
     }
   end
 
@@ -29,19 +21,10 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   let(:given_book_container_2_uuid) { SecureRandom.uuid }
   let(:given_clue_data_2)           do
     {
-      aggregate: 0.5,
-      confidence: {
-        left: 0,
-        right: 1,
-        sample_size: 0,
-        unique_learner_count: 0
-      },
-      interpretation: {
-        confidence: 'bad',
-        level: 'low',
-        threshold: 'below'
-      },
-      pool_id: given_book_container_2_uuid
+      minimum: 0,
+      most_likely: 0.5,
+      maximum: 1,
+      is_real: false
     }
   end
 
@@ -78,19 +61,7 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
         student_clue = StudentClue.find_by uuid: update[:request_uuid]
         expect(student_clue.student_uuid).to eq update[:student_uuid]
         expect(student_clue.book_container_uuid).to eq update[:book_container_uuid]
-
-        clue_data = update[:clue_data]
-        expect(student_clue.aggregate).to eq clue_data[:aggregate]
-
-        confidence = clue_data[:confidence]
-        expect(student_clue.confidence_left).to eq confidence[:left]
-        expect(student_clue.confidence_right).to eq confidence[:right]
-        expect(student_clue.sample_size).to eq confidence[:sample_size]
-
-        interpretation = clue_data[:interpretation]
-        expect(student_clue.is_good_confidence).to eq(interpretation[:confidence] == 'good')
-        expect(student_clue.is_high_level).to eq(interpretation[:level] == 'high')
-        expect(student_clue.is_above_threshold).to eq(interpretation[:threshold] == 'above')
+        expect(student_clue.data.deep_symbolize_keys).to eq update[:clue_data]
       end
 
       action.fetch(:student_clue_update_responses).each_with_index do |response, index|
@@ -115,19 +86,7 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
         student_clue = StudentClue.find_by uuid: update[:request_uuid]
         expect(student_clue.student_uuid).to eq update[:student_uuid]
         expect(student_clue.book_container_uuid).to eq update[:book_container_uuid]
-
-        clue_data = update[:clue_data]
-        expect(student_clue.aggregate).to eq clue_data[:aggregate]
-
-        confidence = clue_data[:confidence]
-        expect(student_clue.confidence_left).to eq confidence[:left]
-        expect(student_clue.confidence_right).to eq confidence[:right]
-        expect(student_clue.sample_size).to eq confidence[:sample_size]
-
-        interpretation = clue_data[:interpretation]
-        expect(student_clue.is_good_confidence).to eq(interpretation[:confidence] == 'good')
-        expect(student_clue.is_high_level).to eq(interpretation[:level] == 'high')
-        expect(student_clue.is_above_threshold).to eq(interpretation[:threshold] == 'above')
+        expect(student_clue.data.deep_symbolize_keys).to eq update[:clue_data]
       end
 
       action.fetch(:student_clue_update_responses).each_with_index do |response, index|

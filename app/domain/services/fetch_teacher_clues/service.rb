@@ -14,7 +14,9 @@ class Services::FetchTeacherClues::Service
     end
 
     missing_clue_requests = teacher_clue_requests.reject do |request|
-      clues_map[request.fetch(:course_container_uuid).downcase][request.fetch(:book_container_uuid).downcase]
+      course_container_uuid = request.fetch(:course_container_uuid).downcase
+      book_container_uuid = request.fetch(:book_container_uuid).downcase
+      clues_map[course_container_uuid][book_container_uuid]
     end
     missing_clue_course_container_uuids = missing_clue_requests.map do |request|
       request.fetch(:course_container_uuid)
@@ -28,49 +30,33 @@ class Services::FetchTeacherClues::Service
       BookContainer.where(uuid: missing_clue_book_container_uuids).index_by(&:uuid)
 
     responses = teacher_clue_requests.map do |request|
-      clue = \
-        clues_map[request.fetch(:course_container_uuid).downcase][request.fetch(:book_container_uuid).downcase]
+      course_container_uuid = request.fetch(:course_container_uuid).downcase
+      book_container_uuid = request.fetch(:book_container_uuid).downcase
+      clue = clues_map[course_container_uuid][book_container_uuid]
 
       if clue.nil?
+        book_container = missing_clue_book_containers_by_uuid[book_container_uuid]
+
         clue_data = {
-          aggregate: 0.5,
-          confidence: {
-            left: 0,
-            right: 1,
-            sample_size: 0,
-            unique_learner_count: 0
-          },
-          interpretation: {
-            confidence: 'bad',
-            level: 'low',
-            threshold: 'below'
-          },
-          pool_id: request.fetch(:book_container_uuid)
+          minimum: 0,
+          most_likely: 0.5,
+          maximum: 1,
+          is_real: false
         }
 
-        clue_status = if missing_clue_book_containers_by_uuid[request.fetch(:book_container_uuid)].nil?
-          'book_container_unknown'
-        elsif missing_clue_course_containers_by_uuid[request.fetch(:course_container_uuid)].nil?
-          'course_container_unknown'
+        if book_container.nil?
+          clue_status = 'book_container_unknown'
         else
-          'clue_unready'
+          clue_data.merge!(ecosystem_uuid: book_container.ecosystem_uuid)
+
+          if missing_clue_course_containers_by_uuid[course_container_uuid].nil?
+            clue_status = 'course_container_unknown'
+          else
+            clue_status = 'clue_unready'
+          end
         end
       else
-        clue_data = {
-          aggregate: clue.aggregate,
-          confidence: {
-            left: clue.confidence_left,
-            right: clue.confidence_right,
-            sample_size: clue.sample_size,
-            unique_learner_count: clue.unique_learner_count
-          },
-          interpretation: {
-            confidence: clue.is_good_confidence ? 'good' : 'bad',
-            level: clue.is_high_level ? 'high' : 'low',
-            threshold: clue.is_above_threshold ? 'above' : 'below'
-          },
-          pool_id: request.fetch(:book_container_uuid)
-        }
+        clue_data = clue.data
 
         clue_status = 'clue_ready'
       end

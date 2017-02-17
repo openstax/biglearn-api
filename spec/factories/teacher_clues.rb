@@ -5,14 +5,14 @@ FactoryGirl.define do
     uuid                  { SecureRandom.uuid }
     course_container_uuid { SecureRandom.uuid }
     book_container_uuid   { SecureRandom.uuid }
-
-    aggregate             { sorted_random_values.second }
-    confidence_left       { sorted_random_values.first }
-    confidence_right      { sorted_random_values.last }
-    sample_size           { rand(10) }
-    unique_learner_count  { rand(10) }
-    is_good_confidence    { [true, false].sample }
-    is_high_level         { [true, false].sample }
-    is_above_threshold    { [true, false].sample }
+    data                  do
+      {
+        minimum:        sorted_random_values.first,
+        most_likely:    sorted_random_values.second,
+        maximum:        sorted_random_values.last,
+        is_real:        [true, false].sample,
+        ecosystem_uuid: SecureRandom.uuid
+      }
+    end
   end
 end

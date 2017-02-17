@@ -6,42 +6,25 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
   let(:given_request_1_uuid)          { SecureRandom.uuid }
   let(:given_course_container_1_uuid) { SecureRandom.uuid }
   let(:given_book_container_1_uuid)   { SecureRandom.uuid }
-  let(:given_clue_data_1)             do
+  let(:given_clue_data_1)           do
     {
-      aggregate: 0.8,
-      confidence: {
-        left: 0.7,
-        right: 0.9,
-        sample_size: 10,
-        unique_learner_count: 1
-      },
-      interpretation: {
-        confidence: 'good',
-        level: 'high',
-        threshold: 'above'
-      },
-      pool_id: given_book_container_1_uuid
+      minimum: 0.7,
+      most_likely: 0.8,
+      maximum: 0.9,
+      is_real: true,
+      ecosystem_uuid: SecureRandom.uuid
     }
   end
 
   let(:given_request_2_uuid)          { SecureRandom.uuid }
   let(:given_course_container_2_uuid) { SecureRandom.uuid }
   let(:given_book_container_2_uuid)   { SecureRandom.uuid }
-  let(:given_clue_data_2)             do
+  let(:given_clue_data_2)           do
     {
-      aggregate: 0.5,
-      confidence: {
-        left: 0,
-        right: 1,
-        sample_size: 0,
-        unique_learner_count: 0
-      },
-      interpretation: {
-        confidence: 'bad',
-        level: 'low',
-        threshold: 'below'
-      },
-      pool_id: given_book_container_2_uuid
+      minimum: 0,
+      most_likely: 0.5,
+      maximum: 1,
+      is_real: false
     }
   end
 
@@ -78,20 +61,7 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
         teacher_clue = TeacherClue.find_by uuid: update[:request_uuid]
         expect(teacher_clue.course_container_uuid).to eq update[:course_container_uuid]
         expect(teacher_clue.book_container_uuid).to eq update[:book_container_uuid]
-
-        clue_data = update[:clue_data]
-        expect(teacher_clue.aggregate).to eq clue_data[:aggregate]
-
-        confidence = clue_data[:confidence]
-        expect(teacher_clue.confidence_left).to eq confidence[:left]
-        expect(teacher_clue.confidence_right).to eq confidence[:right]
-        expect(teacher_clue.sample_size).to eq confidence[:sample_size]
-        expect(teacher_clue.unique_learner_count).to eq confidence[:unique_learner_count]
-
-        interpretation = clue_data[:interpretation]
-        expect(teacher_clue.is_good_confidence).to eq(interpretation[:confidence] == 'good')
-        expect(teacher_clue.is_high_level).to eq(interpretation[:level] == 'high')
-        expect(teacher_clue.is_above_threshold).to eq(interpretation[:threshold] == 'above')
+        expect(teacher_clue.data.deep_symbolize_keys).to eq update[:clue_data]
       end
 
       action.fetch(:teacher_clue_update_responses).each_with_index do |response, index|
@@ -116,20 +86,7 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
         teacher_clue = TeacherClue.find_by uuid: update[:request_uuid]
         expect(teacher_clue.course_container_uuid).to eq update[:course_container_uuid]
         expect(teacher_clue.book_container_uuid).to eq update[:book_container_uuid]
-
-        clue_data = update[:clue_data]
-        expect(teacher_clue.aggregate).to eq clue_data[:aggregate]
-
-        confidence = clue_data[:confidence]
-        expect(teacher_clue.confidence_left).to eq confidence[:left]
-        expect(teacher_clue.confidence_right).to eq confidence[:right]
-        expect(teacher_clue.sample_size).to eq confidence[:sample_size]
-        expect(teacher_clue.unique_learner_count).to eq confidence[:unique_learner_count]
-
-        interpretation = clue_data[:interpretation]
-        expect(teacher_clue.is_good_confidence).to eq(interpretation[:confidence] == 'good')
-        expect(teacher_clue.is_high_level).to eq(interpretation[:level] == 'high')
-        expect(teacher_clue.is_above_threshold).to eq(interpretation[:threshold] == 'above')
+        expect(teacher_clue.data.deep_symbolize_keys).to eq update[:clue_data]
       end
 
       action.fetch(:teacher_clue_update_responses).each_with_index do |response, index|

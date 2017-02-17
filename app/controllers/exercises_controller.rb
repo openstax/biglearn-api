@@ -19,8 +19,7 @@ class ExercisesController < JsonApiController
   def fetch_assignment_spes
     with_json_apis(input_schema:  _fetch_assignment_spes_request_payload_schema,
                    output_schema: _fetch_assignment_spes_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      spe_requests = request_payload.deep_symbolize_keys.fetch(:spe_requests)
+      spe_requests = json_parsed_request_payload.fetch(:spe_requests)
 
       service = Services::FetchAssignmentSpes::Service.new
       result = service.process(spe_requests: spe_requests)
@@ -36,8 +35,7 @@ class ExercisesController < JsonApiController
   def fetch_practice_worst_areas
     with_json_apis(input_schema:  _fetch_practice_worst_areas_request_payload_schema,
                    output_schema: _fetch_practice_worst_areas_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      worst_areas_requests = request_payload.deep_symbolize_keys.fetch(:worst_areas_requests)
+      worst_areas_requests = json_parsed_request_payload.fetch(:worst_areas_requests)
 
       service = Services::FetchPracticeWorstAreasExercises::Service.new
       result = service.process(worst_areas_requests: worst_areas_requests)
@@ -54,7 +52,7 @@ class ExercisesController < JsonApiController
     with_json_apis(input_schema:  _update_assignment_pes_request_payload_schema,
                    output_schema: _update_assignment_pes_response_payload_schema) do
       request_payload = json_parsed_request_payload
-      pe_updates = request_payload.deep_symbolize_keys.fetch(:pe_updates)
+      pe_updates = request_payload.fetch(:pe_updates)
 
       service = Services::UpdateAssignmentPes::Service.new
       result = service.process(pe_updates: pe_updates)
@@ -71,7 +69,7 @@ class ExercisesController < JsonApiController
     with_json_apis(input_schema:  _update_assignment_spes_request_payload_schema,
                    output_schema: _update_assignment_spes_response_payload_schema) do
       request_payload = json_parsed_request_payload
-      spe_updates = request_payload.deep_symbolize_keys.fetch(:spe_updates)
+      spe_updates = request_payload.fetch(:spe_updates)
 
       service = Services::UpdateAssignmentSpes::Service.new
       result = service.process(spe_updates: spe_updates)
@@ -88,16 +86,16 @@ class ExercisesController < JsonApiController
     with_json_apis(input_schema:  _update_practice_worst_areas_request_payload_schema,
                    output_schema: _update_practice_worst_areas_response_payload_schema) do
       request_payload = json_parsed_request_payload
-      practice_worst_area_updates = request_payload.deep_symbolize_keys.fetch(:practice_worst_area_updates)
+      practice_worst_areas_updates = request_payload.fetch(:practice_worst_areas_updates)
 
       service = Services::UpdatePracticeWorstAreasExercises::Service.new
-      result = service.process(practice_worst_area_updates: practice_worst_area_updates)
+      result = service.process(practice_worst_areas_updates: practice_worst_areas_updates)
 
-      response_data = result.fetch(:practice_worst_area_update_responses).map do |response|
+      response_data = result.fetch(:practice_worst_areas_update_responses).map do |response|
         response.slice(:request_uuid, :update_status)
       end
 
-      render json: { practice_worst_area_update_responses: response_data }.to_json, status: 200
+      render json: { practice_worst_areas_update_responses: response_data }.to_json, status: 200
     end
   end
 
@@ -467,18 +465,18 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'practice_worst_area_updates': {
+        'practice_worst_areas_updates': {
           'type': 'array',
-          'items': {'$ref': '#definitions/practice_worst_area_update'},
+          'items': {'$ref': '#definitions/practice_worst_areas_update'},
           'minItems': 0,
           'maxItems': 1000,
         },
       },
-      'required': ['practice_worst_area_updates'],
+      'required': ['practice_worst_areas_updates'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'practice_worst_area_update': {
+        'practice_worst_areas_update': {
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
@@ -503,18 +501,18 @@ class ExercisesController < JsonApiController
 
       'type': 'object',
       'properties': {
-        'practice_worst_area_update_responses': {
+        'practice_worst_areas_update_responses': {
           'type': 'array',
-          'items': {'$ref': '#definitions/practice_worst_area_update_response'},
+          'items': {'$ref': '#definitions/practice_worst_areas_update_response'},
           'minItems': 0,
           'maxItems': 1000,
         },
       },
-      'required': ['practice_worst_area_update_responses'],
+      'required': ['practice_worst_areas_update_responses'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'practice_worst_area_update_response': {
+        'practice_worst_areas_update_response': {
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
