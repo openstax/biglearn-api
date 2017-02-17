@@ -95,7 +95,11 @@ class EcosystemsController < JsonApiController
               'maxItems': 500,
             },
           },
-          'required': ['use_for_clue', 'use_for_personalized_for_assignment_types', 'exercise_uuids'],
+          'required': [
+            'use_for_clue',
+            'use_for_personalized_for_assignment_types',
+            'exercise_uuids'
+          ],
           'additionalProperties': false,
         },
         'exercise': {

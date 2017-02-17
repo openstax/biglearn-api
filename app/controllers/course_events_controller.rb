@@ -48,7 +48,7 @@ class CourseEventsController < JsonApiController
               'maximum': 1000
             }
           },
-          'required': ['course_uuid', 'sequence_number_offset', 'event_limit'],
+          'required': ['request_uuid', 'course_uuid', 'sequence_number_offset', 'event_limit'],
           'additionalProperties': false
         }
       }
@@ -94,7 +94,7 @@ class CourseEventsController < JsonApiController
             },
             'is_stopped_at_gap': {'type': 'boolean'}
           },
-          'required': ['course_uuid', 'events', 'is_stopped_at_gap'],
+          'required': ['request_uuid', 'course_uuid', 'events', 'is_stopped_at_gap'],
           'additionalProperties': false
         }
       }

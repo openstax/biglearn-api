@@ -50,7 +50,13 @@ class RostersController < JsonApiController
               'maxItems': 1000,
             },
           },
-          'required': ['course_uuid', 'sequence_number', 'course_containers', 'students'],
+          'required': [
+            'request_uuid',
+            'course_uuid',
+            'sequence_number',
+            'course_containers',
+            'students'
+          ],
           'additionalProperties': false,
         },
         'course_container': {

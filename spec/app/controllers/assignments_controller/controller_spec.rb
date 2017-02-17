@@ -1,8 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe AssignmentsController, type: :request do
-  let(:given_assignment_uuid)                   { SecureRandom.uuid }
+  let(:given_request_uuid)                    { SecureRandom.uuid }
+  let(:given_course_uuid)                     { SecureRandom.uuid }
   let(:given_sequence_number)                 { rand(10) }
+  let(:given_assignment_uuid)                 { SecureRandom.uuid }
   let(:given_is_deleted)                      { false }
   let(:given_ecosystem_uuid)                  { SecureRandom.uuid }
   let(:given_student_uuid)                    { SecureRandom.uuid }
@@ -33,8 +35,10 @@ RSpec.describe AssignmentsController, type: :request do
   let(:given_assignments)                     do
     [
       {
-        assignment_uuid: given_assignment_uuid,
+        request_uuid: given_request_uuid,
+        course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
+        assignment_uuid: given_assignment_uuid,
         is_deleted: given_is_deleted,
         ecosystem_uuid: given_ecosystem_uuid,
         student_uuid: given_student_uuid,

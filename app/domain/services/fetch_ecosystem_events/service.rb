@@ -19,7 +19,7 @@ class Services::FetchEcosystemEvents::Service
                                                        .group_by(&:ecosystem_uuid)
 
     responses = ecosystem_event_requests.map do |request|
-      ecosystem_events = ecosystem_events_by_ecosystem_uuid[request.fetch(:ecosystem_uuid)]
+      ecosystem_events = ecosystem_events_by_ecosystem_uuid[request.fetch(:ecosystem_uuid)] || []
       included_event_types = Set.new(request.fetch(:event_types))
 
       current_sequence_number = request.fetch(:sequence_number_offset)

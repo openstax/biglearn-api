@@ -39,7 +39,7 @@ class GlobalExerciseExclusionsController < JsonApiController
           'maxItems': 10000,
         },
       },
-      'required': ['request_uuid', 'sequence_number', 'exclusions'],
+      'required': ['request_uuid', 'course_uuid', 'sequence_number', 'exclusions'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }

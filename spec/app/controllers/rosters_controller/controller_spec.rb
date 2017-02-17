@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe RostersController, type: :request do
+  let(:given_request_uuid)                 { SecureRandom.uuid }
   let(:given_course_uuid)                  { SecureRandom.uuid }
   let(:given_sequence_number)              { rand(10) }
 
@@ -21,6 +22,7 @@ RSpec.describe RostersController, type: :request do
   let(:given_rosters)                      do
     [
       {
+        request_uuid: given_request_uuid,
         course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
         course_containers: given_course_containers,

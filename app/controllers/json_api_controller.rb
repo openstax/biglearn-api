@@ -2,7 +2,8 @@ require 'json-schema'
 
 class JsonApiController < ApplicationController
 
-  protect_from_forgery #with: :exception
+  # Skip verifying the CSRF token
+  skip_before_action :verify_authenticity_token
 
   rescue_from Errors::AppRequestValidationError,  with: :_render_app_request_validation_error
   rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error

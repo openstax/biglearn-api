@@ -48,7 +48,7 @@ class EcosystemEventsController < JsonApiController
               'maximum': 1000
             }
           },
-          'required': ['ecosystem_uuid', 'sequence_number_offset', 'event_limit'],
+          'required': ['request_uuid', 'ecosystem_uuid', 'sequence_number_offset', 'event_limit'],
           'additionalProperties': false
         }
       }
@@ -94,7 +94,7 @@ class EcosystemEventsController < JsonApiController
             },
             'is_stopped_at_gap': {'type': 'boolean'}
           },
-          'required': ['ecosystem_uuid', 'events', 'is_stopped_at_gap'],
+          'required': ['request_uuid', 'ecosystem_uuid', 'events', 'is_stopped_at_gap'],
           'additionalProperties': false
         }
       }

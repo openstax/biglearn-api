@@ -19,7 +19,7 @@ class Services::FetchCourseEvents::Service
                                               .group_by(&:course_uuid)
 
     responses = course_event_requests.map do |request|
-      course_events = course_events_by_course_uuid[request.fetch(:course_uuid)]
+      course_events = course_events_by_course_uuid[request.fetch(:course_uuid)] || []
       included_event_types = Set.new(request.fetch(:event_types))
 
       current_sequence_number = request.fetch(:sequence_number_offset)

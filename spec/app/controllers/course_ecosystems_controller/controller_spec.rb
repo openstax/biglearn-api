@@ -69,19 +69,27 @@ RSpec.describe CourseEcosystemsController, type: :request do
 
   context '#update' do
     let(:given_request_uuid_1)     { SecureRandom.uuid }
+    let(:given_course_uuid_1)      { SecureRandom.uuid }
+    let(:given_sequence_number_1)  { rand(100) }
     let(:given_preparation_uuid_1) { SecureRandom.uuid }
 
     let(:given_request_uuid_2)     { SecureRandom.uuid }
+    let(:given_course_uuid_2)      { SecureRandom.uuid }
+    let(:given_sequence_number_2)  { rand(100) }
     let(:given_preparation_uuid_2) { SecureRandom.uuid }
 
     let(:given_update_requests)    do
       [
         {
           request_uuid: given_request_uuid_1,
+          course_uuid: given_course_uuid_1,
+          sequence_number: given_sequence_number_1,
           preparation_uuid: given_preparation_uuid_1
         },
         {
           request_uuid: given_request_uuid_2,
+          course_uuid: given_course_uuid_2,
+          sequence_number: given_sequence_number_2,
           preparation_uuid: given_preparation_uuid_2
         }
       ]

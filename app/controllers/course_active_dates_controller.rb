@@ -39,7 +39,7 @@ class CourseActiveDatesController < JsonApiController
         'starts_at':       {'$ref': '#/standard_definitions/datetime'},
         'ends_at':         {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['course_uuid', 'starts_at', 'ends_at'],
+      'required': ['request_uuid', 'course_uuid', 'sequence_number', 'starts_at', 'ends_at'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }

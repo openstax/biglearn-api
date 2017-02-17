@@ -86,7 +86,7 @@ class CoursesController < JsonApiController
             'uuid': {'$ref': '#standard_definitions/uuid'},
             'initial_ecosystem_uuid': {'$ref': '#standard_definitions/uuid'}
           },
-          'required': ['uuid'],
+          'required': ['uuid', 'initial_ecosystem_uuid'],
           'additionalProperties': false
         }
       }
