@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
   post '/create_ecosystem' => 'ecosystems#create'
+  post '/fetch_ecosystem_metadatas' => 'ecosystems#fetch_metadatas'
+  post '/fetch_ecosystem_events' => 'ecosystems#fetch_events'
 
   post '/create_course' => 'courses#create'
-
-  post '/fetch_ecosystem_metadatas' => 'ecosystems#fetch_metadatas'
   post '/fetch_course_metadatas' => 'courses#fetch_metadatas'
+  post '/fetch_course_events' => 'courses#fetch_events'
 
   post '/update_rosters' => 'rosters#update'
   post '/update_course_active_dates' => 'course_active_dates#update'
@@ -32,7 +33,4 @@ Rails.application.routes.draw do
 
   post '/update_student_clues' => 'clues#update_student'
   post '/update_teacher_clues' => 'clues#update_teacher'
-
-  post '/fetch_ecosystem_events' => 'ecosystem_events#fetch'
-  post '/fetch_course_events' => 'course_events#fetch'
 end

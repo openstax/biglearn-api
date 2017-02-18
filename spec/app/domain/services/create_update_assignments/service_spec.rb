@@ -108,7 +108,9 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
         trial_uuid = assigned_exercise.fetch(:trial_uuid)
         given_assigned_exercise = given_assigned_exercises_by_trial_uuid[trial_uuid]
 
-        expect(assigned_exercise.fetch(:exercise_uuid)).to eq given_assigned_exercise.fetch(:exercise_uuid)
+        expect(assigned_exercise.fetch(:exercise_uuid)).to eq(
+          given_assigned_exercise.fetch(:exercise_uuid)
+        )
         expect(assigned_exercise.fetch(:is_spe)).to eq given_assigned_exercise.fetch(:is_spe)
         expect(assigned_exercise.fetch(:is_pe)).to eq given_assigned_exercise.fetch(:is_pe)
       end

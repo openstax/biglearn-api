@@ -12,4 +12,10 @@ RSpec.describe EcosystemsController, type: :routing do
       expect(post '/fetch_ecosystem_metadatas').to route_to('ecosystems#fetch_metadatas')
     end
   end
+
+  context "POST /fetch_ecosystem_events" do
+    it "routes to #fetch_events" do
+      expect(post '/fetch_ecosystem_events').to route_to('ecosystems#fetch_events')
+    end
+  end
 end
