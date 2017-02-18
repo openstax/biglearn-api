@@ -56,7 +56,7 @@ RSpec.describe AssignmentsController, type: :request do
   let(:request_payload)                       { { assignments: given_assignments } }
 
   let(:target_assignments)                    do
-    given_assignments.map { |assignment| assignment.slice(:assignment_uuid, :sequence_number) }
+    [ { request_uuid: given_request_uuid, updated_assignment_uuid: given_assignment_uuid } ]
   end
   let(:target_result)                         { { updated_assignments: target_assignments } }
   let(:target_response)                       { target_result }

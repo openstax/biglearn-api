@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   post '/fetch_ecosystem_metadatas' => 'ecosystems#fetch_metadatas'
   post '/fetch_course_metadatas' => 'courses#fetch_metadatas'
 
-  post '/update_roster' => 'rosters#update'
+  post '/update_rosters' => 'rosters#update'
   post '/update_course_active_dates' => 'course_active_dates#update'
 
   post '/prepare_course_ecosystem' => 'course_ecosystems#prepare'

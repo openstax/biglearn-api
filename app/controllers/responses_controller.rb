@@ -6,9 +6,9 @@ class ResponsesController < JsonApiController
       responses = json_parsed_request_payload.fetch(:responses)
 
       service = Services::RecordResponses::Service.new
-      recorded_response_uuids = service.process(responses: responses)
+      result = service.process(responses: responses).slice(:recorded_response_uuids)
 
-      render json: { recorded_response_uuids: recorded_response_uuids }.to_json, status: 200
+      render json: result.to_json, status: 200
     end
   end
 

@@ -119,10 +119,10 @@ class AssignmentsController < JsonApiController
           'items': {
             'type': 'object',
             'properties': {
-              'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
-              'sequence_number': {'$ref': '#standard_definitions/non_negative_integer'},
+              'request_uuid': {'$ref': '#standard_definitions/uuid'},
+              'updated_assignment_uuid': {'$ref': '#standard_definitions/uuid'}
             },
-            'required': ['assignment_uuid', 'sequence_number'],
+            'required': ['request_uuid', 'updated_assignment_uuid'],
             'additionalProperties': false,
           },
         },

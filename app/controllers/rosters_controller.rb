@@ -5,10 +5,10 @@ class RostersController < JsonApiController
                    output_schema: _update_response_payload_schema) do
       roster_data = json_parsed_request_payload.fetch(:rosters)
 
-      service = Services::UpdateRoster::Service.new
+      service = Services::UpdateRosters::Service.new
       result = service.process(rosters: roster_data)
 
-      response_payload = { updated_course_uuids: roster_data.map { |roster| roster.fetch(:course_uuid) } }
+      response_payload = result.slice(:updated_rosters)
       render json: response_payload.to_json, status: 200
     end
   end
@@ -87,14 +87,22 @@ class RostersController < JsonApiController
       '$schema': JSON_SCHEMA,
       'type': 'object',
       'properties': {
-        'updated_course_uuids': {
+        'updated_rosters': {
           'type': 'array',
-          'items': {'$ref': '#standard_definitions/uuid'},
+          'items': {
+            'type': 'object',
+            'properties': {
+              'request_uuid': {'$ref': '#standard_definitions/uuid'},
+              'updated_course_uuid': {'$ref': '#standard_definitions/uuid'}
+            },
+            'required': ['request_uuid', 'updated_course_uuid'],
+            'additionalProperties': false
+          },
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 100,
         },
       },
-      'required': ['updated_course_uuids'],
+      'required': ['updated_rosters'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }

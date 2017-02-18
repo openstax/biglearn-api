@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Services::UpdateRoster::Service, type: :service do
+RSpec.describe Services::UpdateRosters::Service, type: :service do
   let(:service)                                        { described_class.new }
 
   let(:given_request_uuid)                             { SecureRandom.uuid }
@@ -84,10 +84,10 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
                     .and change{CourseContainer.count}.by(given_course_containers.size)
                     .and change{Student.count}.by(given_students.size)
 
-      update_roster = CourseEvent.find_by(
+      update_rosters = CourseEvent.find_by(
         course_uuid: given_course_uuid, sequence_number: given_sequence_number
       )
-      data = update_roster.data.deep_symbolize_keys
+      data = update_rosters.data.deep_symbolize_keys
       expect(data.fetch(:course_containers)).to eq given_course_containers
       expect(data.fetch(:students)).to eq given_students
 
@@ -102,8 +102,11 @@ RSpec.describe Services::UpdateRoster::Service, type: :service do
       end
     end
 
-    it "the Course's uuid is returned" do
-      expect(action.fetch(:updated_course_uuids)).to eq [given_course_uuid]
+    it "the Course's uuid is returned with the request_uuid" do
+      updated_roster = action.fetch(:updated_rosters).first
+
+      expect(updated_roster.fetch(:request_uuid)).to eq given_request_uuid
+      expect(updated_roster.fetch(:updated_course_uuid)).to eq given_course_uuid
     end
   end
 end

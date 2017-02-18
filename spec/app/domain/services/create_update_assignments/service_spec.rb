@@ -118,12 +118,7 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
 
     it "the assignment_uuid and sequence_number are returned" do
       expect(action.fetch(:updated_assignments)).to eq(
-        [
-          {
-            assignment_uuid: given_assignment_uuid,
-            sequence_number: given_sequence_number
-          }
-        ]
+        [ { request_uuid: given_request_uuid, updated_assignment_uuid: given_assignment_uuid } ]
       )
     end
   end
