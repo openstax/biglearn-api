@@ -96,11 +96,22 @@ class CourseEcosystemsController < JsonApiController
               'maxItems': 10000,
             },
           },
-          'required': ['from_ecosystem_uuid', 'to_ecosystem_uuid', 'cnx_pagemodule_mappings', 'exercise_mappings'],
+          'required': [
+            'from_ecosystem_uuid',
+            'to_ecosystem_uuid',
+            'cnx_pagemodule_mappings',
+            'exercise_mappings'
+          ],
           'additionalProperties': false,
         },
       },
-      'required': ['preparation_uuid', 'course_uuid', 'sequence_number', 'next_ecosystem_uuid'],
+      'required': [
+        'preparation_uuid',
+        'course_uuid',
+        'sequence_number',
+        'next_ecosystem_uuid',
+        'ecosystem_map'
+      ],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
@@ -168,7 +179,7 @@ class CourseEcosystemsController < JsonApiController
             'sequence_number':   {'$ref': '#standard_definitions/non_negative_integer'},
             'preparation_uuid':  {'$ref': '#standard_definitions/uuid'},
           },
-          'required': ['request_uuid', 'preparation_uuid'],
+          'required': ['request_uuid', 'course_uuid', 'sequence_number', 'preparation_uuid'],
           'additionalProperties': false,
         },
       },
@@ -259,7 +270,7 @@ class CourseEcosystemsController < JsonApiController
             'current_ecosystem_status':           {'$ref': '#definitions/ecosystem_status'},
             'next_ecosystem_status':              {'$ref': '#definitions/ecosystem_status'},
           },
-          'required': ['course_uuid', 'course_is_known'],
+          'required': ['course_uuid', 'course_is_known', 'current_ecosystem_status'],
           'additionalProperties': false,
         },
         'ecosystem_status': {
@@ -270,7 +281,12 @@ class CourseEcosystemsController < JsonApiController
             'ecosystem_is_prepared':  {'type': 'boolean'},
             'precompute_is_complete': {'type': 'boolean'},
           },
-          'required': ['ecosystem_uuid', 'ecosystem_is_known', 'ecosystem_is_prepared'],
+          'required': [
+            'ecosystem_uuid',
+            'ecosystem_is_known',
+            'ecosystem_is_prepared',
+            'precompute_is_complete'
+          ],
           'additionalProperties': false,
         },
       },

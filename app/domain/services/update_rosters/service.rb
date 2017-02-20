@@ -1,9 +1,9 @@
-class Services::UpdateRoster::Service
+class Services::UpdateRosters::Service
   def process(rosters:)
     course_container_attributes = []
     student_attributes = []
     course_event_attributes = []
-    updated_couse_uuids = rosters.map do |roster|
+    updated_rosters = rosters.map do |roster|
       roster.fetch(:course_containers).each do |course_container|
         course_container_attributes << { uuid: course_container.fetch(:container_uuid) }
       end
@@ -27,7 +27,7 @@ class Services::UpdateRoster::Service
         )
       }
 
-      roster.fetch(:course_uuid)
+      roster.slice(:request_uuid).merge(updated_course_uuid: roster.fetch(:course_uuid))
     end
 
     CourseEvent.transaction(isolation: :serializable) do
@@ -36,6 +36,6 @@ class Services::UpdateRoster::Service
       CourseEvent.append     course_event_attributes
     end
 
-    { updated_course_uuids: updated_couse_uuids }
+    { updated_rosters: updated_rosters }
   end
 end

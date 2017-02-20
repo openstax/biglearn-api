@@ -12,19 +12,29 @@ RSpec.describe ExercisesController, type: :request do
 
     let(:given_pe_requests)         do
       [
-        { assignment_uuid: given_assignment_uuid_1, max_num_exercises: given_max_num_exercises_1 },
-        { assignment_uuid: given_assignment_uuid_2, max_num_exercises: given_max_num_exercises_2 }
+        {
+          request_uuid: given_request_uuid_1,
+          assignment_uuid: given_assignment_uuid_1,
+          max_num_exercises: given_max_num_exercises_1
+        },
+        {
+          request_uuid: given_request_uuid_2,
+          assignment_uuid: given_assignment_uuid_2,
+          max_num_exercises: given_max_num_exercises_2
+        }
       ]
     end
 
     let(:target_pe_responses)       do
       [
         {
+          request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           assignment_status: 'assignment_ready'
         },
         {
+          request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           exercise_uuids: [],
           assignment_status: 'assignment_unready'
@@ -78,19 +88,29 @@ RSpec.describe ExercisesController, type: :request do
 
     let(:given_spe_requests)        do
       [
-        { assignment_uuid: given_assignment_uuid_1, max_num_exercises: given_max_num_exercises_1 },
-        { assignment_uuid: given_assignment_uuid_2, max_num_exercises: given_max_num_exercises_2 }
+        {
+          request_uuid: given_request_uuid_1,
+          assignment_uuid: given_assignment_uuid_1,
+          max_num_exercises: given_max_num_exercises_1
+        },
+        {
+          request_uuid: given_request_uuid_2,
+          assignment_uuid: given_assignment_uuid_2,
+          max_num_exercises: given_max_num_exercises_2
+        }
       ]
     end
 
     let(:target_spe_responses)      do
       [
         {
+          request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           assignment_status: 'assignment_ready'
         },
         {
+          request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           exercise_uuids: [],
           assignment_status: 'assignment_unready'
@@ -144,19 +164,29 @@ RSpec.describe ExercisesController, type: :request do
 
     let(:given_worst_areas_requests)   do
       [
-        { student_uuid: given_student_uuid_1, max_num_exercises: given_max_num_exercises_1 },
-        { student_uuid: given_student_uuid_2, max_num_exercises: given_max_num_exercises_2 }
+        {
+          request_uuid: given_request_uuid_1,
+          student_uuid: given_student_uuid_1,
+          max_num_exercises: given_max_num_exercises_1
+        },
+        {
+          request_uuid: given_request_uuid_2,
+          student_uuid: given_student_uuid_2,
+          max_num_exercises: given_max_num_exercises_2
+        }
       ]
     end
 
     let(:target_worst_areas_responses) do
       [
         {
+          request_uuid: given_request_uuid_1,
           student_uuid: given_student_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           student_status: 'student_ready'
         },
         {
+          request_uuid: given_request_uuid_2,
           student_uuid: given_student_uuid_2,
           exercise_uuids: [],
           student_status: 'student_unready'

@@ -11,6 +11,7 @@ class Services::FetchAssignmentSpes::Service
     missing_spe_assignments_by_uuid = missing_spe_assignments.index_by { |mspa| mspa.uuid.downcase }
 
     spe_responses = spe_requests.map do |request|
+      request_uuid = request.fetch(:request_uuid)
       assignment_uuid = request.fetch(:assignment_uuid)
       assignment_spe = assignment_spes_by_assignment_uuid[assignment_uuid]
 
@@ -26,6 +27,7 @@ class Services::FetchAssignmentSpes::Service
       end
 
       {
+        request_uuid: request_uuid,
         assignment_uuid: assignment_uuid,
         exercise_uuids: exercise_uuids,
         assignment_status: assignment_status

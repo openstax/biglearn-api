@@ -30,7 +30,8 @@ class Services::CreateUpdateAssignments::Service
         )
       }
 
-      assignment.slice(:assignment_uuid, :sequence_number)
+      assignment.slice(:request_uuid)
+                .merge(updated_assignment_uuid: assignment.fetch(:assignment_uuid))
     end
 
     CourseEvent.transaction(isolation: :serializable) do

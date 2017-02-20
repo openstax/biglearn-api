@@ -9,6 +9,7 @@ class Services::FetchPracticeWorstAreasExercises::Service
     missing_pe_students_by_uuid = missing_pe_students.index_by { |mps| mps.uuid.downcase }
 
     worst_areas_responses = worst_areas_requests.map do |request|
+      request_uuid = request.fetch(:request_uuid)
       student_uuid = request.fetch(:student_uuid)
       student_pe = student_pes_by_student_uuid[student_uuid]
 
@@ -24,6 +25,7 @@ class Services::FetchPracticeWorstAreasExercises::Service
       end
 
       {
+        request_uuid: request_uuid,
         student_uuid: student_uuid,
         exercise_uuids: exercise_uuids,
         student_status: student_status

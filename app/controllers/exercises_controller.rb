@@ -9,7 +9,7 @@ class ExercisesController < JsonApiController
       result = service.process(pe_requests: pe_requests)
 
       pe_responses = result.fetch(:pe_responses).map do |response|
-        response.slice(:assignment_uuid, :exercise_uuids, :assignment_status)
+        response.slice(:request_uuid, :assignment_uuid, :exercise_uuids, :assignment_status)
       end
 
       render json: { pe_responses: pe_responses }.to_json, status: 200
@@ -25,7 +25,7 @@ class ExercisesController < JsonApiController
       result = service.process(spe_requests: spe_requests)
 
       spe_responses = result.fetch(:spe_responses).map do |response|
-        response.slice(:assignment_uuid, :exercise_uuids, :assignment_status)
+        response.slice(:request_uuid, :assignment_uuid, :exercise_uuids, :assignment_status)
       end
 
       render json: { spe_responses: spe_responses }.to_json, status: 200
@@ -41,7 +41,7 @@ class ExercisesController < JsonApiController
       result = service.process(worst_areas_requests: worst_areas_requests)
 
       worst_areas_responses = result.fetch(:worst_areas_responses).map do |response|
-        response.slice(:student_uuid, :exercise_uuids, :student_status)
+        response.slice(:request_uuid, :student_uuid, :exercise_uuids, :student_status)
       end
 
       render json: { worst_areas_responses: worst_areas_responses }.to_json, status: 200
@@ -121,6 +121,7 @@ class ExercisesController < JsonApiController
         'pe_request': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'max_num_exercises': {
               'type': 'integer',
@@ -128,7 +129,7 @@ class ExercisesController < JsonApiController
               'maximum': 100,
             },
           },
-          'required': ['assignment_uuid', 'max_num_exercises'],
+          'required': ['request_uuid', 'assignment_uuid', 'max_num_exercises'],
           'additionalProperties': false,
         },
       },
@@ -155,6 +156,7 @@ class ExercisesController < JsonApiController
         'pe_response': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
@@ -167,7 +169,7 @@ class ExercisesController < JsonApiController
               'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready'],
             },
           },
-          'required': ['assignment_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
           'additionalProperties': false,
         },
       },
@@ -194,6 +196,7 @@ class ExercisesController < JsonApiController
         'spe_request': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'max_num_exercises': {
               'type': 'integer',
@@ -201,7 +204,7 @@ class ExercisesController < JsonApiController
               'maximum': 100,
             },
           },
-          'required': ['assignment_uuid', 'max_num_exercises'],
+          'required': ['request_uuid', 'assignment_uuid', 'max_num_exercises'],
           'additionalProperties': false,
         },
       },
@@ -228,6 +231,7 @@ class ExercisesController < JsonApiController
         'spe_response': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
@@ -240,7 +244,7 @@ class ExercisesController < JsonApiController
               'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready'],
             },
           },
-          'required': ['assignment_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
           'additionalProperties': false,
         },
       },
@@ -267,6 +271,7 @@ class ExercisesController < JsonApiController
         'worst_areas_request': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'student_uuid': {'$ref': '#standard_definitions/uuid'},
             'max_num_exercises': {
               'type': 'integer',
@@ -274,7 +279,7 @@ class ExercisesController < JsonApiController
               'maximum': 100,
             },
           },
-          'required': ['student_uuid', 'max_num_exercises'],
+          'required': ['request_uuid', 'student_uuid', 'max_num_exercises'],
           'additionalProperties': false,
         },
       },
@@ -301,6 +306,7 @@ class ExercisesController < JsonApiController
         'worst_areas_response': {
           'type': 'object',
           'properties': {
+            'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'student_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
@@ -313,7 +319,7 @@ class ExercisesController < JsonApiController
               'enum': ['student_unknown', 'student_unready', 'student_ready'],
             },
           },
-          'required': ['student_uuid', 'exercise_uuids', 'student_status'],
+          'required': ['request_uuid', 'student_uuid', 'exercise_uuids', 'student_status'],
           'additionalProperties': false,
         },
       },

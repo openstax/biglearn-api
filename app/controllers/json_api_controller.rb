@@ -2,7 +2,8 @@ require 'json-schema'
 
 class JsonApiController < ApplicationController
 
-  protect_from_forgery #with: :exception
+  # Skip verifying the CSRF token
+  skip_before_action :verify_authenticity_token
 
   rescue_from Errors::AppRequestValidationError,  with: :_render_app_request_validation_error
   rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error
@@ -136,7 +137,7 @@ class JsonApiController < ApplicationController
                      '(0[0-9]|1[0-9]|2[0-3]):'       + ## hour
                      '([0-5][0-9]):'                 + ## minute
                      '([0-5][0-9]|60)'               + ## second
-                     '\.\d{6}'                       + ## fraction of second
+                     '(\.\d{1,6})?'                  + ## fraction of second
                      '(Z|z)$'                          ## Zulu timezone
         },
         'receiver_info': {
@@ -182,7 +183,7 @@ class JsonApiController < ApplicationController
           'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
                      '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
                      '[a-fA-F0-9]{12}' +
-                     '@([1-9]{1,}[0-9]|[1-9])\.([1-9]{1,}[0-9]|[1-9])$',
+                     '@([1-9]{1,}[0-9]|[1-9])(\.([1-9]{1,}[0-9]|[1-9]))?$',
         },
         'course_event_type': {
           'type': 'string',
