@@ -6,7 +6,7 @@ class Services::CreateCourse::Service
       type: :create_course,
       course_uuid: course_uuid,
       sequence_number: 0,
-      data: { ecosystem_uuid: ecosystem_uuid }
+      data: { course_uuid: course_uuid, sequence_number: 0, ecosystem_uuid: ecosystem_uuid }
     )
 
     { created_course_uuid: course_uuid }
