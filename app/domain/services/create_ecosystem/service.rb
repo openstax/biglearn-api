@@ -13,7 +13,12 @@ class Services::CreateEcosystem::Service
         type: :create_ecosystem,
         ecosystem_uuid: ecosystem_uuid,
         sequence_number: 0,
-        data: { book: book, exercises: exercises }
+        data: {
+          ecosystem_uuid: ecosystem_uuid,
+          sequence_number: 0,
+          book: book,
+          exercises: exercises
+        }
       )
     end
 

@@ -16,7 +16,7 @@ class Services::UpdateTeacherClues::Service
     end
 
     TeacherClue.import teacher_clues, validate: false, on_duplicate_key_update: {
-      conflict_target: [:course_container_uuid, :book_container_uuid],
+      conflict_target: [ :course_container_uuid, :book_container_uuid ],
       columns: [ :uuid, :data ]
     }
 

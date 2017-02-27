@@ -117,9 +117,9 @@ class EcosystemsController < JsonApiController
         'exercise': {
           'type': 'object',
           'properties': {
-            'uuid':              {'$ref': '#/standard_definitions/uuid'},
-            'exercises_uuid':    {'$ref': '#/standard_definitions/uuid'},
-            'exercises_version': {'$ref': '#/standard_definitions/non_negative_integer'},
+            'exercise_uuid': {'$ref': '#/standard_definitions/uuid'},
+            'group_uuid':    {'$ref': '#/standard_definitions/uuid'},
+            'version':       {'$ref': '#/standard_definitions/non_negative_integer'},
             'los': {
               'type': 'array',
               'items': {'$ref': '#definitions/lo'},
@@ -127,7 +127,7 @@ class EcosystemsController < JsonApiController
               'maxItems': 10,
             },
           },
-          'required': ['uuid', 'exercises_uuid', 'exercises_version', 'los'],
+          'required': ['exercise_uuid', 'group_uuid', 'version', 'los'],
           'additionalProperties': false,
         },
         'lo': {
