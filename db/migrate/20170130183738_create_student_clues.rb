@@ -1,10 +1,12 @@
 class CreateStudentClues < ActiveRecord::Migration
   def change
+    enable_extension 'citext'
+
     create_table :student_clues do |t|
       t.uuid   :uuid,                null: false, index: { unique: true }
       t.uuid   :student_uuid,        null: false
       t.uuid   :book_container_uuid, null: false, index: true
-      t.string :algorithm_name,      null: false
+      t.citext :algorithm_name,      null: false
       t.jsonb  :data,                null: false
 
       t.timestamps                   null: false

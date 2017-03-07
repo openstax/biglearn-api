@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ExercisesController, type: :request do
-  let(:given_algorithm_name)        { 'SPARFA' }
+  let(:given_algorithm_name)        { 'tesr' }
 
   let(:given_request_uuid_1)        { SecureRandom.uuid }
   let(:given_request_uuid_2)        { SecureRandom.uuid }

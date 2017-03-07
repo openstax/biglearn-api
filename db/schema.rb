@@ -15,11 +15,12 @@ ActiveRecord::Schema.define(version: 20170206191822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "citext"
 
   create_table "assignment_pes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
-    t.string   "algorithm_name",  null: false
+    t.citext   "algorithm_name",  null: false
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
@@ -31,7 +32,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
   create_table "assignment_spes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
-    t.string   "algorithm_name",  null: false
+    t.citext   "algorithm_name",  null: false
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
@@ -106,7 +107,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                null: false
     t.uuid     "student_uuid",        null: false
     t.uuid     "book_container_uuid", null: false
-    t.string   "algorithm_name",      null: false
+    t.citext   "algorithm_name",      null: false
     t.jsonb    "data",                null: false
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
@@ -119,7 +120,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
   create_table "student_pes", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "student_uuid",   null: false
-    t.string   "algorithm_name", null: false
+    t.citext   "algorithm_name", null: false
     t.uuid     "exercise_uuids", null: false, array: true
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
@@ -140,7 +141,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                  null: false
     t.uuid     "course_container_uuid", null: false
     t.uuid     "book_container_uuid",   null: false
-    t.string   "algorithm_name",        null: false
+    t.citext   "algorithm_name",        null: false
     t.jsonb    "data",                  null: false
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false

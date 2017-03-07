@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::UpdateAssignmentSpes::Service, type: :service do
   let(:service)                     { described_class.new }
 
-  let(:given_algorithm_name)        { 'SPARFA' }
+  let(:given_algorithm_name)        { 'tesr_teacher' }
 
   let(:given_request_uuid_1)        { SecureRandom.uuid }
   let(:given_assignment_uuid_1)     { SecureRandom.uuid }

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::FetchTeacherClues::Service, type: :service do
   let(:service)                              { described_class.new }
 
-  let(:given_algorithm_name)                 { 'SPARFA' }
+  let(:given_algorithm_name)                 { 'sparfa' }
 
   let(:given_request_1_uuid)                 { SecureRandom.uuid }
   let(:given_course_container_1_uuid)        { SecureRandom.uuid }

@@ -12,6 +12,7 @@ RSpec.describe TeacherClue, type: :model do
     is_expected.to(
       validate_uniqueness_of(:algorithm_name)
         .scoped_to(:course_container_uuid, :book_container_uuid)
+        .case_insensitive
     )
   end
 end

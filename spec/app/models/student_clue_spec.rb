@@ -11,6 +11,7 @@ RSpec.describe StudentClue, type: :model do
   it do
     is_expected.to(
       validate_uniqueness_of(:algorithm_name).scoped_to(:student_uuid, :book_container_uuid)
+                                             .case_insensitive
     )
   end
 end

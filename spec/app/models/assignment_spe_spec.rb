@@ -6,5 +6,9 @@ RSpec.describe AssignmentSpe, type: :model do
   it { is_expected.to validate_presence_of :assignment_uuid }
   it { is_expected.to validate_presence_of :algorithm_name }
 
-  it { is_expected.to validate_uniqueness_of(:algorithm_name).scoped_to(:assignment_uuid) }
+  it do
+    is_expected.to(
+      validate_uniqueness_of(:algorithm_name).scoped_to(:assignment_uuid).case_insensitive
+    )
+  end
 end
