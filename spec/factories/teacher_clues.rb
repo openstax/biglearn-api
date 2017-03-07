@@ -5,6 +5,7 @@ FactoryGirl.define do
     uuid                  { SecureRandom.uuid }
     course_container_uuid { SecureRandom.uuid }
     book_container_uuid   { SecureRandom.uuid }
+    algorithm_name        { Faker::Hacker.abbreviation }
     data                  do
       {
         minimum:        sorted_random_values.first,

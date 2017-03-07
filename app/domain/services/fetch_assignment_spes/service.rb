@@ -1,11 +1,17 @@
 class Services::FetchAssignmentSpes::Service
   def process(spe_requests:)
-    assignment_uuids = spe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
-    assignment_spes = AssignmentSpe.where(assignment_uuid: assignment_uuids)
+    aspe = AssignmentSpe.arel_table
+    queries = spe_requests.map do |request|
+      aspe[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
+        aspe[:algorithm_name].eq(request.fetch(:algorithm_name))
+      )
+    end.reduce(:or)
+    assignment_spes = queries.nil? ? AssignmentSpe.none : AssignmentSpe.where(queries)
     assignment_spes_by_assignment_uuid = assignment_spes.index_by do |asp|
       asp.assignment_uuid.downcase
     end
 
+    assignment_uuids = spe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_spe_assignment_uuids = assignment_uuids - assignment_spes_by_assignment_uuid.keys
     missing_spe_assignments = Assignment.where(uuid: missing_spe_assignment_uuids)
     missing_spe_assignments_by_uuid = missing_spe_assignments.index_by { |mspa| mspa.uuid.downcase }

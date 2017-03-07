@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   let(:service)                     { described_class.new }
 
+  let(:given_algorithm_name)        { 'SPARFA' }
+
   let(:given_request_1_uuid)        { SecureRandom.uuid }
   let(:given_student_1_uuid)        { SecureRandom.uuid }
   let(:given_book_container_1_uuid) { SecureRandom.uuid }
@@ -34,12 +36,14 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
         request_uuid: given_request_1_uuid,
         student_uuid: given_student_1_uuid,
         book_container_uuid: given_book_container_1_uuid,
+        algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_1
       },
       {
         request_uuid: given_request_2_uuid,
         student_uuid: given_student_2_uuid,
         book_container_uuid: given_book_container_2_uuid,
+        algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_2
       }
     ]
@@ -74,9 +78,11 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   context "when the CLUe records already exist" do
     before do
       FactoryGirl.create :student_clue, student_uuid: given_student_1_uuid,
-                                        book_container_uuid: given_book_container_1_uuid
+                                        book_container_uuid: given_book_container_1_uuid,
+                                        algorithm_name: given_algorithm_name
       FactoryGirl.create :student_clue, student_uuid: given_student_2_uuid,
-                                        book_container_uuid: given_book_container_2_uuid
+                                        book_container_uuid: given_book_container_2_uuid,
+                                        algorithm_name: given_algorithm_name
     end
 
     it "existing CLUe records are updated with the correct attributes" do

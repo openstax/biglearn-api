@@ -1,9 +1,15 @@
 class Services::FetchAssignmentPes::Service
   def process(pe_requests:)
-    assignment_uuids = pe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
-    assignment_pes = AssignmentPe.where(assignment_uuid: assignment_uuids)
+    ape = AssignmentPe.arel_table
+    queries = pe_requests.map do |request|
+      ape[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
+        ape[:algorithm_name].eq(request.fetch(:algorithm_name))
+      )
+    end.reduce(:or)
+    assignment_pes = queries.nil? ? AssignmentPe.none : AssignmentPe.where(queries)
     assignment_pes_by_assignment_uuid = assignment_pes.index_by { |ap| ap.assignment_uuid.downcase }
 
+    assignment_uuids = pe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_pe_assignment_uuids = assignment_uuids - assignment_pes_by_assignment_uuid.keys
     missing_pe_assignments = Assignment.where(uuid: missing_pe_assignment_uuids)
     missing_pe_assignments_by_uuid = missing_pe_assignments.index_by { |mpa| mpa.uuid.downcase }

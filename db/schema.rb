@@ -19,23 +19,25 @@ ActiveRecord::Schema.define(version: 20170206191822) do
   create_table "assignment_pes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
+    t.string   "algorithm_name",  null: false
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
-  add_index "assignment_pes", ["assignment_uuid"], name: "index_assignment_pes_on_assignment_uuid", unique: true, using: :btree
+  add_index "assignment_pes", ["assignment_uuid", "algorithm_name"], name: "index_assignment_pes_on_assignment_uuid_and_algorithm_name", unique: true, using: :btree
   add_index "assignment_pes", ["uuid"], name: "index_assignment_pes_on_uuid", unique: true, using: :btree
 
   create_table "assignment_spes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
+    t.string   "algorithm_name",  null: false
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
   end
 
-  add_index "assignment_spes", ["assignment_uuid"], name: "index_assignment_spes_on_assignment_uuid", unique: true, using: :btree
+  add_index "assignment_spes", ["assignment_uuid", "algorithm_name"], name: "index_assignment_spes_on_assignment_uuid_and_algorithm_name", unique: true, using: :btree
   add_index "assignment_spes", ["uuid"], name: "index_assignment_spes_on_uuid", unique: true, using: :btree
 
   create_table "assignments", force: :cascade do |t|
@@ -104,24 +106,26 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                null: false
     t.uuid     "student_uuid",        null: false
     t.uuid     "book_container_uuid", null: false
+    t.string   "algorithm_name",      null: false
     t.jsonb    "data",                null: false
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
   end
 
   add_index "student_clues", ["book_container_uuid"], name: "index_student_clues_on_book_container_uuid", using: :btree
-  add_index "student_clues", ["student_uuid", "book_container_uuid"], name: "index_student_clues_on_student_uuid_and_book_container_uuid", unique: true, using: :btree
+  add_index "student_clues", ["student_uuid", "book_container_uuid", "algorithm_name"], name: "index_student_clues_on_student_uuid_and_book_container_uuid", unique: true, using: :btree
   add_index "student_clues", ["uuid"], name: "index_student_clues_on_uuid", unique: true, using: :btree
 
   create_table "student_pes", force: :cascade do |t|
     t.uuid     "uuid",           null: false
     t.uuid     "student_uuid",   null: false
+    t.string   "algorithm_name", null: false
     t.uuid     "exercise_uuids", null: false, array: true
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
   end
 
-  add_index "student_pes", ["student_uuid"], name: "index_student_pes_on_student_uuid", unique: true, using: :btree
+  add_index "student_pes", ["student_uuid", "algorithm_name"], name: "index_student_pes_on_student_uuid_and_algorithm_name", unique: true, using: :btree
   add_index "student_pes", ["uuid"], name: "index_student_pes_on_uuid", unique: true, using: :btree
 
   create_table "students", force: :cascade do |t|
@@ -136,13 +140,14 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "uuid",                  null: false
     t.uuid     "course_container_uuid", null: false
     t.uuid     "book_container_uuid",   null: false
+    t.string   "algorithm_name",        null: false
     t.jsonb    "data",                  null: false
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
   end
 
   add_index "teacher_clues", ["book_container_uuid"], name: "index_teacher_clues_on_book_container_uuid", using: :btree
-  add_index "teacher_clues", ["course_container_uuid", "book_container_uuid"], name: "index_teacher_clues_on_course_cont_uuid_and_book_cont_uuid", unique: true, using: :btree
+  add_index "teacher_clues", ["course_container_uuid", "book_container_uuid", "algorithm_name"], name: "index_teacher_clues_on_course_cont_uuid_and_book_cont_uuid", unique: true, using: :btree
   add_index "teacher_clues", ["uuid"], name: "index_teacher_clues_on_uuid", unique: true, using: :btree
 
 end

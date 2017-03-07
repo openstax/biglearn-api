@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :service do
   let(:service)                    { described_class.new }
 
+  let(:given_algorithm_name)       { 'SPARFA' }
+
   let(:given_request_uuid_1)       { SecureRandom.uuid }
   let(:given_student_uuid_1)       { SecureRandom.uuid }
   let(:given_max_num_exercises_1)  { rand(10) }
@@ -15,11 +17,13 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
       {
         request_uuid: given_request_uuid_1,
         student_uuid: given_student_uuid_1,
+        algorithm_name: given_algorithm_name,
         max_num_exercises: given_max_num_exercises_1
       },
       {
         request_uuid: given_request_uuid_2,
         student_uuid: given_student_uuid_2,
+        algorithm_name: given_algorithm_name,
         max_num_exercises: given_max_num_exercises_2
       }
     ]
@@ -33,7 +37,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
     given_worst_areas_requests.index_by { |req| req[:request_uuid] }
   end
 
-  context "when non-existing StudentPe student_uuids are given" do
+  context "when non-existing StudentPe student_uuids and algorithm_names are given" do
     context "when non-existing Student uuids are given" do
       it "the student_uuids are returned with student_status: 'student_unknown'" do
         action.fetch(:worst_areas_responses).each do |response|
@@ -63,7 +67,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
     end
   end
 
-  context "when previously-existing StudentPe student_uuids are given" do
+  context "when previously-existing StudentPe student_uuids and algorithm_names are given" do
     let(:exercise_uuids_1) do
       (given_max_num_exercises_1 + rand(given_max_num_exercises_1 + 1)).times.map do
         SecureRandom.uuid
@@ -71,6 +75,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
     end
     let!(:student_pe_1) do
       FactoryGirl.create :student_pe, student_uuid: given_student_uuid_1,
+                                      algorithm_name: given_algorithm_name,
                                       exercise_uuids: exercise_uuids_1
     end
     let(:exercise_uuids_2) do
@@ -78,6 +83,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
     end
     let!(:student_pe_2) do
       FactoryGirl.create :student_pe, student_uuid: given_student_uuid_2,
+                                      algorithm_name: given_algorithm_name,
                                       exercise_uuids: exercise_uuids_2
     end
 

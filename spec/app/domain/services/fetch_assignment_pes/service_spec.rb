@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
   let(:service)                   { described_class.new }
 
+  let(:given_algorithm_name)      { 'SPARFA' }
+
   let(:given_request_uuid_1)      { SecureRandom.uuid }
   let(:given_assignment_uuid_1)   { SecureRandom.uuid }
   let(:given_max_num_exercises_1) { rand(10) }
@@ -15,11 +17,13 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
       {
         request_uuid: given_request_uuid_1,
         assignment_uuid: given_assignment_uuid_1,
+        algorithm_name: given_algorithm_name,
         max_num_exercises: given_max_num_exercises_1
       },
       {
         request_uuid: given_request_uuid_2,
         assignment_uuid: given_assignment_uuid_2,
+        algorithm_name: given_algorithm_name,
         max_num_exercises: given_max_num_exercises_2
       }
     ]
@@ -29,7 +33,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
 
   let(:requests_by_request_uuid)  { given_pe_requests.index_by { |req| req[:request_uuid] } }
 
-  context "when non-existing AssignmentPe assignment_uuids are given" do
+  context "when non-existing AssignmentPe assignment_uuids and algorithm_names are given" do
     context "when non-existing Assignment uuids are given" do
       it "the assignment_uuids are returned with assignment_status: 'assignment_unknown'" do
         action.fetch(:pe_responses).each do |response|
@@ -59,7 +63,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
     end
   end
 
-  context "when previously-existing AssignmentPe assignment_uuids are given" do
+  context "when previously-existing AssignmentPe assignment_uuids and algorithm_names are given" do
     let(:exercise_uuids_1) do
       (given_max_num_exercises_1 + rand(given_max_num_exercises_1 + 1)).times.map do
         SecureRandom.uuid
@@ -67,6 +71,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
     end
     let!(:assignment_pe_1) do
       FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_1,
+                                         algorithm_name: given_algorithm_name,
                                          exercise_uuids: exercise_uuids_1
     end
     let(:exercise_uuids_2) do
@@ -74,6 +79,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
     end
     let!(:assignment_pe_2) do
       FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_2,
+                                         algorithm_name: given_algorithm_name,
                                          exercise_uuids: exercise_uuids_2
     end
 

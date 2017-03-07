@@ -5,5 +5,13 @@ RSpec.describe TeacherClue, type: :model do
 
   it { is_expected.to validate_presence_of :course_container_uuid }
   it { is_expected.to validate_presence_of :book_container_uuid }
+  it { is_expected.to validate_presence_of :algorithm_name }
   it { is_expected.to validate_presence_of :data }
+
+  it do
+    is_expected.to(
+      validate_uniqueness_of(:algorithm_name)
+        .scoped_to(:course_container_uuid, :book_container_uuid)
+    )
+  end
 end

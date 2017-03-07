@@ -1,9 +1,15 @@
 class Services::FetchPracticeWorstAreasExercises::Service
   def process(worst_areas_requests:)
-    student_uuids = worst_areas_requests.map{ |request| request.fetch(:student_uuid).downcase }
-    student_pes = StudentPe.where(student_uuid: student_uuids)
-    student_pes_by_student_uuid = student_pes.index_by{ |sp| sp.student_uuid.downcase }
+    spe = StudentPe.arel_table
+    queries = worst_areas_requests.map do |request|
+      spe[:student_uuid].eq(request.fetch(:student_uuid)).and(
+        spe[:algorithm_name].eq(request.fetch(:algorithm_name))
+      )
+    end.reduce(:or)
+    student_pes = queries.nil? ? StudentPe.none : StudentPe.where(queries)
+    student_pes_by_student_uuid = student_pes.index_by { |sp| sp.student_uuid.downcase }
 
+    student_uuids = worst_areas_requests.map { |request| request.fetch(:student_uuid).downcase }
     missing_pe_student_uuids = student_uuids - student_pes_by_student_uuid.keys
     missing_pe_students = Student.where(uuid: missing_pe_student_uuids)
     missing_pe_students_by_uuid = missing_pe_students.index_by { |mps| mps.uuid.downcase }

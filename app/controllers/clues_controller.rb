@@ -92,8 +92,9 @@ class CluesController < JsonApiController
             'request_uuid':        {'$ref': '#standard_definitions/uuid'},
             'student_uuid':        {'$ref': '#standard_definitions/uuid'},  ## Course-specific Student uuid
             'book_container_uuid': {'$ref': '#standard_definitions/uuid'},  ## Ecosystem-specific uuid (not CNX uuid)
+            'algorithm_name': {'type': 'string'}
           },
-          'required': ['request_uuid', 'student_uuid', 'book_container_uuid'],
+          'required': ['request_uuid', 'student_uuid', 'book_container_uuid', 'algorithm_name'],
           'additionalProperties': false,
         },
       },
@@ -157,8 +158,14 @@ class CluesController < JsonApiController
             'request_uuid':          {'$ref': '#standard_definitions/uuid'},
             'course_container_uuid': {'$ref': '#standard_definitions/uuid'},  ## Course-specific period, etc., container uuid
             'book_container_uuid':   {'$ref': '#standard_definitions/uuid'},  ## Ecosystem-specific uuid (not CNX uuid)
+            'algorithm_name': {'type': 'string'}
           },
-          'required': ['request_uuid', 'course_container_uuid', 'book_container_uuid'],
+          'required': [
+            'request_uuid',
+            'course_container_uuid',
+            'book_container_uuid',
+            'algorithm_name'
+          ],
           'additionalProperties': false,
         },
       },
@@ -224,9 +231,16 @@ class CluesController < JsonApiController
             'request_uuid':        {'$ref': '#standard_definitions/uuid'},
             'student_uuid':        {'$ref': '#standard_definitions/uuid'},
             'book_container_uuid': {'$ref': '#standard_definitions/uuid'},
+            'algorithm_name':      {'type': 'string'},
             'clue_data':           {'$ref': '#standard_definitions/clue_data'}
           },
-          'required': ['request_uuid', 'student_uuid', 'book_container_uuid', 'clue_data'],
+          'required': [
+            'request_uuid',
+            'student_uuid',
+            'book_container_uuid',
+            'algorithm_name',
+            'clue_data'
+          ],
           'additionalProperties': false,
         },
       },
@@ -289,9 +303,16 @@ class CluesController < JsonApiController
             'request_uuid':          {'$ref': '#standard_definitions/uuid'},
             'course_container_uuid': {'$ref': '#standard_definitions/uuid'},
             'book_container_uuid':   {'$ref': '#standard_definitions/uuid'},
+            'algorithm_name':        {'type': 'string'},
             'clue_data':             {'$ref': '#standard_definitions/clue_data'}
           },
-          'required': ['request_uuid', 'course_container_uuid', 'book_container_uuid', 'clue_data'],
+          'required': [
+            'request_uuid',
+            'course_container_uuid',
+            'book_container_uuid',
+            'algorithm_name',
+            'clue_data'
+          ],
           'additionalProperties': false,
         },
       },

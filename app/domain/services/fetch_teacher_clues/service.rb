@@ -3,7 +3,9 @@ class Services::FetchTeacherClues::Service
     tc = TeacherClue.arel_table
     queries = teacher_clue_requests.map do |request|
       tc[:course_container_uuid].eq(request.fetch(:course_container_uuid)).and(
-        tc[:book_container_uuid].eq(request.fetch(:book_container_uuid))
+        tc[:book_container_uuid].eq(request.fetch(:book_container_uuid)).and(
+          tc[:algorithm_name].eq(request.fetch(:algorithm_name))
+        )
       )
     end.reduce(:or)
     clues = queries.nil? ? TeacherClue.none : TeacherClue.where(queries)

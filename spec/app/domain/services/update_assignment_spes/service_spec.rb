@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Services::UpdateAssignmentSpes::Service, type: :service do
   let(:service)                     { described_class.new }
 
+  let(:given_algorithm_name)        { 'SPARFA' }
+
   let(:given_request_uuid_1)        { SecureRandom.uuid }
   let(:given_assignment_uuid_1)     { SecureRandom.uuid }
   let(:given_exercise_uuid_count_1) { rand(10) }
@@ -14,14 +16,16 @@ RSpec.describe Services::UpdateAssignmentSpes::Service, type: :service do
   let(:given_spe_updates)  do
     [
       {
-        request_uuid:     given_request_uuid_1,
-        assignment_uuid:  given_assignment_uuid_1,
-        exercise_uuids:   given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+        request_uuid: given_request_uuid_1,
+        assignment_uuid: given_assignment_uuid_1,
+        algorithm_name: given_algorithm_name,
+        exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
       },
       {
-        request_uuid:     given_request_uuid_2,
-        assignment_uuid:  given_assignment_uuid_2,
-        exercise_uuids:   given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+        request_uuid: given_request_uuid_2,
+        assignment_uuid: given_assignment_uuid_2,
+        algorithm_name: given_algorithm_name,
+        exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
       }
     ]
   end
@@ -53,8 +57,10 @@ RSpec.describe Services::UpdateAssignmentSpes::Service, type: :service do
 
   context "when the assignment spe records already exist" do
     before do
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_1
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_2
+      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_1,
+                                          algorithm_name: given_algorithm_name
+      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_2,
+                                          algorithm_name: given_algorithm_name
     end
 
     it "existing assignment spe records are updated with the correct attributes" do
