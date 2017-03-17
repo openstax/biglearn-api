@@ -27,7 +27,10 @@ class Services::FetchAssignmentSpes::Service
         assignment = missing_spe_assignments_by_uuid[assignment_uuid]
         assignment_status = assignment.nil? ? 'assignment_unknown' : 'assignment_unready'
       else
-        exercise_uuids = assignment_spe.exercise_uuids.uniq.first(request.fetch(:max_num_exercises))
+        all_exercise_uuids = assignment_spe.exercise_uuids.uniq
+        max_num_exercises = request[:max_num_exercises]
+        exercise_uuids = max_num_exercises.nil? ?
+                           all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
 
         assignment_status = 'assignment_ready'
       end

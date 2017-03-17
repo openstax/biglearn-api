@@ -10,7 +10,6 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
   let(:given_max_num_exercises_1) { rand(10) }
   let(:given_request_uuid_2)      { SecureRandom.uuid }
   let(:given_assignment_uuid_2)   { SecureRandom.uuid }
-  let(:given_max_num_exercises_2) { rand(10) }
 
   let(:given_pe_requests)         do
     [
@@ -23,8 +22,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
       {
         request_uuid: given_request_uuid_2,
         assignment_uuid: given_assignment_uuid_2,
-        algorithm_name: given_algorithm_name,
-        max_num_exercises: given_max_num_exercises_2
+        algorithm_name: given_algorithm_name
       }
     ]
   end
@@ -75,7 +73,7 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
                                          exercise_uuids: exercise_uuids_1
     end
     let(:exercise_uuids_2) do
-      rand(given_max_num_exercises_2 + 1).times.map { SecureRandom.uuid }
+      rand(10).times.map { SecureRandom.uuid }
     end
     let!(:assignment_pe_2) do
       FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_2,
@@ -83,12 +81,16 @@ RSpec.describe Services::FetchAssignmentPes::Service, type: :service do
                                          exercise_uuids: exercise_uuids_2
     end
 
-    it "the assignment_uuids are returned with exercise_uuids and 'assignment_ready'" do
+    it "the assignment_uuids are returned" +
+       " with the requested number of exercise_uuids and 'assignment_ready'" do
       action.fetch(:pe_responses).each_with_index do |response, index|
         request = requests_by_request_uuid.fetch(response.fetch(:request_uuid))
         assignment_uuid = request.fetch(:assignment_uuid)
         assignment_pe = AssignmentPe.find_by assignment_uuid: assignment_uuid
-        exercise_uuids = assignment_pe.exercise_uuids.first(request.fetch(:max_num_exercises))
+        all_exercise_uuids = assignment_pe.exercise_uuids
+        max_num_exercises = request[:max_num_exercises]
+        exercise_uuids = max_num_exercises.nil? ?
+                           all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
 
         expect(response.fetch(:assignment_uuid)).to eq assignment_uuid
         expect(response.fetch(:exercise_uuids)).to eq exercise_uuids
