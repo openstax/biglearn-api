@@ -82,3 +82,9 @@ group :development do
 
   gem 'thin'
 end
+
+group :production do
+  # Unicorn production server
+  gem 'unicorn'
+end
+
