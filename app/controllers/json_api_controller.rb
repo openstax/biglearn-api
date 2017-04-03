@@ -140,24 +140,6 @@ class JsonApiController < ApplicationController
                      '(\.\d{1,6})?'                  + ## fraction of second
                      '(Z|z)$'                          ## Zulu timezone
         },
-        'receiver_info': {
-          'type': 'object',
-          'properties': {
-            'receiver_uuid': {'$ref': '#/standard_definitions/uuid'},
-            'partition_count': {
-              'type': 'integer',
-              'minumum': 0,
-              'maximum': 10000,
-            },
-            'partition_modulo': {
-              'type': 'integer',
-              'minumum': 0,
-              'maximum': 9999,
-            }
-          },
-          'required': ['receiver_uuid', 'partition_count', 'partition_modulo'],
-          'additionalProperties': false,
-        },
         'clue_data': {
           'type': 'object',
           'properties': {
