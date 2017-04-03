@@ -3,10 +3,12 @@ require 'rails_helper'
 RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
   let(:service)                       { described_class.new }
 
+  let(:given_algorithm_name)          { 'sparfa' }
+
   let(:given_request_1_uuid)          { SecureRandom.uuid }
   let(:given_course_container_1_uuid) { SecureRandom.uuid }
   let(:given_book_container_1_uuid)   { SecureRandom.uuid }
-  let(:given_clue_data_1)           do
+  let(:given_clue_data_1)             do
     {
       minimum: 0.7,
       most_likely: 0.8,
@@ -19,7 +21,7 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
   let(:given_request_2_uuid)          { SecureRandom.uuid }
   let(:given_course_container_2_uuid) { SecureRandom.uuid }
   let(:given_book_container_2_uuid)   { SecureRandom.uuid }
-  let(:given_clue_data_2)           do
+  let(:given_clue_data_2)             do
     {
       minimum: 0,
       most_likely: 0.5,
@@ -28,28 +30,30 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
     }
   end
 
-  let(:given_clue_updates)          do
+  let(:given_clue_updates)            do
     [
       {
         request_uuid: given_request_1_uuid,
         course_container_uuid: given_course_container_1_uuid,
         book_container_uuid: given_book_container_1_uuid,
+        algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_1
       },
       {
         request_uuid: given_request_2_uuid,
         course_container_uuid: given_course_container_2_uuid,
         book_container_uuid: given_book_container_2_uuid,
+        algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_2
       }
     ]
   end
 
-  let(:action)                      do
+  let(:action)                        do
     service.process(teacher_clue_updates: given_clue_updates)
   end
 
-  let(:valid_request_uuids)         do
+  let(:valid_request_uuids)           do
     [ given_request_1_uuid, given_request_2_uuid ]
   end
 
@@ -74,9 +78,11 @@ RSpec.describe Services::UpdateTeacherClues::Service, type: :service do
   context "when the CLUe records already exist" do
     before do
       FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_1_uuid,
-                                        book_container_uuid: given_book_container_1_uuid
+                                        book_container_uuid: given_book_container_1_uuid,
+                                        algorithm_name: given_algorithm_name
       FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_2_uuid,
-                                        book_container_uuid: given_book_container_2_uuid
+                                        book_container_uuid: given_book_container_2_uuid,
+                                        algorithm_name: given_algorithm_name
     end
 
     it "existing CLUe records are updated with the correct attributes" do

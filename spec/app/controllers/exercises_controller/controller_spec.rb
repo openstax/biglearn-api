@@ -1,8 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe ExercisesController, type: :request do
-  let(:given_request_uuid_1)            { SecureRandom.uuid }
-  let(:given_request_uuid_2)            { SecureRandom.uuid }
+  let(:given_algorithm_name)        { 'tesr' }
+
+  let(:given_request_uuid_1)        { SecureRandom.uuid }
+  let(:given_request_uuid_2)        { SecureRandom.uuid }
 
   context '#fetch_assignment_pes' do
     let(:given_assignment_uuid_1)   { SecureRandom.uuid }
@@ -15,11 +17,13 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_2
         }
       ]
@@ -91,11 +95,13 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_2
         }
       ]
@@ -167,11 +173,13 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           student_uuid: given_student_uuid_1,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_1
         },
         {
           request_uuid: given_request_uuid_2,
           student_uuid: given_student_uuid_2,
+          algorithm_name: given_algorithm_name,
           max_num_exercises: given_max_num_exercises_2
         }
       ]
@@ -256,14 +264,16 @@ RSpec.describe ExercisesController, type: :request do
     let(:given_pe_update_requests)  do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          assignment_uuid:  given_assignment_uuid_1,
-          exercise_uuids:   given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_1,
+          assignment_uuid: given_assignment_uuid_1,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
         },
         {
-          request_uuid:     given_request_uuid_2,
-          assignment_uuid:  given_assignment_uuid_2,
-          exercise_uuids:   given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_2,
+          assignment_uuid: given_assignment_uuid_2,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
         }
       ]
     end
@@ -271,12 +281,12 @@ RSpec.describe ExercisesController, type: :request do
     let(:target_pe_update_responses)       do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_1,
+          update_status: 'accepted'
         },
         {
-          request_uuid:     given_request_uuid_2,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_2,
+          update_status: 'accepted'
         }
       ]
     end
@@ -329,14 +339,16 @@ RSpec.describe ExercisesController, type: :request do
     let(:given_spe_update_requests)  do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          assignment_uuid:  given_assignment_uuid_1,
-          exercise_uuids:   given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_1,
+          assignment_uuid: given_assignment_uuid_1,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
         },
         {
-          request_uuid:     given_request_uuid_2,
-          assignment_uuid:  given_assignment_uuid_2,
-          exercise_uuids:   given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_2,
+          assignment_uuid: given_assignment_uuid_2,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
         }
       ]
     end
@@ -344,12 +356,12 @@ RSpec.describe ExercisesController, type: :request do
     let(:target_spe_update_responses)       do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_1,
+          update_status: 'accepted'
         },
         {
-          request_uuid:     given_request_uuid_2,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_2,
+          update_status: 'accepted'
         }
       ]
     end
@@ -402,14 +414,16 @@ RSpec.describe ExercisesController, type: :request do
     let(:given_worst_areas_update_requests)  do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          student_uuid:     given_student_uuid_1,
-          exercise_uuids:   given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_1,
+          student_uuid: given_student_uuid_1,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
         },
         {
-          request_uuid:     given_request_uuid_2,
-          student_uuid:     given_student_uuid_2,
-          exercise_uuids:   given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          request_uuid: given_request_uuid_2,
+          student_uuid: given_student_uuid_2,
+          algorithm_name: given_algorithm_name,
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
         }
       ]
     end
@@ -417,12 +431,12 @@ RSpec.describe ExercisesController, type: :request do
     let(:target_worst_areas_update_responses)       do
       [
         {
-          request_uuid:     given_request_uuid_1,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_1,
+          update_status: 'accepted'
         },
         {
-          request_uuid:     given_request_uuid_2,
-          update_status:    'accepted'
+          request_uuid: given_request_uuid_2,
+          update_status: 'accepted'
         }
       ]
     end

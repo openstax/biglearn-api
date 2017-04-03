@@ -6,11 +6,13 @@ class CourseEcosystemsController < JsonApiController
       course_ecosystem_data = json_parsed_request_payload
 
       service = Services::PrepareCourseEcosystem::Service.new
-      result = service.process(preparation_uuid: course_ecosystem_data.fetch(:preparation_uuid),
-                               course_uuid: course_ecosystem_data.fetch(:course_uuid),
-                               sequence_number: course_ecosystem_data.fetch(:sequence_number),
-                               next_ecosystem_uuid: course_ecosystem_data.fetch(:next_ecosystem_uuid),
-                               ecosystem_map: course_ecosystem_data.fetch(:ecosystem_map))
+      result = service.process(
+        preparation_uuid: course_ecosystem_data.fetch(:preparation_uuid),
+        course_uuid: course_ecosystem_data.fetch(:course_uuid),
+        sequence_number: course_ecosystem_data.fetch(:sequence_number),
+        next_ecosystem_uuid: course_ecosystem_data.fetch(:next_ecosystem_uuid),
+        ecosystem_map: course_ecosystem_data.fetch(:ecosystem_map)
+      )
 
       render json: result.slice(:status).to_json, status: 200
     end
@@ -83,9 +85,9 @@ class CourseEcosystemsController < JsonApiController
           'properties': {
             'from_ecosystem_uuid': {'$ref': '#standard_definitions/uuid'},
             'to_ecosystem_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'cnx_pagemodule_mappings': {
+            'book_container_mappings': {
               'type': 'array',
-              'items': {'$ref': '#definitions/cnx_pagemodule_mapping'},
+              'items': {'$ref': '#definitions/book_container_mapping'},
               'minItems': 0,
               'maxItems': 500,
             },
@@ -99,7 +101,7 @@ class CourseEcosystemsController < JsonApiController
           'required': [
             'from_ecosystem_uuid',
             'to_ecosystem_uuid',
-            'cnx_pagemodule_mappings',
+            'book_container_mappings',
             'exercise_mappings'
           ],
           'additionalProperties': false,
@@ -115,22 +117,22 @@ class CourseEcosystemsController < JsonApiController
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
-        'cnx_pagemodule_mapping': {
+        'book_container_mapping': {
           'type': 'object',
           'properties': {
-            'from_cnx_pagemodule_identity': {'$ref': '#standard_definitions/cnx_identity'},
-            'to_cnx_pagemodule_identity':   {'$ref': '#standard_definitions/cnx_identity'},
+            'from_book_container_uuid': {'$ref': '#standard_definitions/uuid'},
+            'to_book_container_uuid':   {'$ref': '#standard_definitions/uuid'},
           },
-          'required': ['from_cnx_pagemodule_identity', 'to_cnx_pagemodule_identity'],
+          'required': ['from_book_container_uuid', 'to_book_container_uuid'],
           'additionalProperties': false,
         },
         'exercise_mapping': {
           'type': 'object',
           'properties': {
-            'from_exercise_uuid':         {'$ref': '#standard_definitions/uuid'},
-            'to_cnx_pagemodule_identity': {'$ref': '#standard_definitions/cnx_identity'},
+            'from_exercise_uuid':     {'$ref': '#standard_definitions/uuid'},
+            'to_book_container_uuid': {'$ref': '#standard_definitions/uuid'},
           },
-          'required': ['from_exercise_uuid', 'to_cnx_pagemodule_identity'],
+          'required': ['from_exercise_uuid', 'to_book_container_uuid'],
           'additionalProperties': false,
         },
       },

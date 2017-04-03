@@ -11,12 +11,13 @@ class Services::UpdateStudentClues::Service
         uuid: request_uuid,
         student_uuid: update.fetch(:student_uuid),
         book_container_uuid: update.fetch(:book_container_uuid),
+        algorithm_name: update.fetch(:algorithm_name),
         data: clue_data
       )
     end
 
     StudentClue.import student_clues, validate: false, on_duplicate_key_update: {
-      conflict_target: [ :student_uuid, :book_container_uuid ],
+      conflict_target: [ :student_uuid, :book_container_uuid, :algorithm_name ],
       columns: [ :uuid, :data ]
     }
 

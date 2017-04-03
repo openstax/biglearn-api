@@ -9,14 +9,14 @@ RSpec.describe CourseEcosystemsController, type: :request do
 
     let(:given_from_ecosystem_uuid)     { SecureRandom.uuid }
     let(:given_to_ecosystem_uuid)       { given_next_ecosystem_uuid }
-    let(:given_cnx_pagemodule_mappings) { [] }
+    let(:given_book_container_mappings) { [] }
     let(:given_exercise_mappings)       { [] }
 
     let(:given_ecosystem_map)           do
       {
         from_ecosystem_uuid: given_from_ecosystem_uuid,
         to_ecosystem_uuid: given_to_ecosystem_uuid,
-        cnx_pagemodule_mappings: given_cnx_pagemodule_mappings,
+        book_container_mappings: given_book_container_mappings,
         exercise_mappings: given_exercise_mappings
       }
     end

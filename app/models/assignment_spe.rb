@@ -1,5 +1,6 @@
 class AssignmentSpe < ActiveRecord::Base
   include HasUniqueUuid
 
-  validates :assignment_uuid, presence: true, uniqueness: true
+  validates :assignment_uuid, presence: true
+  validates :algorithm_name,  presence: true, uniqueness: { scope: :assignment_uuid }
 end

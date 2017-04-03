@@ -9,12 +9,13 @@ class Services::UpdateAssignmentSpes::Service
       AssignmentSpe.new(
         uuid: request_uuid,
         assignment_uuid: update.fetch(:assignment_uuid),
+        algorithm_name: update.fetch(:algorithm_name),
         exercise_uuids: update.fetch(:exercise_uuids)
       )
     end
 
     AssignmentSpe.import assignment_spes, validate: false, on_duplicate_key_update: {
-      conflict_target: [:assignment_uuid],
+      conflict_target: [ :assignment_uuid, :algorithm_name ],
       columns: [ :uuid, :exercise_uuids ]
     }
 

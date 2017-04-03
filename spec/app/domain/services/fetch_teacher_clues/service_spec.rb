@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Services::FetchTeacherClues::Service, type: :service do
   let(:service)                              { described_class.new }
 
+  let(:given_algorithm_name)                 { 'sparfa' }
+
   let(:given_request_1_uuid)                 { SecureRandom.uuid }
   let(:given_course_container_1_uuid)        { SecureRandom.uuid }
   let(:given_book_container_1_uuid)          { SecureRandom.uuid }
@@ -15,12 +17,14 @@ RSpec.describe Services::FetchTeacherClues::Service, type: :service do
       {
         request_uuid: given_request_1_uuid,
         course_container_uuid: given_course_container_1_uuid,
-        book_container_uuid: given_book_container_1_uuid
+        book_container_uuid: given_book_container_1_uuid,
+        algorithm_name: given_algorithm_name
       },
       {
         request_uuid: given_request_2_uuid,
         course_container_uuid: given_course_container_2_uuid,
-        book_container_uuid: given_book_container_2_uuid
+        book_container_uuid: given_book_container_2_uuid,
+        algorithm_name: given_algorithm_name
       }
     ]
   end
@@ -103,11 +107,13 @@ RSpec.describe Services::FetchTeacherClues::Service, type: :service do
       context "when the CLUe is ready" do
         let!(:clue_1) do
           FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_1_uuid,
-                                            book_container_uuid: given_book_container_1_uuid
+                                            book_container_uuid: given_book_container_1_uuid,
+                                            algorithm_name: given_algorithm_name
         end
         let!(:clue_2) do
           FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_2_uuid,
-                                            book_container_uuid: given_book_container_2_uuid
+                                            book_container_uuid: given_book_container_2_uuid,
+                                            algorithm_name: given_algorithm_name
         end
 
         it "the request_uuid is returned with clue_status: 'clue_ready'" do
