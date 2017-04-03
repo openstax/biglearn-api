@@ -68,11 +68,11 @@ class JsonApiController < ApplicationController
 
 
   def _render_app_request_validation_error(exception)
-    request_headers = ActionDispatch::Http::Headers::CGI_VARIABLES.inject({}){ |result, key|
+    request_headers = {}
+    ActionDispatch::Http::Headers::CGI_VARIABLES.each do |result, key|
       value = request.headers[key]
       result[key] = value unless value.nil? ## TODO: find a way to recover original key
-      result
-    }
+    end
     request.body.rewind
     request_body = request.body.read
     payload = {
