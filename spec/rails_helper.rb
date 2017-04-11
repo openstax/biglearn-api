@@ -73,5 +73,5 @@ RSpec.configure do |config|
 end
 
 def make_post_request(route:, headers: nil, body: nil)
-  post route, body, headers
+  post route, params: body, headers: headers
 end

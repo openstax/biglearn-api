@@ -1,4 +1,4 @@
-class CourseEvent < ActiveRecord::Base
+class CourseEvent < ApplicationRecord
   self.inheritance_column = nil
 
   include AppendOnlyWithUniqueUuid

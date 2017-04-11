@@ -1,4 +1,4 @@
-module ActiveRecordExtension
+module PluckWithKeys
 
   extend ActiveSupport::Concern
 
@@ -12,13 +12,10 @@ module ActiveRecordExtension
         named_keys = select_keys
       end
 
-      self.pluck(*select_keys).map{ |plucked_values|
+      pluck(*select_keys).map do |plucked_values|
         Hash[ *named_keys.zip([plucked_values].flatten(1)).flatten(1) ]
-      }
+      end
     end
   end
 
 end
-
-# include the extension 
-ActiveRecord::Base.send(:include, ActiveRecordExtension)

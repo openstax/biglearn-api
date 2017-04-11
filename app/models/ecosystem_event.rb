@@ -1,4 +1,4 @@
-class EcosystemEvent < ActiveRecord::Base
+class EcosystemEvent < ApplicationRecord
   self.inheritance_column = nil
 
   include AppendOnlyWithUniqueUuid

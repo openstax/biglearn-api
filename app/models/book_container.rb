@@ -1,4 +1,4 @@
-class BookContainer < ActiveRecord::Base
+class BookContainer < ApplicationRecord
   include AppendOnlyWithUniqueUuid
 
   validates :ecosystem_uuid, presence: true

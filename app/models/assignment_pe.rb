@@ -1,6 +1,4 @@
-class AssignmentPe < ActiveRecord::Base
-  include HasUniqueUuid
-
+class AssignmentPe < ApplicationRecord
   validates :assignment_uuid, presence: true
   validates :algorithm_name,  presence: true, uniqueness: { scope: :assignment_uuid }
 end

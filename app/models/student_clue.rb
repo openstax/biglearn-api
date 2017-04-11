@@ -1,6 +1,4 @@
-class StudentClue < ActiveRecord::Base
-  include HasUniqueUuid
-
+class StudentClue < ApplicationRecord
   validates :student_uuid,        presence: true
   validates :book_container_uuid, presence: true
   validates :algorithm_name,      presence: true,

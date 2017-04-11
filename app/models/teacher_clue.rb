@@ -1,6 +1,4 @@
-class TeacherClue < ActiveRecord::Base
-  include HasUniqueUuid
-
+class TeacherClue < ApplicationRecord
   validates :course_container_uuid, presence: true
   validates :book_container_uuid,   presence: true
   validates :algorithm_name,        presence: true,
