@@ -124,7 +124,7 @@ class EcosystemsController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#definitions/lo'},
               'minItems': 1,
-              'maxItems': 10,
+              'maxItems': 100,
             },
           },
           'required': ['exercise_uuid', 'group_uuid', 'version', 'los'],
