@@ -38,6 +38,9 @@ gem 'jbuilder', '~> 2.5'
 # Run unicorn when using the `rails server` or `rails s` command
 gem 'unicorn-rails'
 
+# Prevent server memory from growing until OOM
+gem 'unicorn-worker-killer'
+
 # Used for input/output payload schema validation
 gem 'json-schema'
 
