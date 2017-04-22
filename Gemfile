@@ -50,6 +50,10 @@ gem 'activerecord-import'
 # Entity-relationship diagram gem
 gem 'rails-erd'
 
+# Faster JSON serialization
+gem 'oj'
+gem 'oj_mimic_json'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri

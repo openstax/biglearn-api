@@ -120,6 +120,8 @@ GEM
     notiffany (0.1.1)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oj (2.18.5)
+    oj_mimic_json (1.0.1)
     pg (0.20.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -257,6 +259,8 @@ DEPENDENCIES
   jquery-rails
   json-schema
   listen (~> 3.0.5)
+  oj
+  oj_mimic_json
   pg
   rails (~> 5.0.2)
   rails-erd
