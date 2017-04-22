@@ -6,8 +6,9 @@ class Services::FetchPracticeWorstAreasExercises::Service
         spe[:algorithm_name].eq(request.fetch(:algorithm_name))
       )
     end.reduce(:or)
-    student_pes = queries.nil? ? StudentPe.none : StudentPe.where(queries)
-    student_pes_by_student_uuid = student_pes.index_by { |sp| sp.student_uuid.downcase }
+
+    student_pes_by_student_uuid = queries.nil? ?
+      {} : StudentPe.where(queries).index_by { |sp| sp.student_uuid.downcase }
 
     student_uuids = worst_areas_requests.map { |request| request.fetch(:student_uuid).downcase }
     missing_pe_student_uuids = student_uuids - student_pes_by_student_uuid.keys

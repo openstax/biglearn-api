@@ -8,12 +8,11 @@ class Services::FetchStudentClues::Service
         )
       )
     end.reduce(:or)
-    clues = queries.nil? ? StudentClue.none : StudentClue.where(queries)
 
     clues_map = Hash.new { |hash, key| hash[key] = {} }
-    clues.each do |clue|
+    StudentClue.where(queries).each do |clue|
       clues_map[clue.student_uuid.downcase][clue.book_container_uuid.downcase] = clue
-    end
+    end unless queries.nil?
 
     missing_clue_requests = student_clue_requests.reject do |request|
       clues_map[request.fetch(:student_uuid).downcase][request.fetch(:book_container_uuid).downcase]

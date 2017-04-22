@@ -14,9 +14,8 @@ class Services::FetchEcosystemEvents::Service
         .and(ee[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
     end.reduce(:or)
 
-    ecosystem_events_by_ecosystem_uuid = EcosystemEvent.where(queries)
-                                                       .order(:sequence_number)
-                                                       .group_by(&:ecosystem_uuid)
+    ecosystem_events_by_ecosystem_uuid = queries.nil? ?
+      {} : EcosystemEvent.where(queries).order(:sequence_number).group_by(&:ecosystem_uuid)
 
     responses = ecosystem_event_requests.map do |request|
       ecosystem_events = ecosystem_events_by_ecosystem_uuid[request.fetch(:ecosystem_uuid)] || []

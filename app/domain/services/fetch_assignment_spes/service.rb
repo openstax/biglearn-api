@@ -6,10 +6,8 @@ class Services::FetchAssignmentSpes::Service
         aspe[:algorithm_name].eq(request.fetch(:algorithm_name))
       )
     end.reduce(:or)
-    assignment_spes = queries.nil? ? AssignmentSpe.none : AssignmentSpe.where(queries)
-    assignment_spes_by_assignment_uuid = assignment_spes.index_by do |asp|
-      asp.assignment_uuid.downcase
-    end
+    assignment_spes_by_assignment_uuid = queries.nil? ?
+      {} : AssignmentSpe.where(queries).index_by { |as| as.assignment_uuid.downcase }
 
     assignment_uuids = spe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_spe_assignment_uuids = assignment_uuids - assignment_spes_by_assignment_uuid.keys

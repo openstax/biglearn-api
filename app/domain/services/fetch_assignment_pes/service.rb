@@ -6,8 +6,8 @@ class Services::FetchAssignmentPes::Service
         ape[:algorithm_name].eq(request.fetch(:algorithm_name))
       )
     end.reduce(:or)
-    assignment_pes = queries.nil? ? AssignmentPe.none : AssignmentPe.where(queries)
-    assignment_pes_by_assignment_uuid = assignment_pes.index_by { |ap| ap.assignment_uuid.downcase }
+    assignment_pes_by_assignment_uuid = queries.nil? ?
+      {} : AssignmentPe.where(queries).index_by { |ap| ap.assignment_uuid.downcase }
 
     assignment_uuids = pe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_pe_assignment_uuids = assignment_uuids - assignment_pes_by_assignment_uuid.keys

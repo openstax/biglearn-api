@@ -14,9 +14,8 @@ class Services::FetchCourseEvents::Service
         .and(ce[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
     end.reduce(:or)
 
-    course_events_by_course_uuid = CourseEvent.where(queries)
-                                              .order(:sequence_number)
-                                              .group_by(&:course_uuid)
+    course_events_by_course_uuid = queries.nil? ?
+      {} : CourseEvent.where(queries).order(:sequence_number).group_by(&:course_uuid)
 
     responses = course_event_requests.map do |request|
       course_events = course_events_by_course_uuid[request.fetch(:course_uuid)] || []
