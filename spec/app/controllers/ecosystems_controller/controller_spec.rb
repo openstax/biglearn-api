@@ -55,12 +55,11 @@ RSpec.describe EcosystemsController, type: :request do
 
     let(:target_result)         do
       {
-        ecosystem_responses: ecosystems_count.times.map{
+        ecosystem_responses: ecosystems_count.times.map do
           {
-            uuid: SecureRandom.uuid,
-            cnx_identity: "#{SecureRandom.uuid}@#{rand(99) + 1}.#{rand(99) + 1}"
+            uuid: SecureRandom.uuid
           }
-        }
+        end
       }
     end
 
