@@ -3,15 +3,10 @@ class Services::FetchEcosystemMetadatas::Service
     ecosystems = EcosystemEvent.create_ecosystem
                                .distinct
                                .order(:created_at)
-                               .pluck_with_keys(:ecosystem_uuid, :data, :created_at)
+                               .pluck_with_keys(:ecosystem_uuid, :created_at)
 
-    ecosystem_responses = ecosystems.map do |ecosystem|
-      {
-        uuid: ecosystem[:ecosystem_uuid],
-        cnx_identity: ecosystem[:data].deep_symbolize_keys.fetch(:book).fetch(:cnx_identity)
-      }
-    end
+    ecosystem_responses = ecosystems.map { |ecosystem| { uuid: ecosystem[:ecosystem_uuid] } }
 
-    { ecosystem_responses:  ecosystem_responses}
+    { ecosystem_responses:  ecosystem_responses }
   end
 end

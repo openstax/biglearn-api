@@ -174,8 +174,7 @@ class EcosystemsController < JsonApiController
         'ecosystem_metadata': {
           'type': 'object',
           'properties': {
-            'uuid': {'$ref': '#/standard_definitions/uuid'},
-            'cnx_identity': {'$ref': '#/standard_definitions/cnx_identity'}
+            'uuid': {'$ref': '#/standard_definitions/uuid'}
           },
           'required': ['uuid'],
           'additionalProperties': false
