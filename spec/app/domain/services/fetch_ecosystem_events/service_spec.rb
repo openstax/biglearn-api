@@ -68,7 +68,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
                                            type: given_event_types_2.sample
     end
 
-    it "returns all events with is_stopped_at_gap: false" do
+    it "returns all events with is_gap: false and is_end: true" do
       action.fetch(:ecosystem_event_responses).each do |response|
         expect(requests_by_request_uuid.keys).to include response.fetch(:request_uuid)
         request = requests_by_request_uuid[response.fetch(:request_uuid)]
@@ -83,7 +83,8 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
           expect(event.fetch(:event_type)).to eq event_model.type
           expect(event.fetch(:event_data)).to eq event_model.data
         end
-        expect(response.fetch(:is_stopped_at_gap)).to eq false
+        expect(response.fetch(:is_gap)).to eq false
+        expect(response.fetch(:is_end)).to eq true
       end
     end
   end
@@ -102,7 +103,7 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
 
     let(:gap_events)                   { [ gap_event_1, gap_event_2 ] }
 
-    it "returns only events before the gap with is_stopped_at_gap: true" do
+    it "returns only events before the gap with is_gap: true and is_end: false" do
       action.fetch(:ecosystem_event_responses).each do |response|
         expect(requests_by_request_uuid.keys).to include response.fetch(:request_uuid)
         request = requests_by_request_uuid[response.fetch(:request_uuid)]
@@ -118,7 +119,8 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
           expect(event.fetch(:event_type)).to eq event_model.type
           expect(event.fetch(:event_data)).to eq event_model.data
         end
-        expect(response.fetch(:is_stopped_at_gap)).to eq true
+        expect(response.fetch(:is_gap)).to eq true
+        expect(response.fetch(:is_end)).to eq false
       end
     end
   end

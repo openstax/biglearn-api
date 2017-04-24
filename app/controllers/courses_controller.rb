@@ -138,7 +138,7 @@ class CoursesController < JsonApiController
             'event_limit': {
               'type': 'integer',
               'minimum': 1,
-              'maximum': 1000
+              'maximum': 100
             }
           },
           'required': ['request_uuid', 'course_uuid', 'sequence_number_offset', 'event_limit'],
@@ -185,9 +185,10 @@ class CoursesController < JsonApiController
               'minItems': 0,
               'maxItems': 1000
             },
-            'is_stopped_at_gap': {'type': 'boolean'}
+            'is_gap': {'type': 'boolean'},
+            'is_end': {'type': 'boolean'}
           },
-          'required': ['request_uuid', 'course_uuid', 'events', 'is_stopped_at_gap'],
+          'required': ['request_uuid', 'course_uuid', 'events', 'is_gap', 'is_end'],
           'additionalProperties': false
         }
       }

@@ -103,7 +103,7 @@ RSpec.describe EcosystemsController, type: :request do
     end
     let(:given_ecosystem_1_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_1) { rand(1000000) }
-    let(:given_event_limit_1)            { rand(1000) + 1 }
+    let(:given_event_limit_1)            { rand(10) + 1 }
     let(:given_event_request_1)          do
       {
         request_uuid: given_request_1_uuid,
@@ -120,7 +120,7 @@ RSpec.describe EcosystemsController, type: :request do
     end
     let(:given_ecosystem_2_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_2) { rand(1000000) }
-    let(:given_event_limit_2)            { rand(1000) + 1 }
+    let(:given_event_limit_2)            { rand(10) + 1 }
     let(:given_event_request_2)          do
       {
         request_uuid: given_request_2_uuid,
@@ -148,13 +148,15 @@ RSpec.describe EcosystemsController, type: :request do
         }
       ]
     end
-    let(:target_is_stopped_at_gap_1)    { [true, false].sample }
+    let(:target_is_gap_1)               { [true, false].sample }
+    let(:target_is_end_1)               { [true, false].sample }
     let(:target_event_response_1)       do
       {
         request_uuid: given_request_1_uuid,
         ecosystem_uuid: given_ecosystem_1_uuid,
         events: target_event_1,
-        is_stopped_at_gap: target_is_stopped_at_gap_1
+        is_gap: target_is_gap_1,
+        is_end: target_is_end_1
       }
     end
 
@@ -171,13 +173,15 @@ RSpec.describe EcosystemsController, type: :request do
         }
       ]
     end
-    let(:target_is_stopped_at_gap_2)    { [true, false].sample }
+    let(:target_is_gap_2)               { [true, false].sample }
+    let(:target_is_end_2)               { [true, false].sample }
     let(:target_event_response_2)       do
       {
         request_uuid: given_request_2_uuid,
         ecosystem_uuid: given_ecosystem_2_uuid,
         events: target_event_2,
-        is_stopped_at_gap: target_is_stopped_at_gap_2
+        is_gap: target_is_gap_2,
+        is_end: target_is_end_2
       }
     end
 

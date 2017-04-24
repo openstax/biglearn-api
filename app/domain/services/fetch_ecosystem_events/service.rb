@@ -1,17 +1,22 @@
 # This code will not return events with gaps in the sequence_number
 # AS LONG AS you don't skip ahead of gaps using the sequence_number_offset
 class Services::FetchEcosystemEvents::Service
-  DEFAULT_EVENT_LIMIT_PER_ECOSYSTEM = 1000
+  MAX_EVENTS = 10
 
   def process(ecosystem_event_requests:)
+    num_requests = ecosystem_event_requests.size
+    max_events_per_request = MAX_EVENTS/num_requests
+
+    limits_per_request = {}
     ee = EcosystemEvent.arel_table
     queries = ecosystem_event_requests.map do |request|
-      limit = request.fetch(:event_limit) || DEFAULT_EVENT_LIMIT_PER_ECOSYSTEM
+      limit = [request.fetch(:event_limit, max_events_per_request), max_events_per_request].min
+      limits_per_request[request] = limit
 
       ee[:ecosystem_uuid]
         .eq(request.fetch(:ecosystem_uuid))
         .and(ee[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
-        .and(ee[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
+        .and(ee[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit + 1))
     end.reduce(:or)
 
     ecosystem_events_by_ecosystem_uuid = queries.nil? ?
@@ -21,10 +26,11 @@ class Services::FetchEcosystemEvents::Service
       ecosystem_events = ecosystem_events_by_ecosystem_uuid[request.fetch(:ecosystem_uuid)] || []
       included_event_types = Set.new(request.fetch(:event_types))
 
+      limit = limits_per_request.fetch(request)
       current_sequence_number = request.fetch(:sequence_number_offset)
       is_gap = false
       gapless_event_hashes = []
-      ecosystem_events.each do |event|
+      ecosystem_events.first(limit).each do |event|
         is_gap = event.sequence_number != current_sequence_number
         break if is_gap # Gap detected... Stop processing
 
@@ -45,7 +51,8 @@ class Services::FetchEcosystemEvents::Service
         request_uuid: request.fetch(:request_uuid),
         ecosystem_uuid: request.fetch(:ecosystem_uuid),
         events: gapless_event_hashes,
-        is_stopped_at_gap: is_gap
+        is_gap: is_gap,
+        is_end: !is_gap && ecosystem_events[limit + 1].nil?
       }
     end
 

@@ -1,17 +1,22 @@
 # This code will not return events with gaps in the sequence_number
 # AS LONG AS you don't skip ahead of gaps using the sequence_number_offset
 class Services::FetchCourseEvents::Service
-  DEFAULT_EVENT_LIMIT_PER_COURSE = 1000
+  MAX_EVENTS = 100
 
   def process(course_event_requests:)
+    num_requests = course_event_requests.size
+    max_events_per_request = MAX_EVENTS/num_requests
+
+    limits_per_request = {}
     ce = CourseEvent.arel_table
     queries = course_event_requests.map do |request|
-      limit = request.fetch(:event_limit) || DEFAULT_EVENT_LIMIT_PER_COURSE
+      limit = [request.fetch(:event_limit, max_events_per_request), max_events_per_request].min
+      limits_per_request[request] = limit
 
       ce[:course_uuid]
         .eq(request.fetch(:course_uuid))
         .and(ce[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
-        .and(ce[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit))
+        .and(ce[:sequence_number].lt(request.fetch(:sequence_number_offset) + limit + 1))
     end.reduce(:or)
 
     course_events_by_course_uuid = queries.nil? ?
@@ -21,10 +26,11 @@ class Services::FetchCourseEvents::Service
       course_events = course_events_by_course_uuid[request.fetch(:course_uuid)] || []
       included_event_types = Set.new(request.fetch(:event_types))
 
+      limit = limits_per_request.fetch(request)
       current_sequence_number = request.fetch(:sequence_number_offset)
       is_gap = false
       gapless_event_hashes = []
-      course_events.each do |event|
+      course_events.first(limit).each do |event|
         is_gap = event.sequence_number != current_sequence_number
         break if is_gap # Gap detected... Stop processing
 
@@ -45,7 +51,8 @@ class Services::FetchCourseEvents::Service
         request_uuid: request.fetch(:request_uuid),
         course_uuid: request.fetch(:course_uuid),
         events: gapless_event_hashes,
-        is_stopped_at_gap: is_gap
+        is_gap: is_gap,
+        is_end: !is_gap && course_events[limit + 1].nil?
       }
     end
 
