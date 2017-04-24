@@ -24,7 +24,7 @@ class CoursesController < JsonApiController
     with_json_apis(output_schema: _fetch_metadatas_response_payload_schema) do
 
       service = Services::FetchCourseMetadatas::Service.new
-      result = service.process()
+      result = service.process
 
       response_payload = { course_responses: result.fetch(:course_responses) }
       render json: response_payload.to_json, status: 200
@@ -135,13 +135,13 @@ class CoursesController < JsonApiController
             },
             'course_uuid': {'$ref': '#standard_definitions/uuid'},
             'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'},
-            'event_limit': {
+            'max_num_events': {
               'type': 'integer',
               'minimum': 1,
               'maximum': 100
             }
           },
-          'required': ['request_uuid', 'course_uuid', 'sequence_number_offset', 'event_limit'],
+          'required': ['request_uuid', 'course_uuid', 'sequence_number_offset', 'max_num_events'],
           'additionalProperties': false
         }
       }

@@ -15,6 +15,35 @@ class CourseEvent < ApplicationRecord
     record_response:                    8
   }
 
+  scope :after_gap, -> do
+    joins(
+      <<-SQL.strip_heredoc
+        LEFT OUTER JOIN course_events course_event_gaps
+          ON course_event_gaps.course_uuid = course_events.course_uuid
+            AND course_event_gaps.sequence_number = course_events.sequence_number - 1
+      SQL
+    ).where.not(sequence_number: 0)
+     .where(course_event_gaps: { id: nil })
+  end
+
+  scope :after_gap_with_course_gap_number, -> do
+    from(
+      <<-OUTERSQL
+        (
+          #{after_gap.select(
+              <<-INNERSQL.strip_heredoc
+                course_events.*,
+                  row_number() OVER (
+                    PARTITION BY course_events.course_uuid
+                    ORDER BY course_events.sequence_number
+                  ) AS course_gap_number
+              INNERSQL
+            ).to_sql}
+        ) AS course_events
+      OUTERSQL
+    )
+  end
+
   validates :type,            presence: true
   validates :course_uuid,     presence: true
   validates :sequence_number, presence: true,

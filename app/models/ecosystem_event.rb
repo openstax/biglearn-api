@@ -7,6 +7,35 @@ class EcosystemEvent < ApplicationRecord
     create_ecosystem: 0
   }
 
+  scope :after_gap, -> do
+    joins(
+      <<-SQL.strip_heredoc
+        LEFT OUTER JOIN ecosystem_events ecosystem_event_gaps
+          ON ecosystem_event_gaps.ecosystem_uuid = ecosystem_events.ecosystem_uuid
+            AND ecosystem_event_gaps.sequence_number = ecosystem_events.sequence_number - 1
+      SQL
+    ).where.not(sequence_number: 0)
+     .where(ecosystem_event_gaps: { id: nil })
+  end
+
+  scope :after_gap_with_ecosystem_gap_number, -> do
+    from(
+      <<-OUTERSQL
+        (
+          #{after_gap.select(
+              <<-INNERSQL.strip_heredoc
+                ecosystem_events.*,
+                  row_number() OVER (
+                    PARTITION BY ecosystem_events.ecosystem_uuid
+                    ORDER BY ecosystem_events.sequence_number
+                  ) AS ecosystem_gap_number
+              INNERSQL
+            ).to_sql}
+        ) AS ecosystem_events
+      OUTERSQL
+    )
+  end
+
   validates :type,            presence: true
   validates :ecosystem_uuid,  presence: true
   validates :sequence_number, presence: true,

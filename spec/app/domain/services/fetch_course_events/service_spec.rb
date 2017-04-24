@@ -8,15 +8,15 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
     CourseEvent.types.keys.sample(rand(CourseEvent.types.size - 1) + 1)
   end
   let(:given_course_1_uuid)            { SecureRandom.uuid }
-  let(:given_sequence_number_offset_1) { rand(1000000) }
-  let(:given_event_limit_1)            { rand(1000) + 1 }
+  let(:given_sequence_number_offset_1) { 0 }
+  let(:given_max_num_events_1)            { rand(1000) + 1 }
   let(:given_event_request_1)          do
     {
       request_uuid: given_request_1_uuid,
       event_types: given_event_types_1,
       course_uuid: given_course_1_uuid,
       sequence_number_offset: given_sequence_number_offset_1,
-      event_limit: given_event_limit_1
+      max_num_events: given_max_num_events_1
     }
   end
 
@@ -25,15 +25,15 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
     CourseEvent.types.keys.sample(rand(CourseEvent.types.size - 1) + 1)
   end
   let(:given_course_2_uuid)            { SecureRandom.uuid }
-  let(:given_sequence_number_offset_2) { rand(1000000) }
-  let(:given_event_limit_2)            { rand(1000) + 1 }
+  let(:given_sequence_number_offset_2) { 0 }
+  let(:given_max_num_events_2)            { rand(1000) + 1 }
   let(:given_event_request_2)          do
     {
       request_uuid: given_request_2_uuid,
       event_types: given_event_types_2,
       course_uuid: given_course_2_uuid,
       sequence_number_offset: given_sequence_number_offset_2,
-      event_limit: given_event_limit_2
+      max_num_events: given_max_num_events_2
     }
   end
 
