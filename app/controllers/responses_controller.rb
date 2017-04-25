@@ -1,7 +1,7 @@
 class ResponsesController < JsonApiController
 
   def record
-    with_json_apis(input_schema:  _record_request_payload_schema,
+    with_json_apis(input_schema: _record_request_payload_schema,
                    output_schema: _record_response_payload_schema) do
       responses = json_parsed_request_payload.fetch(:responses)
 
@@ -11,7 +11,6 @@ class ResponsesController < JsonApiController
       render json: result.to_json, status: 200
     end
   end
-
 
   def _record_request_payload_schema
     {
