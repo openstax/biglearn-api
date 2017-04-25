@@ -12,6 +12,7 @@ class Services::RecordResponses::Service
           :response_uuid,
           :course_uuid,
           :sequence_number,
+          :ecosystem_uuid,
           :trial_uuid,
           :student_uuid,
           :exercise_uuid,

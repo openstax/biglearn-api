@@ -19,48 +19,19 @@ RSpec.describe Services::RecordResponses::Service do
 
   context "when response data is given" do
     let(:given_response_data) do
-      [
+      4.times.map do
         {
           response_uuid:  SecureRandom.uuid,
           course_uuid:    SecureRandom.uuid,
           sequence_number: rand(1000),
-          trial_uuid:     SecureRandom.uuid,
-          student_uuid:   SecureRandom.uuid,
-          exercise_uuid:  SecureRandom.uuid,
-          is_correct:     [true, false].sample,
-          responded_at:   Time.now.utc.iso8601(6),
-        },
-        {
-          response_uuid:  SecureRandom.uuid,
-          course_uuid:    SecureRandom.uuid,
-          sequence_number: rand(1000),
-          trial_uuid:     SecureRandom.uuid,
-          student_uuid:   SecureRandom.uuid,
-          exercise_uuid:  SecureRandom.uuid,
-          is_correct:     [true, false].sample,
-          responded_at:   Time.now.utc.iso8601(6),
-        },
-        {
-          response_uuid:  SecureRandom.uuid,
-          course_uuid:    SecureRandom.uuid,
-          sequence_number: rand(1000),
-          trial_uuid:     SecureRandom.uuid,
-          student_uuid:   SecureRandom.uuid,
-          exercise_uuid:  SecureRandom.uuid,
-          is_correct:     [true, false].sample,
-          responded_at:   Time.now.utc.iso8601(6),
-        },
-        {
-          response_uuid:  SecureRandom.uuid,
-          course_uuid:    SecureRandom.uuid,
-          sequence_number: rand(1000),
+          ecosystem_uuid: SecureRandom.uuid,
           trial_uuid:     SecureRandom.uuid,
           student_uuid:   SecureRandom.uuid,
           exercise_uuid:  SecureRandom.uuid,
           is_correct:     [true, false].sample,
           responded_at:   Time.now.utc.iso8601(6),
         }
-      ]
+      end
     end
 
     let(:existing_response_data) { given_response_data.values_at(0, 2) }
@@ -77,8 +48,9 @@ RSpec.describe Services::RecordResponses::Service do
                            sequence_number: response_data.fetch(:sequence_number),
                            data: response_data.slice(
                              :response_uuid,
-                             :trial_uuid,
                              :sequence_number,
+                             :ecosystem_uuid,
+                             :trial_uuid,
                              :student_uuid,
                              :exercise_uuid,
                              :is_correct,
@@ -129,17 +101,18 @@ RSpec.describe Services::RecordResponses::Service do
         given_response_data = given_response_data_by_response_uuid[newly_created_response.uuid]
 
         aggregate_failures 'record_response data checks' do
-          expect(newly_created_response.uuid).to          eq(given_response_data.fetch(:response_uuid))
-          expect(newly_created_response.course_uuid).to   eq(given_response_data.fetch(:course_uuid))
+          expect(newly_created_response.uuid).to eq(given_response_data.fetch(:response_uuid))
+          expect(newly_created_response.course_uuid).to eq(given_response_data.fetch(:course_uuid))
           expect(newly_created_response.sequence_number).to(
             eq(given_response_data.fetch(:sequence_number))
           )
 
           data = newly_created_response.data.deep_symbolize_keys
-          expect(data.fetch(:trial_uuid)).to   eq(given_response_data.fetch(:trial_uuid))
+          expect(data.fetch(:ecosystem_uuid)).to eq(given_response_data.fetch(:ecosystem_uuid))
+          expect(data.fetch(:trial_uuid)).to eq(given_response_data.fetch(:trial_uuid))
           expect(data.fetch(:student_uuid)).to eq(given_response_data.fetch(:student_uuid))
           expect(data.fetch(:exercise_uuid)).to eq(given_response_data.fetch(:exercise_uuid))
-          expect(data.fetch(:is_correct)).to   eq(given_response_data.fetch(:is_correct))
+          expect(data.fetch(:is_correct)).to eq(given_response_data.fetch(:is_correct))
           expect(DateTime.parse(data.fetch(:responded_at))).to(
             be_within(1e-6).of(DateTime.parse(given_response_data.fetch(:responded_at)))
           )
