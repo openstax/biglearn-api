@@ -54,6 +54,9 @@ gem 'rails-erd'
 gem 'oj'
 gem 'oj_mimic_json'
 
+# Silence logs for certain actions
+gem 'silencer'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
