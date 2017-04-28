@@ -34,7 +34,7 @@ class Services::CreateUpdateAssignments::Service
                 .merge(updated_assignment_uuid: assignment.fetch(:assignment_uuid))
     end
 
-    CourseEvent.transaction(isolation: :serializable) do
+    CourseEvent.transaction do
       Assignment.append assignment_attributes
 
       CourseEvent.append course_event_attributes

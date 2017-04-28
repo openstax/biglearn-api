@@ -5,7 +5,7 @@ class Services::CreateEcosystem::Service
       { uuid: content.fetch(:container_uuid), ecosystem_uuid: ecosystem_uuid }
     end
 
-    EcosystemEvent.transaction(isolation: :serializable) do
+    EcosystemEvent.transaction do
       BookContainer.append book_container_attributes
 
       EcosystemEvent.append(

@@ -26,14 +26,13 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
     end
 
     it "a CourseEvent is NOT created and an error is returned" do
-      expect{action}.to not_change{CourseEvent.count}
-                    .and raise_error(ActiveRecord::RecordNotUnique)
+      expect{action}.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 
   context "when a previously non-existing course_uuid and sequence_number combination is given" do
     it "a CourseEvent is created with the correct attributes" do
-      expect{action}.to change{CourseEvent.count}.by(1)
+      expect{action}.to change{ CourseEvent.count }.by(1)
       course_active_date = CourseEvent.find_by(course_uuid: given_course_uuid,
                                                sequence_number: given_sequence_number)
       data = course_active_date.data.deep_symbolize_keys

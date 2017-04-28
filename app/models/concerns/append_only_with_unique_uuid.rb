@@ -19,8 +19,7 @@ module AppendOnlyWithUniqueUuid
         import records, validate: false, on_duplicate_key_ignore: { conflict_target: [:uuid] }
       }
 
-      connection.transaction_open? ? import_block.call :
-                                     transaction(isolation: :serializable, &import_block)
+      connection.transaction_open? ? import_block.call : transaction(&import_block)
     end
   end
 end

@@ -30,7 +30,7 @@ class Services::UpdateRosters::Service
       roster.slice(:request_uuid).merge(updated_course_uuid: roster.fetch(:course_uuid))
     end
 
-    CourseEvent.transaction(isolation: :serializable) do
+    CourseEvent.transaction do
       CourseContainer.append course_container_attributes
       Student.append         student_attributes
       CourseEvent.append     course_event_attributes

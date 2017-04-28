@@ -44,13 +44,39 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = false
 
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.clean_with :truncation
+  config.prepend_before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning { example.run }
+  config.prepend_before(:all) do
+    DatabaseCleaner.start
+  end
+
+  config.prepend_before(:all, js: true) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.prepend_before(:all, truncation: true) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.prepend_before(:all) do
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.prepend_before(:each) do
+    DatabaseCleaner.start
+  end
+
+  # https://github.com/DatabaseCleaner/database_cleaner#rspec-with-capybara-example says:
+  #   "It's also recommended to use append_after to ensure DatabaseCleaner.clean
+  #    runs after the after-test cleanup capybara/rspec installs."
+  config.append_after(:each) do
+    DatabaseCleaner.clean
+  end
+
+  config.append_after(:all) do
+    DatabaseCleaner.clean
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
