@@ -7,22 +7,25 @@ class EcosystemEvent < ApplicationRecord
     create_ecosystem: 0
   }
 
-  scope :after_gap, -> do
+  # Returns the last record before the each gap in sequence_numbers for each ecosystem
+  # Always includes the last existing record for each ecosystem
+  scope :before_gap, -> do
     joins(
       <<-SQL.strip_heredoc
         LEFT OUTER JOIN ecosystem_events ecosystem_event_gaps
           ON ecosystem_event_gaps.ecosystem_uuid = ecosystem_events.ecosystem_uuid
-            AND ecosystem_event_gaps.sequence_number = ecosystem_events.sequence_number - 1
+            AND ecosystem_event_gaps.sequence_number = ecosystem_events.sequence_number + 1
       SQL
-    ).where.not(sequence_number: 0)
-     .where(ecosystem_event_gaps: { id: nil })
+    ).where(ecosystem_event_gaps: { id: nil })
   end
 
-  scope :after_gap_with_ecosystem_gap_number, -> do
+  # Same as above, but also numbers each gap
+  scope :before_gap_with_ecosystem_gap_number, -> do
     from(
       <<-OUTERSQL
         (
-          #{after_gap.select(
+          #{
+            before_gap.select(
               <<-INNERSQL.strip_heredoc
                 ecosystem_events.*,
                   row_number() OVER (
@@ -30,7 +33,8 @@ class EcosystemEvent < ApplicationRecord
                     ORDER BY ecosystem_events.sequence_number
                   ) AS ecosystem_gap_number
               INNERSQL
-            ).to_sql}
+            ).to_sql
+          }
         ) AS ecosystem_events
       OUTERSQL
     )
