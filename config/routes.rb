@@ -33,4 +33,8 @@ Rails.application.routes.draw do
 
   post '/update_student_clues' => 'clues#update_student'
   post '/update_teacher_clues' => 'clues#update_teacher'
+
+  # Redirect invalid requests to the 404 page
+  match :/       , to: redirect('/404.html'), via: [:get, :post, :put, :patch, :delete]
+  match :'*other', to: redirect('/404.html'), via: [:get, :post, :put, :patch, :delete]
 end

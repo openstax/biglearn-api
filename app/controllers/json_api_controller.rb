@@ -6,10 +6,10 @@ class JsonApiController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   rescue_from Errors::AppRequestValidationError,  with: :_render_app_request_validation_error
+  rescue_from ActiveRecord::RecordNotUnique,      with: :_render_app_record_not_unique
   rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error
-  rescue_from Errors::AppUnprocessableError,      with: :_render_app_unprocessable_error
 
-  JSON_SCHEMA='http://json-schema.org/draft-04/schema#'
+  JSON_SCHEMA = 'http://json-schema.org/draft-04/schema#'
 
   def self.validate_json_action(method, input_schema:, output_schema:)
     alias_method "#{method}_without_validation", method
@@ -26,14 +26,12 @@ class JsonApiController < ApplicationController
     _validate_response(output_schema) unless output_schema.nil?
   end
 
-
   def json_parsed_request_payload
     request.body.rewind
     JSON.parse(request.body.read).deep_symbolize_keys
   rescue StandardError => ex
     fail Errors::AppRequestValidationError.new('could not parse request json payload')
   end
-
 
   def _validate_request(input_schema)
     fail Errors::AppRequestHeaderError.new('request must have Content-Type = application/json') \
@@ -48,7 +46,6 @@ class JsonApiController < ApplicationController
     fail Errors::AppRequestSchemaError.new('request body failed validation', validation_errors) \
       if validation_errors.any?
   end
-
 
   def _validate_response(output_schema)
     fail Errors::AppResponseStatusError.new("invalid response status: #{response.status}") \
@@ -66,29 +63,27 @@ class JsonApiController < ApplicationController
     fail Errors::AppResponseValidationError.new('could not parse response json payload')
   end
 
-
   def _render_app_request_validation_error(exception)
-    request_headers = {}
-    ActionDispatch::Http::Headers::CGI_VARIABLES.each do |result, key|
-      value = request.headers[key]
-      result[key] = value unless value.nil? ## TODO: find a way to recover original key
-    end
     request.body.rewind
     request_body = request.body.read
     payload = {
       'errors': exception.errors,
-      'request': {
-        'headers': request_headers,
-        'body':    request_body
-      }
+      'request': request_body
     }
     render json: payload.to_json, status: 400
   end
 
+  def _render_app_record_not_unique(exception)
+    payload = {
+      'exception': exception.class.name,
+      'errors': exception.to_s
+    }
+    render json: payload.to_json, status: 422
+  end
 
   def _render_app_response_validation_error(exception)
     payload = {
-     'errors': exception.errors,
+      'errors': exception.errors,
       'response': {
         'status':  response.status,
         'headers': response.headers,
@@ -98,16 +93,6 @@ class JsonApiController < ApplicationController
     response.status = 500
     response.body   = payload.to_json
   end
-
-
-  def _render_app_unprocessable_error(exception)
-    payload = {
-      'errors': exception.errors,
-      'exception': exception.inspect,
-    }
-    render json: payload.to_json, status: 422
-  end
-
 
   module SchemaDefinitions
 

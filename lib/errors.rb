@@ -59,6 +59,4 @@ module Errors
   class AppResponseStatusError < AppResponseValidationError; end
   class AppResponseSchemaError < AppResponseValidationError; end
 
-  class AppUnprocessableError < AppError; end
-
 end

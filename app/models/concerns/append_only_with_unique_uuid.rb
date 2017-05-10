@@ -9,7 +9,7 @@ module AppendOnlyWithUniqueUuid
 
   class_methods do
     def append(attributes_array)
-      records = [attributes_array].flatten.map{ |attributes| new(attributes) }
+      records = [attributes_array].flatten.map { |attributes| new(attributes) }
       import_block = -> {
         # We use validate: false here because the controller schemas and the DB
         # already enforce the presence/uniqueness/data type validations
