@@ -1,4 +1,4 @@
-class Services::CreateUpdateAssignments::Service
+class Services::CreateUpdateAssignments::Service < Services::ApplicationService
   def process(assignments:)
     assignment_attributes = []
     course_event_attributes = []
@@ -26,7 +26,9 @@ class Services::CreateUpdateAssignments::Service
           :spes_are_assigned,
           :goal_num_tutor_assigned_pes,
           :pes_are_assigned,
-          :assigned_exercises
+          :assigned_exercises,
+          :created_at,
+          :updated_at
         )
       }
 

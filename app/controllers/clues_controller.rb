@@ -1,70 +1,35 @@
 class CluesController < JsonApiController
 
   def fetch_student
-    with_json_apis(input_schema:  _fetch_student_request_payload_schema,
-                   output_schema: _fetch_student_response_payload_schema) do
-      student_clue_requests_data = json_parsed_request_payload.fetch(:student_clue_requests)
-
-      service = Services::FetchStudentClues::Service.new
-      result = service.process(student_clue_requests: student_clue_requests_data)
-
-      response_data = result.fetch(:student_clue_responses).map do |response|
-        response.slice(:request_uuid, :clue_data, :clue_status)
-      end
-
-      render json: { student_clue_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_student_request_payload_schema,
+      output_schema: _fetch_student_response_payload_schema,
+      service: Services::FetchStudentClues::Service
+    )
   end
 
   def fetch_teacher
-    with_json_apis(input_schema:  _fetch_teacher_request_payload_schema,
-                   output_schema: _fetch_teacher_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      teacher_clue_requests_data = request_payload.deep_symbolize_keys.fetch(:teacher_clue_requests)
-
-      service = Services::FetchTeacherClues::Service.new
-      result = service.process(teacher_clue_requests: teacher_clue_requests_data)
-
-      response_data = result.fetch(:teacher_clue_responses).map do |response|
-        response.slice(:request_uuid, :clue_data, :clue_status)
-      end
-
-      render json: { teacher_clue_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_teacher_request_payload_schema,
+      output_schema: _fetch_teacher_response_payload_schema,
+      service: Services::FetchTeacherClues::Service
+    )
   end
 
   def update_student
-    with_json_apis(input_schema:  _update_student_request_payload_schema,
-                   output_schema: _update_student_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      student_clue_updates = request_payload.deep_symbolize_keys.fetch(:student_clue_updates)
-
-      service = Services::UpdateStudentClues::Service.new
-      result = service.process(student_clue_updates: student_clue_updates)
-
-      response_data = result.fetch(:student_clue_update_responses).map do |response|
-        response.slice(:request_uuid, :update_status)
-      end
-
-      render json: { student_clue_update_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_student_request_payload_schema,
+      output_schema: _update_student_response_payload_schema,
+      service: Services::UpdateStudentClues::Service
+    )
   end
 
   def update_teacher
-    with_json_apis(input_schema:  _update_teacher_request_payload_schema,
-                   output_schema: _update_teacher_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      teacher_clue_updates = request_payload.deep_symbolize_keys.fetch(:teacher_clue_updates)
-
-      service = Services::UpdateTeacherClues::Service.new
-      result = service.process(teacher_clue_updates: teacher_clue_updates)
-
-      response_data = result.fetch(:teacher_clue_update_responses).map do |response|
-        response.slice(:request_uuid, :update_status)
-      end
-
-      render json: { teacher_clue_update_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_teacher_request_payload_schema,
+      output_schema: _update_teacher_response_payload_schema,
+      service: Services::UpdateTeacherClues::Service
+    )
   end
 
   protected

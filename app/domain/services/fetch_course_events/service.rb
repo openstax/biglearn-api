@@ -1,5 +1,5 @@
 # This code will not return events with gaps in the sequence_number
-class Services::FetchCourseEvents::Service
+class Services::FetchCourseEvents::Service < Services::ApplicationService
   MAX_EVENTS = 100
 
   def process(course_event_requests:)

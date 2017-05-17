@@ -1,4 +1,4 @@
-class Services::UpdateStudentClues::Service
+class Services::UpdateStudentClues::Service < Services::ApplicationService
   def process(student_clue_updates:)
     update_responses = []
     student_clues = student_clue_updates.map do |update|

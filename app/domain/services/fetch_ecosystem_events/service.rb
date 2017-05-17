@@ -1,5 +1,5 @@
 # This code will not return events with gaps in the sequence_number
-class Services::FetchEcosystemEvents::Service
+class Services::FetchEcosystemEvents::Service < Services::ApplicationService
   MAX_EVENTS = 10
 
   def process(ecosystem_event_requests:)

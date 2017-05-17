@@ -1,17 +1,11 @@
 class AssignmentsController < JsonApiController
 
   def create_update
-    with_json_apis(input_schema:  _create_update_request_payload_schema,
-                   output_schema: _create_update_response_payload_schema) do
-      assignment_data = json_parsed_request_payload.fetch(:assignments)
-
-      service = Services::CreateUpdateAssignments::Service.new
-      result = service.process(assignments: assignment_data)
-
-      response_payload = { updated_assignments: result.fetch(:updated_assignments) }
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _create_update_request_payload_schema,
+      output_schema: _create_update_response_payload_schema,
+      service: Services::CreateUpdateAssignments::Service
+    )
   end
 
   protected
@@ -73,6 +67,8 @@ class AssignmentsController < JsonApiController
               'minItems': 0,
               'maxItems': 1000,
             },
+            'created_at': {'$ref': '#/standard_definitions/datetime'},
+            'updated_at': {'$ref': '#/standard_definitions/datetime'}
           },
           'required': [
             'request_uuid',
@@ -87,6 +83,8 @@ class AssignmentsController < JsonApiController
             'spes_are_assigned',
             'pes_are_assigned',
             'assigned_exercises',
+            'created_at',
+            'updated_at'
           ],
           'additionalProperties': false,
         },

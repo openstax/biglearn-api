@@ -1,15 +1,11 @@
 class ResponsesController < JsonApiController
 
   def record
-    with_json_apis(input_schema: _record_request_payload_schema,
-                   output_schema: _record_response_payload_schema) do
-      responses = json_parsed_request_payload.fetch(:responses)
-
-      service = Services::RecordResponses::Service.new
-      result = service.process(responses: responses).slice(:recorded_response_uuids)
-
-      render json: result.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _record_request_payload_schema,
+      output_schema: _record_response_payload_schema,
+      service: Services::RecordResponses::Service
+    )
   end
 
   def _record_request_payload_schema
@@ -39,7 +35,7 @@ class ResponsesController < JsonApiController
             'student_uuid':    {'$ref': '#/standard_definitions/uuid'},
             'exercise_uuid':   {'$ref': '#/standard_definitions/uuid'},
             'is_correct':      {'type': 'boolean'},
-            'responded_at':    {'$ref': '#/standard_definitions/datetime'},
+            'responded_at':    {'$ref': '#/standard_definitions/datetime'}
           },
           'required': [
             'response_uuid',
@@ -57,7 +53,6 @@ class ResponsesController < JsonApiController
       },
     }
   end
-
 
   def _record_response_payload_schema
     {

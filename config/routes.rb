@@ -4,18 +4,18 @@ Rails.application.routes.draw do
   post '/fetch_ecosystem_events' => 'ecosystems#fetch_events'
 
   post '/create_course' => 'courses#create'
+  post '/update_course_active_dates' => 'courses#update_active_dates'
   post '/fetch_course_metadatas' => 'courses#fetch_metadatas'
   post '/fetch_course_events' => 'courses#fetch_events'
 
   post '/update_rosters' => 'rosters#update'
-  post '/update_course_active_dates' => 'course_active_dates#update'
 
   post '/prepare_course_ecosystem' => 'course_ecosystems#prepare'
   post '/update_course_ecosystems' => 'course_ecosystems#update'
   post '/fetch_course_ecosystem_statuses' => 'course_ecosystems#status'
 
-  post '/update_globally_excluded_exercises' => 'global_exercise_exclusions#update'
-  post '/update_course_excluded_exercises'   => 'course_exercise_exclusions#update'
+  post '/update_globally_excluded_exercises' => 'exercise_exclusions#update_global'
+  post '/update_course_excluded_exercises'   => 'exercise_exclusions#update_course'
 
   post '/create_update_assignments' => 'assignments#create_update'
   post '/record_responses' => 'responses#record'

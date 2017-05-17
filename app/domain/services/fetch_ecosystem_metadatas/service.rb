@@ -1,4 +1,4 @@
-class Services::FetchEcosystemMetadatas::Service
+class Services::FetchEcosystemMetadatas::Service < Services::ApplicationService
   def process
     ecosystems = EcosystemEvent.create_ecosystem
                                .distinct

@@ -11,54 +11,62 @@ class JsonApiController < ApplicationController
 
   JSON_SCHEMA = 'http://json-schema.org/draft-04/schema#'
 
-  def self.validate_json_action(method, input_schema:, output_schema:)
-    alias_method "#{method}_without_validation", method
-    define_method method do |*args|
-      _validate_request(input_schema)
-      send "#{method}_without_validation"
-      _validate_response(output_schema)
+  def with_json_apis(input_schema: nil, output_schema: nil, &block)
+    parsed_request = _validate_and_parse_request(input_schema)
+    response_payload = block.call(parsed_request)
+    render json: response_payload, status: 200
+    _validate_response(output_schema)
+  end
+
+  def respond_with_json_apis_and_service(input_schema: nil, output_schema: nil, service:)
+    with_json_apis(input_schema: input_schema, output_schema: output_schema) do |request_payload|
+      input_schema.nil? ? service.process : service.process(request_payload)
     end
   end
 
-  def with_json_apis(input_schema: nil, output_schema: nil, &block)
-    _validate_request(input_schema) unless input_schema.nil?
-    block.call
-    _validate_response(output_schema) unless output_schema.nil?
-  end
-
-  def json_parsed_request_payload
+  def _json_parsed_request_payload
     request.body.rewind
     JSON.parse(request.body.read).deep_symbolize_keys
   rescue StandardError => ex
     fail Errors::AppRequestValidationError.new('could not parse request json payload')
   end
 
-  def _validate_request(input_schema)
+  def _validate_and_parse_request(input_schema)
+    return {} if input_schema.nil?
+
     fail Errors::AppRequestHeaderError.new('request must have Content-Type = application/json') \
       unless request.content_type == 'application/json'
 
-    validation_errors = JSON::Validator.fully_validate(
-      input_schema,
-      json_parsed_request_payload,
-      insert_defaults: true,
-      validate_schema: true
-    )
-    fail Errors::AppRequestSchemaError.new('request body failed validation', validation_errors) \
-      if validation_errors.any?
+    _json_parsed_request_payload.tap do |parsed_request|
+      validation_errors = JSON::Validator.fully_validate(
+        input_schema,
+        parsed_request,
+        insert_defaults: true,
+        validate_schema: true
+      )
+
+      fail Errors::AppRequestSchemaError.new('request body failed validation', validation_errors) \
+        if validation_errors.any?
+    end
   end
 
   def _validate_response(output_schema)
     fail Errors::AppResponseStatusError.new("invalid response status: #{response.status}") \
       unless response.status == 200
 
-    validation_errors = JSON::Validator.fully_validate(
-      output_schema,
-      JSON.parse(response.body),
-      validate_schema: true
-    )
+    return {} if output_schema.nil?
 
-    fail Errors::AppResponseSchemaError.new('response body failed validation', validation_errors) \
-      if validation_errors.any?
+    JSON.parse(response.body).tap do |parsed_response|
+      validation_errors = JSON::Validator.fully_validate(
+        output_schema,
+        parsed_response,
+        validate_schema: true
+      )
+
+      fail Errors::AppResponseSchemaError.new(
+        'response body failed validation', validation_errors
+      ) if validation_errors.any?
+    end
   rescue StandardError => ex
     fail Errors::AppResponseValidationError.new('could not parse response json payload')
   end

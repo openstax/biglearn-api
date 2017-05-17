@@ -1,4 +1,4 @@
-class Services::FetchAssignmentPes::Service
+class Services::FetchAssignmentPes::Service < Services::ApplicationService
   def process(pe_requests:)
     ape = AssignmentPe.arel_table
     queries = pe_requests.map do |request|

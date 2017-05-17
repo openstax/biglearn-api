@@ -1,4 +1,4 @@
-class Services::FetchAssignmentSpes::Service
+class Services::FetchAssignmentSpes::Service < Services::ApplicationService
   def process(spe_requests:)
     aspe = AssignmentSpe.arel_table
     queries = spe_requests.map do |request|

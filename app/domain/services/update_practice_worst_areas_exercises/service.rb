@@ -1,4 +1,4 @@
-class Services::UpdatePracticeWorstAreasExercises::Service
+class Services::UpdatePracticeWorstAreasExercises::Service < Services::ApplicationService
   def process(practice_worst_areas_updates:)
     update_responses = []
     student_pes = practice_worst_areas_updates.map do |update|

@@ -1,102 +1,51 @@
 class ExercisesController < JsonApiController
 
   def fetch_assignment_pes
-    with_json_apis(input_schema:  _fetch_assignment_pes_request_payload_schema,
-                   output_schema: _fetch_assignment_pes_response_payload_schema) do
-      pe_requests = json_parsed_request_payload.fetch(:pe_requests)
-
-      service = Services::FetchAssignmentPes::Service.new
-      result = service.process(pe_requests: pe_requests)
-
-      pe_responses = result.fetch(:pe_responses).map do |response|
-        response.slice(:request_uuid, :assignment_uuid, :exercise_uuids, :assignment_status)
-      end
-
-      render json: { pe_responses: pe_responses }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_assignment_pes_request_payload_schema,
+      output_schema: _fetch_assignment_pes_response_payload_schema,
+      service: Services::FetchAssignmentPes::Service
+    )
   end
 
   def fetch_assignment_spes
-    with_json_apis(input_schema:  _fetch_assignment_spes_request_payload_schema,
-                   output_schema: _fetch_assignment_spes_response_payload_schema) do
-      spe_requests = json_parsed_request_payload.fetch(:spe_requests)
-
-      service = Services::FetchAssignmentSpes::Service.new
-      result = service.process(spe_requests: spe_requests)
-
-      spe_responses = result.fetch(:spe_responses).map do |response|
-        response.slice(:request_uuid, :assignment_uuid, :exercise_uuids, :assignment_status)
-      end
-
-      render json: { spe_responses: spe_responses }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_assignment_spes_request_payload_schema,
+      output_schema: _fetch_assignment_spes_response_payload_schema,
+      service: Services::FetchAssignmentSpes::Service
+    )
   end
 
   def fetch_practice_worst_areas
-    with_json_apis(input_schema:  _fetch_practice_worst_areas_request_payload_schema,
-                   output_schema: _fetch_practice_worst_areas_response_payload_schema) do
-      worst_areas_requests = json_parsed_request_payload.fetch(:worst_areas_requests)
-
-      service = Services::FetchPracticeWorstAreasExercises::Service.new
-      result = service.process(worst_areas_requests: worst_areas_requests)
-
-      worst_areas_responses = result.fetch(:worst_areas_responses).map do |response|
-        response.slice(:request_uuid, :student_uuid, :exercise_uuids, :student_status)
-      end
-
-      render json: { worst_areas_responses: worst_areas_responses }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_practice_worst_areas_request_payload_schema,
+      output_schema: _fetch_practice_worst_areas_response_payload_schema,
+      service: Services::FetchPracticeWorstAreasExercises::Service
+    )
   end
 
   def update_assignment_pes
-    with_json_apis(input_schema:  _update_assignment_pes_request_payload_schema,
-                   output_schema: _update_assignment_pes_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      pe_updates = request_payload.fetch(:pe_updates)
-
-      service = Services::UpdateAssignmentPes::Service.new
-      result = service.process(pe_updates: pe_updates)
-
-      response_data = result.fetch(:pe_update_responses).map do |response|
-        response.slice(:request_uuid, :update_status)
-      end
-
-      render json: { pe_update_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_assignment_pes_request_payload_schema,
+      output_schema: _update_assignment_pes_response_payload_schema,
+      service: Services::UpdateAssignmentPes::Service
+    )
   end
 
   def update_assignment_spes
-    with_json_apis(input_schema:  _update_assignment_spes_request_payload_schema,
-                   output_schema: _update_assignment_spes_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      spe_updates = request_payload.fetch(:spe_updates)
-
-      service = Services::UpdateAssignmentSpes::Service.new
-      result = service.process(spe_updates: spe_updates)
-
-      response_data = result.fetch(:spe_update_responses).map do |response|
-        response.slice(:request_uuid, :update_status)
-      end
-
-      render json: { spe_update_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_assignment_spes_request_payload_schema,
+      output_schema: _update_assignment_spes_response_payload_schema,
+      service: Services::UpdateAssignmentSpes::Service
+    )
   end
 
   def update_practice_worst_areas
-    with_json_apis(input_schema:  _update_practice_worst_areas_request_payload_schema,
-                   output_schema: _update_practice_worst_areas_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      practice_worst_areas_updates = request_payload.fetch(:practice_worst_areas_updates)
-
-      service = Services::UpdatePracticeWorstAreasExercises::Service.new
-      result = service.process(practice_worst_areas_updates: practice_worst_areas_updates)
-
-      response_data = result.fetch(:practice_worst_areas_update_responses).map do |response|
-        response.slice(:request_uuid, :update_status)
-      end
-
-      render json: { practice_worst_areas_update_responses: response_data }.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_practice_worst_areas_request_payload_schema,
+      output_schema: _update_practice_worst_areas_response_payload_schema,
+      service: Services::UpdatePracticeWorstAreasExercises::Service
+    )
   end
 
   protected

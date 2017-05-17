@@ -9,13 +9,15 @@ module ExerciseExclusionsServicesSharedExamples
     let(:given_course_uuid)     { SecureRandom.uuid }
     let(:given_sequence_number) { rand(10) + 1 }
     let(:given_exclusions)      { generate_exclusions(number_of_exclusions) }
+    let(:given_updated_at)      { Time.current.iso8601(6) }
 
     let(:action)                do
       service.process(
         request_uuid: given_request_uuid,
         course_uuid: given_course_uuid,
         sequence_number: given_sequence_number,
-        exclusions: given_exclusions
+        exclusions: given_exclusions,
+        updated_at: given_updated_at
       )
     end
 

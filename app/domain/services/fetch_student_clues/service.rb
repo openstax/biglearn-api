@@ -1,4 +1,4 @@
-class Services::FetchStudentClues::Service
+class Services::FetchStudentClues::Service < Services::ApplicationService
   def process(student_clue_requests:)
     sc = StudentClue.arel_table
     queries = student_clue_requests.map do |request|

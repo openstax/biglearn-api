@@ -1,5 +1,5 @@
-class Services::UpdateCourseActiveDates::Service
-  def process(request_uuid:, course_uuid:, sequence_number:, starts_at:, ends_at:)
+class Services::UpdateCourseActiveDates::Service < Services::ApplicationService
+  def process(request_uuid:, course_uuid:, sequence_number:, starts_at:, ends_at:, updated_at:)
     CourseEvent.append(
       uuid: request_uuid,
       type: :update_course_active_dates,
@@ -10,7 +10,8 @@ class Services::UpdateCourseActiveDates::Service
         course_uuid: course_uuid,
         sequence_number: sequence_number,
         starts_at: starts_at,
-        ends_at: ends_at
+        ends_at: ends_at,
+        updated_at: updated_at
       }
     )
 

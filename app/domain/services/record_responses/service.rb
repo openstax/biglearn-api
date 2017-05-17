@@ -1,7 +1,7 @@
-class Services::RecordResponses::Service
+class Services::RecordResponses::Service < Services::ApplicationService
   def process(responses:)
     course_event_attributes = []
-    recorded_response_uuids = responses.uniq{ |response| response.fetch(:response_uuid) }
+    recorded_response_uuids = responses.uniq { |response| response.fetch(:response_uuid) }
                                        .map do |response|
       course_event_attributes << {
         uuid: response.fetch(:response_uuid),

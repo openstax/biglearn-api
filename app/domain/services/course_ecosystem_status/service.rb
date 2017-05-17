@@ -1,4 +1,4 @@
-class Services::CourseEcosystemStatus::Service
+class Services::CourseEcosystemStatus::Service < Services::ApplicationService
   def process(request_uuid:, course_uuids:)
     create_courses_by_course_uuid = CourseEvent.create_course
                                                .where(uuid: course_uuids)

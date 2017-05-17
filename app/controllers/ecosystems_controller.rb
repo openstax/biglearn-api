@@ -1,42 +1,26 @@
 class EcosystemsController < JsonApiController
 
   def create
-    with_json_apis(input_schema:  _create_request_payload_schema,
-                   output_schema: _create_response_payload_schema) do
-      ecosystem_data = json_parsed_request_payload
-
-      service = Services::CreateEcosystem::Service.new
-      result = service.process(ecosystem_uuid: ecosystem_data.fetch(:ecosystem_uuid),
-                               book: ecosystem_data.fetch(:book),
-                               exercises: ecosystem_data.fetch(:exercises))
-
-      response_payload = { created_ecosystem_uuid: result.fetch(:created_ecosystem_uuid) }
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _create_request_payload_schema,
+      output_schema: _create_response_payload_schema,
+      service: Services::CreateEcosystem::Service
+    )
   end
 
   def fetch_metadatas
-    with_json_apis(output_schema: _fetch_metadatas_response_payload_schema) do
-
-      service = Services::FetchEcosystemMetadatas::Service.new
-      result = service.process
-
-      response_payload = { ecosystem_responses: result.fetch(:ecosystem_responses) }
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      output_schema: _fetch_metadatas_response_payload_schema,
+      service: Services::FetchEcosystemMetadatas::Service
+    )
   end
 
   def fetch_events
-    with_json_apis(input_schema:  _fetch_events_request_payload_schema,
-                   output_schema: _fetch_events_response_payload_schema) do
-      event_requests = json_parsed_request_payload.fetch(:ecosystem_event_requests)
-
-      service = Services::FetchEcosystemEvents::Service.new
-      response_payload = service.process(ecosystem_event_requests: event_requests)
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_events_request_payload_schema,
+      output_schema: _fetch_events_response_payload_schema,
+      service: Services::FetchEcosystemEvents::Service
+    )
   end
 
   protected
@@ -64,7 +48,7 @@ class EcosystemsController < JsonApiController
                   'items': {'$ref': '#definitions/pool'},
                   'minItems': 0,
                   'maxItems': 20,
-                },
+                }
               },
               'required': ['container_uuid', 'container_parent_uuid', 'pools'],
               'additionalProperties': false,
@@ -79,8 +63,9 @@ class EcosystemsController < JsonApiController
           'minItems': 0,
           'maxItems': 10000,
         },
+        'imported_at': {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['ecosystem_uuid', 'book', 'exercises'],
+      'required': ['ecosystem_uuid', 'book', 'exercises', 'imported_at'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {

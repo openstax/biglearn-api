@@ -1,4 +1,4 @@
-class Services::UpdateCourseEcosystem::Service
+class Services::UpdateCourseEcosystem::Service < Services::ApplicationService
   def process(update_requests:)
     preparation_uuids = update_requests.map{ |request| request.fetch(:preparation_uuid) }
     preparations_by_uuid = CourseEvent.prepare_course_ecosystem.where(uuid: preparation_uuids)
@@ -24,7 +24,8 @@ class Services::UpdateCourseEcosystem::Service
             :request_uuid,
             :course_uuid,
             :sequence_number,
-            :preparation_uuid
+            :preparation_uuid,
+            :updated_at
           )
         }
 

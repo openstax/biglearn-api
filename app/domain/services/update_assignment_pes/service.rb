@@ -1,4 +1,4 @@
-class Services::UpdateAssignmentPes::Service
+class Services::UpdateAssignmentPes::Service < Services::ApplicationService
   def process(pe_updates:)
     update_responses = []
     assignment_pes = pe_updates.map do |update|

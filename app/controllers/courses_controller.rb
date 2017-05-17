@@ -1,46 +1,34 @@
 class CoursesController < JsonApiController
 
   def create
-    with_json_apis(input_schema:  _create_request_payload_schema,
-                   output_schema: _create_response_payload_schema) do
-      request_payload = json_parsed_request_payload
+    respond_with_json_apis_and_service(
+      input_schema:  _create_request_payload_schema,
+      output_schema: _create_response_payload_schema,
+      service: Services::CreateCourse::Service
+    )
+  end
 
-      course_uuid = request_payload.fetch(:course_uuid)
-      ecosystem_uuid = request_payload.fetch(:ecosystem_uuid)
-
-      service = Services::CreateCourse::Service.new
-      result = service.process(
-        course_uuid: course_uuid,
-        ecosystem_uuid: ecosystem_uuid
-      )
-
-      response_payload = { created_course_uuid: result.fetch(:created_course_uuid) }
-
-      render json: response_payload.to_json, status: 200
-    end
+  def update_active_dates
+    respond_with_json_apis_and_service(
+      input_schema:  _update_active_dates_request_payload_schema,
+      output_schema: _update_active_dates_response_payload_schema,
+      service: Services::UpdateCourseActiveDates::Service
+    )
   end
 
   def fetch_metadatas
-    with_json_apis(output_schema: _fetch_metadatas_response_payload_schema) do
-
-      service = Services::FetchCourseMetadatas::Service.new
-      result = service.process
-
-      response_payload = { course_responses: result.fetch(:course_responses) }
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      output_schema: _fetch_metadatas_response_payload_schema,
+      service: Services::FetchCourseMetadatas::Service
+    )
   end
 
   def fetch_events
-    with_json_apis(input_schema:  _fetch_events_request_payload_schema,
-                   output_schema: _fetch_events_response_payload_schema) do
-      event_requests = json_parsed_request_payload.fetch(:course_event_requests)
-
-      service = Services::FetchCourseEvents::Service.new
-      response_payload = service.process(course_event_requests: event_requests)
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _fetch_events_request_payload_schema,
+      output_schema: _fetch_events_response_payload_schema,
+      service: Services::FetchCourseEvents::Service
+    )
   end
 
   protected
@@ -53,14 +41,15 @@ class CoursesController < JsonApiController
       'properties': {
         'course_uuid':    {'$ref': '#/standard_definitions/uuid'},
         'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
+        'starts_at':      {'$ref': '#/standard_definitions/datetime'},
+        'ends_at':        {'$ref': '#/standard_definitions/datetime'},
+        'created_at':     {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['course_uuid', 'ecosystem_uuid'],
+      'required': ['course_uuid', 'ecosystem_uuid', 'starts_at', 'ends_at', 'created_at'],
       'additionalProperties': false,
-
-      'standard_definitions': _standard_definitions,
+      'standard_definitions': _standard_definitions
     }
   end
-
 
   def _create_response_payload_schema
     {
@@ -72,8 +61,47 @@ class CoursesController < JsonApiController
       },
       'required': ['created_course_uuid'],
       'additionalProperties': false,
+      'standard_definitions': _standard_definitions
+    }
+  end
 
-      'standard_definitions': _standard_definitions,
+  def _update_active_dates_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'request_uuid':    {'$ref': '#standard_definitions/uuid'},
+        'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
+        'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
+        'starts_at':       {'$ref': '#/standard_definitions/datetime'},
+        'ends_at':         {'$ref': '#/standard_definitions/datetime'},
+        'updated_at':      {'$ref': '#/standard_definitions/datetime'}
+      },
+      'required': [
+        'request_uuid',
+        'course_uuid',
+        'sequence_number',
+        'starts_at',
+        'ends_at',
+        'updated_at'
+      ],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions
+    }
+  end
+
+  def _update_active_dates_response_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'updated_course_uuid': {'$ref': '#/standard_definitions/uuid'},
+      },
+      'required': ['updated_course_uuid'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions
     }
   end
 

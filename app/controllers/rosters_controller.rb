@@ -1,16 +1,11 @@
 class RostersController < JsonApiController
 
   def update
-    with_json_apis(input_schema:  _update_request_payload_schema,
-                   output_schema: _update_response_payload_schema) do
-      roster_data = json_parsed_request_payload.fetch(:rosters)
-
-      service = Services::UpdateRosters::Service.new
-      result = service.process(rosters: roster_data)
-
-      response_payload = result.slice(:updated_rosters)
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_request_payload_schema,
+      output_schema: _update_response_payload_schema,
+      service: Services::UpdateRosters::Service
+    )
   end
 
   protected
@@ -48,7 +43,7 @@ class RostersController < JsonApiController
               'items': {'$ref': '#definitions/student'},
               'minItems': 0,
               'maxItems': 1000,
-            },
+            }
           },
           'required': [
             'request_uuid',
@@ -64,18 +59,27 @@ class RostersController < JsonApiController
           'properties': {
             'container_uuid':        {'$ref': '#standard_definitions/uuid'},
             'parent_container_uuid': {'$ref': '#standard_definitions/uuid'},
-            'is_archived': {'type': 'boolean'}
+            'created_at':            {'$ref': '#/standard_definitions/datetime'},
+            'archived_at':           {'$ref': '#/standard_definitions/datetime'}
           },
-          'required': ['container_uuid', 'parent_container_uuid', 'is_archived'],
+          'required': ['container_uuid', 'parent_container_uuid', 'created_at'],
           'additionalProperties': false,
         },
         'student': {
           'type': 'object',
           'properties': {
-            'student_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'container_uuid': {'$ref': '#standard_definitions/uuid'},
+            'student_uuid':                    {'$ref': '#standard_definitions/uuid'},
+            'container_uuid':                  {'$ref': '#standard_definitions/uuid'},
+            'enrolled_at':                     {'$ref': '#/standard_definitions/datetime'},
+            'last_course_container_change_at': {'$ref': '#/standard_definitions/datetime'},
+            'dropped_at':                      {'$ref': '#/standard_definitions/datetime'}
           },
-          'required': ['student_uuid', 'container_uuid'],
+          'required': [
+            'student_uuid',
+            'container_uuid',
+            'enrolled_at',
+            'last_course_container_change_at'
+          ],
           'additionalProperties': false,
         }
       }

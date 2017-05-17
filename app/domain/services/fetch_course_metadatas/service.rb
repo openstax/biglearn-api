@@ -1,4 +1,4 @@
-class Services::FetchCourseMetadatas::Service
+class Services::FetchCourseMetadatas::Service < Services::ApplicationService
   def process
     courses = CourseEvent.create_course
                          .distinct

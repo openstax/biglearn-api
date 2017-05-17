@@ -1,4 +1,4 @@
-class Services::UpdateRosters::Service
+class Services::UpdateRosters::Service < Services::ApplicationService
   def process(rosters:)
     course_container_attributes = []
     student_attributes = []

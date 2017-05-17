@@ -1,71 +1,27 @@
 class CourseEcosystemsController < JsonApiController
 
   def prepare
-    with_json_apis(input_schema:  _prepare_request_payload_schema,
-                   output_schema: _prepare_response_payload_schema) do
-      course_ecosystem_data = json_parsed_request_payload
-
-      service = Services::PrepareCourseEcosystem::Service.new
-      result = service.process(
-        preparation_uuid: course_ecosystem_data.fetch(:preparation_uuid),
-        course_uuid: course_ecosystem_data.fetch(:course_uuid),
-        sequence_number: course_ecosystem_data.fetch(:sequence_number),
-        next_ecosystem_uuid: course_ecosystem_data.fetch(:next_ecosystem_uuid),
-        ecosystem_map: course_ecosystem_data.fetch(:ecosystem_map)
-      )
-
-      render json: result.slice(:status).to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _prepare_request_payload_schema,
+      output_schema: _prepare_response_payload_schema,
+      service: Services::PrepareCourseEcosystem::Service
+    )
   end
 
   def update
-    with_json_apis(input_schema:  _update_request_payload_schema,
-                   output_schema: _update_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      update_requests_data = request_payload.deep_symbolize_keys.fetch(:update_requests)
-
-      service = Services::UpdateCourseEcosystem::Service.new
-      results = service.process(update_requests: update_requests_data)
-
-      response_payload = {
-        update_responses: results.fetch(:update_responses).map do |result|
-          result.slice(:request_uuid, :update_status)
-        end
-      }
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _update_request_payload_schema,
+      output_schema: _update_response_payload_schema,
+      service: Services::UpdateCourseEcosystem::Service
+    )
   end
 
   def status
-    with_json_apis(input_schema:  _status_request_payload_schema,
-                   output_schema: _status_response_payload_schema) do
-      request_payload = json_parsed_request_payload
-      course_ecosystem_data = request_payload.deep_symbolize_keys
-
-      service = Services::CourseEcosystemStatus::Service.new
-      results = service.process(request_uuid: course_ecosystem_data.fetch(:request_uuid),
-                                course_uuids: course_ecosystem_data.fetch(:course_uuids))
-
-      response_payload = {
-        course_statuses: results.fetch(:course_statuses).map do |result|
-          result.slice(
-            :course_uuid, :course_is_known, :current_ecosystem_preparation_uuid
-          ).merge(
-            current_ecosystem_status: result.fetch(:current_ecosystem_status).slice(
-              :ecosystem_uuid, :ecosystem_is_known,
-              :ecosystem_is_prepared, :precompute_is_complete
-            ),
-            next_ecosystem_status: result.fetch(:next_ecosystem_status).slice(
-              :ecosystem_uuid, :ecosystem_is_known,
-              :ecosystem_is_prepared, :precompute_is_complete
-            )
-          )
-        end
-      }
-
-      render json: response_payload.to_json, status: 200
-    end
+    respond_with_json_apis_and_service(
+      input_schema:  _status_request_payload_schema,
+      output_schema: _status_response_payload_schema,
+      service: Services::CourseEcosystemStatus::Service
+    )
   end
 
   protected
@@ -89,14 +45,14 @@ class CourseEcosystemsController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#definitions/book_container_mapping'},
               'minItems': 0,
-              'maxItems': 500,
+              'maxItems': 500
             },
             'exercise_mappings': {
               'type': 'array',
               'items': {'$ref': '#definitions/exercise_mapping'},
               'minItems': 0,
-              'maxItems': 10000,
-            },
+              'maxItems': 10000
+            }
           },
           'required': [
             'from_ecosystem_uuid',
@@ -104,15 +60,17 @@ class CourseEcosystemsController < JsonApiController
             'book_container_mappings',
             'exercise_mappings'
           ],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
+        'prepared_at': {'$ref': '#/standard_definitions/datetime'}
       },
       'required': [
         'preparation_uuid',
         'course_uuid',
         'sequence_number',
         'next_ecosystem_uuid',
-        'ecosystem_map'
+        'ecosystem_map',
+        'prepared_at'
       ],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
@@ -124,7 +82,7 @@ class CourseEcosystemsController < JsonApiController
             'to_book_container_uuid':   {'$ref': '#standard_definitions/uuid'},
           },
           'required': ['from_book_container_uuid', 'to_book_container_uuid'],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
         'exercise_mapping': {
           'type': 'object',
@@ -133,12 +91,11 @@ class CourseEcosystemsController < JsonApiController
             'to_book_container_uuid': {'$ref': '#standard_definitions/uuid'},
           },
           'required': ['from_exercise_uuid', 'to_book_container_uuid'],
-          'additionalProperties': false,
-        },
-      },
+          'additionalProperties': false
+        }
+      }
     }
   end
-
 
   def _prepare_response_payload_schema
     {
@@ -149,10 +106,10 @@ class CourseEcosystemsController < JsonApiController
         'status': {
           'type': 'string',
           'enum': ['accepted'],
-        },
+        }
       },
       'required': ['status'],
-      'additionalProperties': false,
+      'additionalProperties': false
     }
   end
 
@@ -167,7 +124,7 @@ class CourseEcosystemsController < JsonApiController
           'items': {'$ref': '#definitions/update_request'},
           'minItems': 0,
           'maxItems': 1000,
-        },
+        }
       },
       'required': ['update_requests'],
       'additionalProperties': false,
@@ -176,15 +133,22 @@ class CourseEcosystemsController < JsonApiController
         'update_request': {
           'type': 'object',
           'properties': {
-            'request_uuid':      {'$ref': '#standard_definitions/uuid'},
-            'course_uuid':       {'$ref': '#standard_definitions/uuid'},
-            'sequence_number':   {'$ref': '#standard_definitions/non_negative_integer'},
-            'preparation_uuid':  {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':     {'$ref': '#standard_definitions/uuid'},
+            'course_uuid':      {'$ref': '#standard_definitions/uuid'},
+            'sequence_number':  {'$ref': '#standard_definitions/non_negative_integer'},
+            'preparation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'updated_at':       {'$ref': '#/standard_definitions/datetime'}
           },
-          'required': ['request_uuid', 'course_uuid', 'sequence_number', 'preparation_uuid'],
-          'additionalProperties': false,
-        },
-      },
+          'required': [
+            'request_uuid',
+            'course_uuid',
+            'sequence_number',
+            'preparation_uuid',
+            'updated_at'
+          ],
+          'additionalProperties': false
+        }
+      }
     }
   end
 
@@ -199,7 +163,7 @@ class CourseEcosystemsController < JsonApiController
           'items': {'$ref': '#definitions/update_response'},
           'minItems': 0,
           'maxItems': 1000,
-        },
+        }
       },
       'required': ['update_responses'],
       'additionProperties': false,
@@ -215,14 +179,14 @@ class CourseEcosystemsController < JsonApiController
                 'preparation_unknown',
                 'preparation_obsolete',
                 'updated_but_unready',
-                'updated_and_ready',
-              ],
-            },
+                'updated_and_ready'
+              ]
+            }
           },
           'required': ['request_uuid', 'update_status'],
-          'additionalProperties': false,
-        },
-      },
+          'additionalProperties': false
+        }
+      }
     }
   end
 
@@ -237,8 +201,8 @@ class CourseEcosystemsController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#standard_definitions/uuid'},
           'minItems': 0,
-          'maxItems': 1000,
-        },
+          'maxItems': 1000
+        }
       },
       'required': ['request_uuid', 'course_uuids'],
       'additionalProperties': false,
@@ -281,7 +245,7 @@ class CourseEcosystemsController < JsonApiController
             'ecosystem_uuid':         {'$ref': '#standard_definitions/uuid'},
             'ecosystem_is_known':     {'type': 'boolean'},
             'ecosystem_is_prepared':  {'type': 'boolean'},
-            'precompute_is_complete': {'type': 'boolean'},
+            'precompute_is_complete': {'type': 'boolean'}
           },
           'required': [
             'ecosystem_uuid',
@@ -289,9 +253,9 @@ class CourseEcosystemsController < JsonApiController
             'ecosystem_is_prepared',
             'precompute_is_complete'
           ],
-          'additionalProperties': false,
-        },
-      },
+          'additionalProperties': false
+        }
+      }
     }
   end
 

@@ -1,4 +1,4 @@
-class Services::FetchPracticeWorstAreasExercises::Service
+class Services::FetchPracticeWorstAreasExercises::Service < Services::ApplicationService
   def process(worst_areas_requests:)
     spe = StudentPe.arel_table
     queries = worst_areas_requests.map do |request|

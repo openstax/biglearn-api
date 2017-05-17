@@ -1,5 +1,5 @@
-class Services::UpdateGlobalExerciseExclusions::Service
-  def process(request_uuid:, course_uuid:, sequence_number:, exclusions:)
+class Services::UpdateGlobalExerciseExclusions::Service < Services::ApplicationService
+  def process(request_uuid:, course_uuid:, sequence_number:, exclusions:, updated_at:)
     CourseEvent.append(
       uuid:            request_uuid,
       type:            :update_globally_excluded_exercises,
@@ -9,7 +9,8 @@ class Services::UpdateGlobalExerciseExclusions::Service
         request_uuid: request_uuid,
         course_uuid:     course_uuid,
         sequence_number: sequence_number,
-        exclusions: exclusions
+        exclusions: exclusions,
+        updated_at: updated_at
       }
     )
 
