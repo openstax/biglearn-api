@@ -81,12 +81,17 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       else
         # No gap, so sequence_number_before_first_gap really is the end of the sequence
         # Just have to check that we returned enough results
-        sequence_number_offset = request.fetch(:sequence_number_offset)
         sequence_number_before_first_gap =
           sequence_number_before_first_gap_by_course_uuid[course_uuid]
-        limit = limits_by_request_uuid.fetch(request_uuid)
 
-        limit >= sequence_number_before_first_gap + 1 - sequence_number_offset
+        if sequence_number_before_first_gap.nil?
+          true
+        else
+          limit = limits_by_request_uuid.fetch(request_uuid)
+          sequence_number_offset = request.fetch(:sequence_number_offset)
+
+          limit >= sequence_number_before_first_gap + 1 - sequence_number_offset
+        end
       end
 
       {
