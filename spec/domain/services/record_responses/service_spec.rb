@@ -21,15 +21,16 @@ RSpec.describe Services::RecordResponses::Service do
     let(:given_response_data) do
       4.times.map do
         {
-          response_uuid:  SecureRandom.uuid,
-          course_uuid:    SecureRandom.uuid,
-          sequence_number: rand(1000),
-          ecosystem_uuid: SecureRandom.uuid,
-          trial_uuid:     SecureRandom.uuid,
-          student_uuid:   SecureRandom.uuid,
-          exercise_uuid:  SecureRandom.uuid,
-          is_correct:     [true, false].sample,
-          responded_at:   Time.current.iso8601(6)
+          response_uuid:    SecureRandom.uuid,
+          course_uuid:      SecureRandom.uuid,
+          sequence_number:  rand(1000),
+          ecosystem_uuid:   SecureRandom.uuid,
+          trial_uuid:       SecureRandom.uuid,
+          student_uuid:     SecureRandom.uuid,
+          exercise_uuid:    SecureRandom.uuid,
+          is_correct:       [ true, false ].sample,
+          is_real_response: [ true, false ].sample,
+          responded_at:     Time.current.iso8601(6)
         }
       end
     end
@@ -54,6 +55,7 @@ RSpec.describe Services::RecordResponses::Service do
                              :student_uuid,
                              :exercise_uuid,
                              :is_correct,
+                             :is_real_response,
                              :responded_at
                            )
       end
@@ -62,17 +64,17 @@ RSpec.describe Services::RecordResponses::Service do
     it "CourseEvents are created for only previously-unseen response data" do
       expect{action}.to change{CourseEvent.count}.by(new_response_data.size)
 
-      target_response_uuids = new_response_data.map{ |data| data.fetch(:response_uuid) }
+      target_response_uuids = new_response_data.map { |data| data.fetch(:response_uuid) }
       newly_created_responses = CourseEvent.where(uuid: target_response_uuids)
       expect(newly_created_responses.size).to eq(new_response_data.size)
     end
 
     it "CourseEvents for previously-seen response data are left unchanged" do
-      target_response_uuids = existing_response_data.map{ |data| data.fetch(:response_uuid) }
+      target_response_uuids = existing_response_data.map { |data| data.fetch(:response_uuid) }
       expect(existing_responses.size).to eq(existing_response_data.size)
-      target_updated_ats = existing_responses.map{ |response| response.reload.updated_at }
+      target_updated_ats = existing_responses.map { |response| response.reload.updated_at }
 
-      expect{action}.to change{CourseEvent.count}.by(new_response_data.size)
+      expect{action}.to change {CourseEvent.count}.by(new_response_data.size)
 
       existing_responses.each do |response|
         response.reload
@@ -83,14 +85,14 @@ RSpec.describe Services::RecordResponses::Service do
     end
 
     it "all unique given response_uuids are returned (idempotence)" do
-      target_uuids = given_response_data.map{ |data| data.fetch(:response_uuid) }.uniq
+      target_uuids = given_response_data.map { |data| data.fetch(:response_uuid) }.uniq
       expect(action.fetch(:recorded_response_uuids)).to match_array(target_uuids)
     end
 
     it 'the newly-created CourseEvent records have the correct parameters' do
-      expect{action}.to change{CourseEvent.count}.by(new_response_data.size)
+      expect {action}.to change {CourseEvent.count}.by(new_response_data.size)
 
-      new_response_uuids = new_response_data.map{ |data| data.fetch(:response_uuid) }
+      new_response_uuids = new_response_data.map { |data| data.fetch(:response_uuid) }
       newly_created_responses = CourseEvent.where(uuid: new_response_uuids)
 
       given_response_data_by_response_uuid = given_response_data.index_by do |response|
@@ -113,6 +115,8 @@ RSpec.describe Services::RecordResponses::Service do
           expect(data.fetch(:student_uuid)).to eq(given_response_data.fetch(:student_uuid))
           expect(data.fetch(:exercise_uuid)).to eq(given_response_data.fetch(:exercise_uuid))
           expect(data.fetch(:is_correct)).to eq(given_response_data.fetch(:is_correct))
+          expect(data.fetch(:is_real_response)).to eq(given_response_data.fetch(:is_real_response))
+          expect(data.fetch(:responded_at)).to eq(given_response_data.fetch(:responded_at))
           expect(DateTime.parse(data.fetch(:responded_at))).to(
             be_within(1e-6).of(DateTime.parse(given_response_data.fetch(:responded_at)))
           )

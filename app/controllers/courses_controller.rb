@@ -41,11 +41,19 @@ class CoursesController < JsonApiController
       'properties': {
         'course_uuid':    {'$ref': '#/standard_definitions/uuid'},
         'ecosystem_uuid': {'$ref': '#/standard_definitions/uuid'},
+        'is_real_course': {'type': 'boolean'},
         'starts_at':      {'$ref': '#/standard_definitions/datetime'},
         'ends_at':        {'$ref': '#/standard_definitions/datetime'},
         'created_at':     {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['course_uuid', 'ecosystem_uuid', 'starts_at', 'ends_at', 'created_at'],
+      'required': [
+        'course_uuid',
+        'ecosystem_uuid',
+        'is_real_course',
+        'starts_at',
+        'ends_at',
+        'created_at'
+      ],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }

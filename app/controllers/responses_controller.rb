@@ -27,15 +27,16 @@ class ResponsesController < JsonApiController
         'response': {
           'type': 'object',
           'properties': {
-            'response_uuid':   {'$ref': '#/standard_definitions/uuid'},
-            'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
-            'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
-            'ecosystem_uuid':  {'$ref': '#/standard_definitions/uuid'},
-            'trial_uuid':      {'$ref': '#/standard_definitions/uuid'},
-            'student_uuid':    {'$ref': '#/standard_definitions/uuid'},
-            'exercise_uuid':   {'$ref': '#/standard_definitions/uuid'},
-            'is_correct':      {'type': 'boolean'},
-            'responded_at':    {'$ref': '#/standard_definitions/datetime'}
+            'response_uuid':    {'$ref': '#/standard_definitions/uuid'},
+            'course_uuid':      {'$ref': '#/standard_definitions/uuid'},
+            'sequence_number':  {'$ref': '#/standard_definitions/non_negative_integer'},
+            'ecosystem_uuid':   {'$ref': '#/standard_definitions/uuid'},
+            'trial_uuid':       {'$ref': '#/standard_definitions/uuid'},
+            'student_uuid':     {'$ref': '#/standard_definitions/uuid'},
+            'exercise_uuid':    {'$ref': '#/standard_definitions/uuid'},
+            'is_correct':       {'type': 'boolean'},
+            'is_real_response': {'type': 'boolean'},
+            'responded_at':     {'$ref': '#/standard_definitions/datetime'}
           },
           'required': [
             'response_uuid',
@@ -46,7 +47,8 @@ class ResponsesController < JsonApiController
             'student_uuid',
             'exercise_uuid',
             'is_correct',
-            'responded_at',
+            'is_real_response',
+            'responded_at'
           ],
           'additionalProperties': false,
         },

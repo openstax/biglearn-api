@@ -1,17 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe ResponsesController, type: :request do
-  let(:given_response_uuid)   { SecureRandom.uuid }
-  let(:given_course_uuid)     { SecureRandom.uuid }
-  let(:given_sequence_number) { rand(10) }
-  let(:given_ecosystem_uuid)  { SecureRandom.uuid }
-  let(:given_trial_uuid)      { SecureRandom.uuid }
-  let(:given_student_uuid)    { SecureRandom.uuid }
-  let(:given_exercise_uuid)   { SecureRandom.uuid }
-  let(:given_is_correct)      { [true, false].sample }
-  let(:given_responded_at)    { Time.current.iso8601(6) }
+  let(:given_response_uuid)    { SecureRandom.uuid       }
+  let(:given_course_uuid)      { SecureRandom.uuid       }
+  let(:given_sequence_number)  { rand(10)                }
+  let(:given_ecosystem_uuid)   { SecureRandom.uuid       }
+  let(:given_trial_uuid)       { SecureRandom.uuid       }
+  let(:given_student_uuid)     { SecureRandom.uuid       }
+  let(:given_exercise_uuid)    { SecureRandom.uuid       }
+  let(:given_is_correct)       { [ true, false ].sample  }
+  let(:given_is_real_response) { [ true, false ].sample  }
+  let(:given_responded_at)     { Time.current.iso8601(6) }
 
-  let(:given_responses)       do
+  let(:given_responses)        do
     [
       {
         response_uuid: given_response_uuid,
@@ -22,25 +23,26 @@ RSpec.describe ResponsesController, type: :request do
         student_uuid: given_student_uuid,
         exercise_uuid: given_exercise_uuid,
         is_correct: given_is_correct,
+        is_real_response: given_is_real_response,
         responded_at: given_responded_at
       }
     ]
   end
 
-  let(:request_payload)                    { { responses: given_responses } }
+  let(:request_payload)        { { responses: given_responses } }
 
-  let(:target_result)                      do
+  let(:target_result)          do
     { recorded_response_uuids: given_responses.map { |response| response.fetch(:response_uuid) } }
   end
-  let(:target_response)                    { target_result }
+  let(:target_response)        { target_result }
 
-  let(:service_double)                     do
+  let(:service_double)          do
     object_double(Services::RecordResponses::Service.new).tap do |dbl|
       allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
     end
   end
 
-  before(:each)                            do
+  before(:each)                do
     allow(Services::RecordResponses::Service).to receive(:new).and_return(service_double)
   end
 

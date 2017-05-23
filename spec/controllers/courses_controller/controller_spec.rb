@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe CoursesController, type: :request do
   context '#create_course' do
-    let(:given_course_uuid)    { SecureRandom.uuid }
-    let(:given_ecosystem_uuid) { SecureRandom.uuid }
+    let(:given_course_uuid)    { SecureRandom.uuid                 }
+    let(:given_ecosystem_uuid) { SecureRandom.uuid                 }
+    let(:given_is_real_course) { [ true, false ].sample            }
     let(:given_starts_at)      { Time.current.iso8601(6)           }
     let(:given_ends_at)        { Time.current.tomorrow.iso8601(6)  }
     let(:given_created_at)     { Time.current.yesterday.iso8601(6) }
@@ -12,6 +13,7 @@ RSpec.describe CoursesController, type: :request do
       {
         course_uuid: given_course_uuid,
         ecosystem_uuid: given_ecosystem_uuid,
+        is_real_course: given_is_real_course,
         starts_at: given_starts_at,
         ends_at: given_ends_at,
         created_at: given_created_at
@@ -26,7 +28,7 @@ RSpec.describe CoursesController, type: :request do
       end
     end
 
-    before(:each) do
+    before(:each)              do
       allow(Services::CreateCourse::Service).to receive(:new).and_return(service_double)
     end
 

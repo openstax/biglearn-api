@@ -17,6 +17,7 @@ class Services::RecordResponses::Service < Services::ApplicationService
           :student_uuid,
           :exercise_uuid,
           :is_correct,
+          :is_real_response,
           :responded_at
         )
       }
