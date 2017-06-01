@@ -12,8 +12,8 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
     # Find the first and second gaps for each ecosystem (last record also counts as gap)
     sequence_number_before_first_gap_by_ecosystem_uuid = {}
     ecosystem_uuids_with_gaps = Set.new
-    EcosystemEvent.before_gap_with_ecosystem_gap_number
-                  .where(ecosystem_uuid: ecosystem_uuids, ecosystem_gap_number: [1, 2])
+    EcosystemEvent.before_gap_with_ecosystem_gap_number(ecosystem_uuids: ecosystem_uuids)
+                  .where(ecosystem_gap_number: [1, 2])
                   .pluck(:ecosystem_uuid, :ecosystem_gap_number, :sequence_number)
                   .each do |ecosystem_uuid, ecosystem_gap_number, sequence_number|
       if ecosystem_gap_number == 1

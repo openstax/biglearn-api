@@ -12,8 +12,8 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     # Find the first and second gaps for each course (last record also counts as gap)
     sequence_number_before_first_gap_by_course_uuid = {}
     course_uuids_with_gaps = Set.new
-    CourseEvent.before_gap_with_course_gap_number
-               .where(course_uuid: course_uuids, course_gap_number: [1, 2])
+    CourseEvent.before_gap_with_course_gap_number(course_uuids: course_uuids)
+               .where(course_gap_number: [1, 2])
                .pluck(:course_uuid, :course_gap_number, :sequence_number)
                .each do |course_uuid, course_gap_number, sequence_number|
       if course_gap_number == 1

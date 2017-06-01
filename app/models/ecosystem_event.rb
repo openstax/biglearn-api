@@ -9,33 +9,36 @@ class EcosystemEvent < ApplicationRecord
 
   # Returns the last record before the each gap in sequence_numbers for each ecosystem
   # Always includes the last existing record for each ecosystem
-  scope :before_gap, -> do
-    joins(
-      <<-SQL.strip_heredoc
-        LEFT OUTER JOIN ecosystem_events ecosystem_event_gaps
-          ON ecosystem_event_gaps.ecosystem_uuid = ecosystem_events.ecosystem_uuid
-            AND ecosystem_event_gaps.sequence_number = ecosystem_events.sequence_number + 1
-      SQL
-    ).where(ecosystem_event_gaps: { id: nil })
+  scope :before_gap, ->(ecosystem_uuids: nil) do
+    query = where(
+      from('"ecosystem_events" "next_event"').where(
+        <<-SQL.strip_heredoc
+          "next_event"."ecosystem_uuid" = "ecosystem_events"."ecosystem_uuid"
+            AND "next_event"."sequence_number" = "ecosystem_events"."sequence_number" + 1
+        SQL
+      ).exists.not
+    )
+
+    ecosystem_uuids.nil? ? query : query.where(ecosystem_uuid: ecosystem_uuids)
   end
 
   # Same as above, but also numbers each gap
-  scope :before_gap_with_ecosystem_gap_number, -> do
+  scope :before_gap_with_ecosystem_gap_number, ->(ecosystem_uuids: nil) do
     from(
       <<-OUTERSQL
         (
           #{
-            before_gap.select(
+            before_gap(ecosystem_uuids: ecosystem_uuids).select(
               <<-INNERSQL.strip_heredoc
-                ecosystem_events.*,
+                "ecosystem_events".*,
                   row_number() OVER (
-                    PARTITION BY ecosystem_events.ecosystem_uuid
-                    ORDER BY ecosystem_events.sequence_number
-                  ) AS ecosystem_gap_number
+                    PARTITION BY "ecosystem_events"."ecosystem_uuid"
+                    ORDER BY "ecosystem_events"."sequence_number"
+                  ) AS "ecosystem_gap_number"
               INNERSQL
             ).to_sql
           }
-        ) AS ecosystem_events
+        ) AS "ecosystem_events"
       OUTERSQL
     )
   end
