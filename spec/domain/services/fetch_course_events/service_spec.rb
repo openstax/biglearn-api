@@ -9,7 +9,7 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
   end
   let(:given_course_1_uuid)            { SecureRandom.uuid }
   let(:given_sequence_number_offset_1) { 0 }
-  let(:given_max_num_events_1)            { rand(1000) + 1 }
+  let(:given_max_num_events_1)         { rand(1000) + 1 }
   let(:given_event_request_1)          do
     {
       request_uuid: given_request_1_uuid,
@@ -26,7 +26,7 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
   end
   let(:given_course_2_uuid)            { SecureRandom.uuid }
   let(:given_sequence_number_offset_2) { 0 }
-  let(:given_max_num_events_2)            { rand(1000) + 1 }
+  let(:given_max_num_events_2)         { rand(1000) + 1 }
   let(:given_event_request_2)          do
     {
       request_uuid: given_request_2_uuid,

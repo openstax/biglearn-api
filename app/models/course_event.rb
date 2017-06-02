@@ -15,42 +15,6 @@ class CourseEvent < ApplicationRecord
     record_response:                    8
   }
 
-  # Returns the last record before the each gap in sequence_numbers for each course
-  # Always includes the last existing record for each course
-  scope :before_gap, ->(course_uuids: nil) do
-    query = where(
-      from('"course_events" "next_event"').where(
-        <<-SQL.strip_heredoc
-          "next_event"."course_uuid" = "course_events"."course_uuid"
-            AND "next_event"."sequence_number" = "course_events"."sequence_number" + 1
-        SQL
-      ).exists.not
-    )
-
-    course_uuids.nil? ? query : query.where(course_uuid: course_uuids)
-  end
-
-  # Same as above, but also numbers each gap
-  scope :before_gap_with_course_gap_number, ->(course_uuids: nil) do
-    from(
-      <<-OUTERSQL
-        (
-          #{
-            before_gap(course_uuids: course_uuids).select(
-              <<-INNERSQL.strip_heredoc
-                "course_events".*,
-                  row_number() OVER (
-                    PARTITION BY "course_events"."course_uuid"
-                    ORDER BY "course_events"."sequence_number"
-                  ) AS "course_gap_number"
-              INNERSQL
-            ).to_sql
-          }
-        ) AS "course_events"
-      OUTERSQL
-    )
-  end
-
   validates :type,            presence: true
   validates :course_uuid,     presence: true
   validates :sequence_number, presence: true,

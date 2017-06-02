@@ -3,27 +3,6 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
   MAX_EVENTS = 100
 
   def process(course_event_requests:)
-    course_uuids = course_event_requests.map { |request| request.fetch(:course_uuid) }
-
-    # The following 2 queries need to be consistent with each other (atomic)
-    # We do this by using the result from the first one to limit the returned results
-    # from the second, combined with the fact that events are append-only and cannot be modified
-
-    # Find the first and second gaps for each course (last record also counts as gap)
-    sequence_number_before_first_gap_by_course_uuid = {}
-    course_uuids_with_gaps = Set.new
-    CourseEvent.before_gap_with_course_gap_number(course_uuids: course_uuids)
-               .where(course_gap_number: [1, 2])
-               .pluck(:course_uuid, :course_gap_number, :sequence_number)
-               .each do |course_uuid, course_gap_number, sequence_number|
-      if course_gap_number == 1
-        sequence_number_before_first_gap_by_course_uuid[course_uuid] = sequence_number
-      else
-        # One gap could just be the end of the sequence, but a second gap indicates a missing value
-        course_uuids_with_gaps << course_uuid
-      end
-    end
-
     # Build the second query while ensuring
     # that we don't get any records inserted since we ran the first one
     num_requests = course_event_requests.size
@@ -32,11 +11,6 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     ce = CourseEvent.arel_table
     event_query = course_event_requests.map do |request|
       course_uuid = request.fetch(:course_uuid)
-      sequence_number_before_first_gap =
-        sequence_number_before_first_gap_by_course_uuid[course_uuid]
-      # Skip if there are no CourseEvents for this Course
-      next if sequence_number_before_first_gap.nil?
-
       sequence_number_offset = request.fetch(:sequence_number_offset)
       request_uuid = request.fetch(:request_uuid)
       limit = [request.fetch(:max_num_events, max_events_per_request), max_events_per_request].min
@@ -46,10 +20,23 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         ce[:course_uuid].eq(course_uuid)
           .and(ce[:type].in(request.fetch(:event_types)))
           .and(ce[:sequence_number].gteq(sequence_number_offset))
-          .and(ce[:sequence_number].lteq(sequence_number_before_first_gap))
       )
       .order(:sequence_number)
-      .project(ce[Arel.star], "'#{request_uuid}' AS request_uuid")
+      .project(
+        ce[Arel.star],
+        "'#{request_uuid}' AS \"request_uuid\"",
+        <<-SQL.strip_heredoc
+          CASE WHEN "course_events"."sequence_number" > 0
+            AND NOT EXISTS (
+              SELECT "previous_event".*
+              FROM "course_events" AS "previous_event"
+              WHERE "previous_event"."course_uuid" = "course_events"."course_uuid"
+                AND "previous_event"."sequence_number" = "course_events"."sequence_number" - 1
+            ) THEN TRUE
+          ELSE FALSE
+          END AS "is_after_gap"
+        SQL
+      )
       .take(limit)
     end.compact.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
 
@@ -60,43 +47,31 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
+
       course_events = course_events_by_request_uuid[request_uuid] || []
-
-      course_uuid = request.fetch(:course_uuid)
-
+      is_gap = false
       event_hashes = course_events.map do |event|
+        is_gap = true if event.is_after_gap
+
+        next if is_gap
+
         {
           sequence_number: event.sequence_number,
           event_uuid: event.uuid,
           event_type: event.type,
           event_data: event.data
         }
-      end
+      end.compact
 
-      is_gap = course_uuids_with_gaps.include? course_uuid
-
-      is_end = if is_gap
-        # There is a gap, so this is definitely not the end of the sequence
-        false
-      else
-        # No gap, so sequence_number_before_first_gap really is the end of the sequence
-        # Just have to check that we returned enough results
-        sequence_number_before_first_gap =
-          sequence_number_before_first_gap_by_course_uuid[course_uuid]
-
-        if sequence_number_before_first_gap.nil?
-          true
-        else
-          limit = limits_by_request_uuid.fetch(request_uuid)
-          sequence_number_offset = request.fetch(:sequence_number_offset)
-
-          limit >= sequence_number_before_first_gap + 1 - sequence_number_offset
-        end
-      end
+      # If we detected a gap, this means we are not sending some CourseEvents,
+      # so this is not the end of the sequence
+      # If we didn't detect a gap, then we check if we returned
+      # less than the number of CourseEvents requested
+      is_end = !is_gap && limits_by_request_uuid.fetch(request_uuid) > course_events.size
 
       {
         request_uuid: request_uuid,
-        course_uuid: course_uuid,
+        course_uuid: request.fetch(:course_uuid),
         events: event_hashes,
         is_gap: is_gap,
         is_end: is_end
