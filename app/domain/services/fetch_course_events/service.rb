@@ -3,8 +3,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
   MAX_EVENTS = 100
 
   def process(course_event_requests:)
-    # Build the second query while ensuring
-    # that we don't get any records inserted since we ran the first one
+    # Build a single query that returns the requested events using UNION ALL
     num_requests = course_event_requests.size
     max_events_per_request = MAX_EVENTS/num_requests
     limits_by_request_uuid = {}
@@ -22,11 +21,19 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
           .and(ce[:sequence_number].gteq(sequence_number_offset))
       )
       .order(:sequence_number)
-      .project(
-        ce[Arel.star],
-        "'#{request_uuid}' AS \"request_uuid\"",
+      .project(ce[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
+      .take(limit)
+    end.compact.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
+
+    # http://radar.oreilly.com/2014/05/more-than-enough-arel.html
+    from_query = ce.create_table_alias(event_query, :course_events)
+
+    # Also return gap information with each record
+    course_events_by_request_uuid = event_query.nil? ?
+      {} :
+      CourseEvent.from(from_query).select(
         <<-SQL.strip_heredoc
-          CASE WHEN "course_events"."sequence_number" > 0
+          "course_events".*, CASE WHEN "course_events"."sequence_number" > 0
             AND NOT EXISTS (
               SELECT "previous_event".*
               FROM "course_events" AS "previous_event"
@@ -36,14 +43,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
           ELSE FALSE
           END AS "is_after_gap"
         SQL
-      )
-      .take(limit)
-    end.compact.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
-
-    # http://radar.oreilly.com/2014/05/more-than-enough-arel.html
-    from_query = ce.create_table_alias(event_query, :course_events)
-    course_events_by_request_uuid = event_query.nil? ?
-      {} : CourseEvent.from(from_query).group_by(&:request_uuid)
+      ).group_by(&:request_uuid)
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
