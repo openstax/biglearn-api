@@ -69,8 +69,8 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.jsonb    "data",            null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.index ["course_uuid", "sequence_number"], name: "index_course_events_on_course_uuid_and_sequence_number", unique: true, using: :btree
     t.index ["course_uuid", "type"], name: "index_course_events_on_course_uuid_and_type", using: :btree
-    t.index ["sequence_number", "course_uuid"], name: "index_course_events_on_sequence_number_and_course_uuid", unique: true, using: :btree
     t.index ["uuid"], name: "index_course_events_on_uuid", unique: true, using: :btree
   end
 
@@ -82,8 +82,8 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.jsonb    "data",            null: false
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.index ["ecosystem_uuid", "sequence_number"], name: "index_ecosystem_events_on_ecosystem_uuid_and_sequence_number", unique: true, using: :btree
     t.index ["ecosystem_uuid", "type"], name: "index_ecosystem_events_on_ecosystem_uuid_and_type", using: :btree
-    t.index ["sequence_number", "ecosystem_uuid"], name: "index_ecosystem_events_on_sequence_number_and_ecosystem_uuid", unique: true, using: :btree
     t.index ["uuid"], name: "index_ecosystem_events_on_uuid", unique: true, using: :btree
   end
 

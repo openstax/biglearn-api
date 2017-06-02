@@ -10,7 +10,7 @@ class CreateEcosystems < ActiveRecord::Migration
       t.timestamps                null: false
     end
 
-    add_index :ecosystem_events, [:sequence_number, :ecosystem_uuid], unique: true
+    add_index :ecosystem_events, [:ecosystem_uuid, :sequence_number], unique: true
     add_index :ecosystem_events, [:ecosystem_uuid, :type]
   end
 end

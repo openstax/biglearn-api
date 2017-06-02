@@ -10,7 +10,7 @@ class CreateCourseEvents < ActiveRecord::Migration
       t.timestamps                null: false
     end
 
-    add_index :course_events, [:sequence_number, :course_uuid], unique: true
+    add_index :course_events, [:course_uuid, :sequence_number], unique: true
     add_index :course_events, [:course_uuid, :type]
   end
 end
