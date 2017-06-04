@@ -60,7 +60,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/pe_request'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['pe_requests'],
@@ -76,7 +76,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100,
+              'maximum': 100
             },
           },
           'required': ['request_uuid', 'assignment_uuid', 'algorithm_name'],
@@ -96,7 +96,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/pe_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['pe_responses'],
@@ -112,15 +112,19 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
             },
             'assignment_status': {
               'type': 'string',
-              'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready'],
+              'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready']
             },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
+            }
           },
           'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
       },
     }
@@ -136,7 +140,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/spe_request'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['spe_requests'],
@@ -152,7 +156,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100,
+              'maximum': 100
             },
           },
           'required': ['request_uuid', 'assignment_uuid', 'algorithm_name'],
@@ -172,7 +176,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/spe_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['spe_responses'],
@@ -188,15 +192,19 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
             },
             'assignment_status': {
               'type': 'string',
-              'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready'],
+              'enum': ['assignment_unknown', 'assignment_unready', 'assignment_ready']
             },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
+            }
           },
           'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
       },
     }
@@ -212,7 +220,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/worst_areas_request'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['worst_areas_requests'],
@@ -228,7 +236,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100,
+              'maximum': 100
             },
           },
           'required': ['request_uuid', 'student_uuid', 'algorithm_name'],
@@ -248,7 +256,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/worst_areas_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['worst_areas_responses'],
@@ -264,15 +272,19 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
             },
             'student_status': {
               'type': 'string',
-              'enum': ['student_unknown', 'student_unready', 'student_ready'],
+              'enum': ['student_unknown', 'student_unready', 'student_ready']
             },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
+            }
           },
           'required': ['request_uuid', 'student_uuid', 'exercise_uuids', 'student_status'],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
       },
     }
@@ -288,7 +300,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/pe_update'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['pe_updates'],
@@ -305,11 +317,15 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
+            },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
             }
           },
           'required': ['request_uuid' , 'assignment_uuid', 'algorithm_name', 'exercise_uuids'],
-          'additionalProperties': false,
+          'additionalProperties': false
         },
       },
     }
@@ -325,7 +341,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/pe_update_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['pe_update_responses'],
@@ -338,7 +354,7 @@ class ExercisesController < JsonApiController
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'update_status': {
               'type': 'string',
-              'enum': ['accepted'],
+              'enum': ['accepted']
             }
           },
           'required': ['request_uuid', 'update_status'],
@@ -358,7 +374,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/spe_update'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['spe_updates'],
@@ -375,7 +391,11 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
+            },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
             }
           },
           'required': ['request_uuid' , 'assignment_uuid', 'algorithm_name', 'exercise_uuids'],
@@ -395,7 +415,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/spe_update_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['spe_update_responses'],
@@ -408,11 +428,11 @@ class ExercisesController < JsonApiController
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'update_status': {
               'type': 'string',
-              'enum': ['accepted'],
+              'enum': ['accepted']
             }
           },
           'required': ['request_uuid', 'update_status'],
-          'additionalProperties': false,
+          'additionalProperties': false
         }
       },
     }
@@ -429,7 +449,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/practice_worst_areas_update'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['practice_worst_areas_updates'],
@@ -446,7 +466,11 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100,
+              'maxItems': 100
+            },
+            'spy_info': {
+              'type': 'object',
+              'additionalProperties': true
             }
           },
           'required': ['request_uuid' , 'student_uuid', 'algorithm_name', 'exercise_uuids'],
@@ -466,7 +490,7 @@ class ExercisesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/practice_worst_areas_update_response'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 1000
         },
       },
       'required': ['practice_worst_areas_update_responses'],
@@ -479,7 +503,7 @@ class ExercisesController < JsonApiController
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'update_status': {
               'type': 'string',
-              'enum': ['accepted'],
+              'enum': ['accepted']
             }
           },
           'required': ['request_uuid', 'update_status'],
