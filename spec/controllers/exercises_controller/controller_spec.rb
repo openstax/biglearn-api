@@ -9,8 +9,10 @@ RSpec.describe ExercisesController, type: :request do
   context '#fetch_assignment_pes' do
     let(:given_assignment_uuid_1)   { SecureRandom.uuid }
     let(:given_max_num_exercises_1) { rand(10) }
+    let(:given_spy_info_1)          { { test: true } }
     let(:given_assignment_uuid_2)   { SecureRandom.uuid }
     let(:given_max_num_exercises_2) { rand(10) }
+    let(:given_spy_info_2)          { {} }
 
     let(:given_pe_requests)         do
       [
@@ -35,29 +37,31 @@ RSpec.describe ExercisesController, type: :request do
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
-          assignment_status: 'assignment_ready'
+          assignment_status: 'assignment_ready',
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           exercise_uuids: [],
-          assignment_status: 'assignment_unready'
+          assignment_status: 'assignment_unready',
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:request_payload)           { { pe_requests: given_pe_requests } }
+    let(:request_payload) { { pe_requests: given_pe_requests } }
 
-    let(:target_result)             { { pe_responses: target_pe_responses } }
-    let(:target_response)           { target_result }
+    let(:target_result)   { { pe_responses: target_pe_responses } }
+    let(:target_response) { target_result }
 
-    let(:service_double)            do
+    let(:service_double)  do
       object_double(Services::FetchAssignmentPes::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
     end
 
-    before(:each)                   do
+    before(:each)         do
       allow(Services::FetchAssignmentPes::Service).to receive(:new).and_return(service_double)
     end
 
@@ -87,8 +91,10 @@ RSpec.describe ExercisesController, type: :request do
   context '#fetch_assignment_spes' do
     let(:given_assignment_uuid_1)   { SecureRandom.uuid }
     let(:given_max_num_exercises_1) { rand(10) }
+    let(:given_spy_info_1)          { { test: true } }
     let(:given_assignment_uuid_2)   { SecureRandom.uuid }
     let(:given_max_num_exercises_2) { rand(10) }
+    let(:given_spy_info_2)          { {} }
 
     let(:given_spe_requests)        do
       [
@@ -113,23 +119,25 @@ RSpec.describe ExercisesController, type: :request do
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
-          assignment_status: 'assignment_ready'
+          assignment_status: 'assignment_ready',
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           exercise_uuids: [],
-          assignment_status: 'assignment_unready'
+          assignment_status: 'assignment_unready',
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:request_payload)           { { spe_requests: given_spe_requests } }
+    let(:request_payload) { { spe_requests: given_spe_requests } }
 
-    let(:target_result)             { { spe_responses: target_spe_responses } }
-    let(:target_response)           { target_result }
+    let(:target_result)   { { spe_responses: target_spe_responses } }
+    let(:target_response) { target_result }
 
-    let(:service_double)            do
+    let(:service_double)  do
       object_double(Services::FetchAssignmentSpes::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
@@ -163,10 +171,12 @@ RSpec.describe ExercisesController, type: :request do
   end
 
   context '#fetch_practice_worst_areas' do
-    let(:given_student_uuid_1)                  { SecureRandom.uuid }
-    let(:given_max_num_exercises_1)             { rand(10) }
-    let(:given_student_uuid_2)                  { SecureRandom.uuid }
-    let(:given_max_num_exercises_2)             { rand(10) }
+    let(:given_student_uuid_1)         { SecureRandom.uuid }
+    let(:given_max_num_exercises_1)    { rand(10) }
+    let(:given_spy_info_1)             { { test: true } }
+    let(:given_student_uuid_2)         { SecureRandom.uuid }
+    let(:given_max_num_exercises_2)    { rand(10) }
+    let(:given_spy_info_2)             { {} }
 
     let(:given_worst_areas_requests)   do
       [
@@ -191,33 +201,35 @@ RSpec.describe ExercisesController, type: :request do
           request_uuid: given_request_uuid_1,
           student_uuid: given_student_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
-          student_status: 'student_ready'
+          student_status: 'student_ready',
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           student_uuid: given_student_uuid_2,
           exercise_uuids: [],
-          student_status: 'student_unready'
+          student_status: 'student_unready',
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:request_payload)                       do
+    let(:request_payload) do
       { worst_areas_requests: given_worst_areas_requests }
     end
 
-    let(:target_result)                         do
+    let(:target_result)   do
       { worst_areas_responses: target_worst_areas_responses }
     end
-    let(:target_response)                       { target_result }
+    let(:target_response) { target_result }
 
-    let(:service_double)                        do
+    let(:service_double)  do
       object_double(Services::FetchPracticeWorstAreasExercises::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
     end
 
-    before(:each)                             do
+    before(:each)         do
       allow(Services::FetchPracticeWorstAreasExercises::Service).to(
         receive(:new).and_return(service_double)
       )
@@ -257,28 +269,31 @@ RSpec.describe ExercisesController, type: :request do
   context '#update_assignment_pes' do
     let(:given_assignment_uuid_1)     { SecureRandom.uuid }
     let(:given_exercise_uuid_count_1) { rand(10) }
-
-    let(:given_assignment_uuid_2)   { SecureRandom.uuid }
+    let(:given_spy_info_1)            { { test: true } }
+    let(:given_assignment_uuid_2)     { SecureRandom.uuid }
     let(:given_exercise_uuid_count_2) { rand(10) }
+    let(:given_spy_info_2)            { {} }
 
-    let(:given_pe_update_requests)  do
+    let(:given_pe_update_requests)    do
       [
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:target_pe_update_responses)       do
+    let(:target_pe_update_responses)  do
       [
         {
           request_uuid: given_request_uuid_1,
@@ -291,18 +306,18 @@ RSpec.describe ExercisesController, type: :request do
       ]
     end
 
-    let(:request_payload)           { { pe_updates: given_pe_update_requests } }
+    let(:request_payload) { { pe_updates: given_pe_update_requests } }
 
-    let(:target_result)             { { pe_update_responses: target_pe_update_responses } }
-    let(:target_response)           { target_result }
+    let(:target_result)   { { pe_update_responses: target_pe_update_responses } }
+    let(:target_response) { target_result }
 
-    let(:service_double)            do
+    let(:service_double)  do
       object_double(Services::UpdateAssignmentPes::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
     end
 
-    before(:each)                   do
+    before(:each)         do
       allow(Services::UpdateAssignmentPes::Service).to receive(:new).and_return(service_double)
     end
 
@@ -332,28 +347,31 @@ RSpec.describe ExercisesController, type: :request do
   context '#update_assignment_spes' do
     let(:given_assignment_uuid_1)     { SecureRandom.uuid }
     let(:given_exercise_uuid_count_1) { rand(10) }
-
-    let(:given_assignment_uuid_2)   { SecureRandom.uuid }
+    let(:given_spy_info_1)            { { test: true } }
+    let(:given_assignment_uuid_2)     { SecureRandom.uuid }
     let(:given_exercise_uuid_count_2) { rand(10) }
+    let(:given_spy_info_2)            { {} }
 
-    let(:given_spe_update_requests)  do
+    let(:given_spe_update_requests)   do
       [
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:target_spe_update_responses)       do
+    let(:target_spe_update_responses) do
       [
         {
           request_uuid: given_request_uuid_1,
@@ -366,12 +384,12 @@ RSpec.describe ExercisesController, type: :request do
       ]
     end
 
-    let(:request_payload)           { { spe_updates: given_spe_update_requests } }
+    let(:request_payload) { { spe_updates: given_spe_update_requests } }
 
-    let(:target_result)             { { spe_update_responses: target_spe_update_responses } }
-    let(:target_response)           { target_result }
+    let(:target_result)   { { spe_update_responses: target_spe_update_responses } }
+    let(:target_response) { target_result }
 
-    let(:service_double)            do
+    let(:service_double)  do
       object_double(Services::UpdateAssignmentSpes::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end
@@ -405,30 +423,33 @@ RSpec.describe ExercisesController, type: :request do
   end
 
   context '#update_practice_worst_areas' do
-    let(:given_student_uuid_1)     { SecureRandom.uuid }
+    let(:given_student_uuid_1)        { SecureRandom.uuid }
     let(:given_exercise_uuid_count_1) { rand(10) }
-
-    let(:given_student_uuid_2)   { SecureRandom.uuid }
+    let(:given_spy_info_1)            { { test: true } }
+    let(:given_student_uuid_2)        { SecureRandom.uuid }
     let(:given_exercise_uuid_count_2) { rand(10) }
+    let(:given_spy_info_2)            { {} }
 
-    let(:given_worst_areas_update_requests)  do
+    let(:given_worst_areas_update_requests)   do
       [
         {
           request_uuid: given_request_uuid_1,
           student_uuid: given_student_uuid_1,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_1
         },
         {
           request_uuid: given_request_uuid_2,
           student_uuid: given_student_uuid_2,
           algorithm_name: given_algorithm_name,
-          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid }
+          exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
+          spy_info: given_spy_info_2
         }
       ]
     end
 
-    let(:target_worst_areas_update_responses)       do
+    let(:target_worst_areas_update_responses) do
       [
         {
           request_uuid: given_request_uuid_1,
@@ -441,12 +462,12 @@ RSpec.describe ExercisesController, type: :request do
       ]
     end
 
-    let(:request_payload)           { { practice_worst_areas_updates: given_worst_areas_update_requests } }
+    let(:request_payload) { { practice_worst_areas_updates: given_worst_areas_update_requests } }
 
-    let(:target_result)             { { practice_worst_areas_update_responses: target_worst_areas_update_responses } }
-    let(:target_response)           { target_result }
+    let(:target_result)   { { practice_worst_areas_update_responses: target_worst_areas_update_responses } }
+    let(:target_response) { target_result }
 
-    let(:service_double)            do
+    let(:service_double)  do
       object_double(Services::UpdatePracticeWorstAreasExercises::Service.new).tap do |dbl|
         allow(dbl).to receive(:process).with(request_payload).and_return(target_result)
       end

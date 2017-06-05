@@ -91,10 +91,12 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
         max_num_exercises = request[:max_num_exercises]
         exercise_uuids = max_num_exercises.nil? ?
                            all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
+        spy_info = assignment_spe.spy_info
 
         expect(response.fetch(:assignment_uuid)).to eq assignment_uuid
         expect(response.fetch(:exercise_uuids)).to eq exercise_uuids
         expect(response.fetch(:assignment_status)).to eq 'assignment_ready'
+        expect(response.fetch(:spy_info)).to eq spy_info
       end
     end
   end

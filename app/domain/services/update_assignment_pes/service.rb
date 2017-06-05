@@ -10,13 +10,14 @@ class Services::UpdateAssignmentPes::Service < Services::ApplicationService
         uuid: request_uuid,
         assignment_uuid: update.fetch(:assignment_uuid),
         algorithm_name: update.fetch(:algorithm_name),
-        exercise_uuids: update.fetch(:exercise_uuids)
+        exercise_uuids: update.fetch(:exercise_uuids),
+        spy_info: update.fetch(:spy_info, {})
       )
     end
 
     AssignmentPe.import assignment_pes, validate: false, on_duplicate_key_update: {
       conflict_target: [ :assignment_uuid, :algorithm_name ],
-      columns: [ :uuid, :exercise_uuids ]
+      columns: [ :uuid, :exercise_uuids, :spy_info ]
     }
 
     { pe_update_responses: update_responses }

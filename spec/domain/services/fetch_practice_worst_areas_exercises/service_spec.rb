@@ -95,10 +95,12 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
         max_num_exercises = request[:max_num_exercises]
         exercise_uuids = max_num_exercises.nil? ?
                            all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
+        spy_info = student_pe.spy_info
 
         expect(response.fetch(:student_uuid)).to eq student_uuid
         expect(response.fetch(:exercise_uuids)).to eq exercise_uuids
         expect(response.fetch(:student_status)).to eq 'student_ready'
+        expect(response.fetch(:spy_info)).to eq spy_info
       end
     end
   end

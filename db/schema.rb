@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170206191822) do
+ActiveRecord::Schema.define(version: 20170605035558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.jsonb    "spy_info",        null: false
     t.index ["assignment_uuid", "algorithm_name"], name: "index_assignment_pes_on_assignment_uuid_and_algorithm_name", unique: true, using: :btree
     t.index ["uuid"], name: "index_assignment_pes_on_uuid", unique: true, using: :btree
   end
@@ -34,6 +35,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "exercise_uuids",  null: false, array: true
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.jsonb    "spy_info",        null: false
     t.index ["assignment_uuid", "algorithm_name"], name: "index_assignment_spes_on_assignment_uuid_and_algorithm_name", unique: true, using: :btree
     t.index ["uuid"], name: "index_assignment_spes_on_uuid", unique: true, using: :btree
   end
@@ -114,6 +116,7 @@ ActiveRecord::Schema.define(version: 20170206191822) do
     t.uuid     "exercise_uuids", null: false, array: true
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.jsonb    "spy_info",       null: false
     t.index ["student_uuid", "algorithm_name"], name: "index_student_pes_on_student_uuid_and_algorithm_name", unique: true, using: :btree
     t.index ["uuid"], name: "index_student_pes_on_uuid", unique: true, using: :btree
   end

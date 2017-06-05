@@ -22,23 +22,24 @@ class Services::FetchPracticeWorstAreasExercises::Service < Services::Applicatio
 
       if student_pe.nil?
         exercise_uuids = []
-
         student = missing_pe_students_by_uuid[student_uuid]
         student_status = student.nil? ? 'student_unknown' : 'student_unready'
+        spy_info = {}
       else
         all_exercise_uuids = student_pe.exercise_uuids.uniq
         max_num_exercises = request[:max_num_exercises]
         exercise_uuids = max_num_exercises.nil? ?
                            all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
-
         student_status = 'student_ready'
+        spy_info = student_pe.spy_info
       end
 
       {
         request_uuid: request_uuid,
         student_uuid: student_uuid,
         exercise_uuids: exercise_uuids,
-        student_status: student_status
+        student_status: student_status,
+        spy_info: spy_info
       }
     end
 

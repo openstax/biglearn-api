@@ -4,5 +4,6 @@ FactoryGirl.define do
     student_uuid   { SecureRandom.uuid }
     algorithm_name { Faker::Hacker.abbreviation }
     exercise_uuids []
+    spy_info       { {} }
   end
 end

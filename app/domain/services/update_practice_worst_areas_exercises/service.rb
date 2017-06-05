@@ -10,13 +10,14 @@ class Services::UpdatePracticeWorstAreasExercises::Service < Services::Applicati
         uuid: request_uuid,
         student_uuid: update.fetch(:student_uuid),
         algorithm_name: update.fetch(:algorithm_name),
-        exercise_uuids: update.fetch(:exercise_uuids)
+        exercise_uuids: update.fetch(:exercise_uuids),
+        spy_info: update.fetch(:spy_info, {})
       )
     end
 
     StudentPe.import student_pes, validate: false, on_duplicate_key_update: {
       conflict_target: [ :student_uuid, :algorithm_name ],
-      columns: [ :uuid, :exercise_uuids ]
+      columns: [ :uuid, :exercise_uuids, :spy_info ]
     }
 
     { practice_worst_areas_update_responses: update_responses }
