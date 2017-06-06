@@ -76,7 +76,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100
+              'maximum': 1000
             },
           },
           'required': ['request_uuid', 'assignment_uuid', 'algorithm_name'],
@@ -112,7 +112,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'assignment_status': {
               'type': 'string',
@@ -156,7 +156,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100
+              'maximum': 1000
             },
           },
           'required': ['request_uuid', 'assignment_uuid', 'algorithm_name'],
@@ -192,7 +192,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'assignment_status': {
               'type': 'string',
@@ -236,7 +236,7 @@ class ExercisesController < JsonApiController
             'max_num_exercises': {
               'type': 'integer',
               'minimum': 0,
-              'maximum': 100
+              'maximum': 1000
             },
           },
           'required': ['request_uuid', 'student_uuid', 'algorithm_name'],
@@ -272,7 +272,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'student_status': {
               'type': 'string',
@@ -317,7 +317,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'spy_info': {
               'type': 'object',
@@ -391,7 +391,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'spy_info': {
               'type': 'object',
@@ -466,7 +466,7 @@ class ExercisesController < JsonApiController
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
               'minItems': 0,
-              'maxItems': 100
+              'maxItems': 1000
             },
             'spy_info': {
               'type': 'object',
