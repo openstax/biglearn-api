@@ -37,18 +37,19 @@ class AssignmentsController < JsonApiController
             'is_deleted':      {'type': 'boolean'},
             'ecosystem_uuid':  {'$ref': '#standard_definitions/uuid'},
             'student_uuid':    {'$ref': '#standard_definitions/uuid'},
-            'assignment_type': {  ## NOTE: This should match the usage when creating ecosystem pools
+            'assignment_type': { ## NOTE: This should match the usage when creating ecosystem pools
               'type': 'string',
               'minLength': 1,
               'maxLength': 100,
             },
-            'exclusion_info': {  ## NOTE: optional
+            'exclusion_info': { ## NOTE: optional
               'type': 'object',
               'properties': {
-                'opens_at': {'$ref': '#standard_definitions/datetime'}, ## NOTE: optional
-                'due_at':   {'$ref': '#standard_definitions/datetime'},
+                'opens_at':    {'$ref': '#standard_definitions/datetime'}, ## NOTE: optional
+                'due_at':      {'$ref': '#standard_definitions/datetime'}, ## NOTE: optional
+                'feedback_at': {'$ref': '#standard_definitions/datetime'}
               },
-              'required': ['due_at'],
+              'required': [ 'feedback_at' ],
               'additionalProperties': false,
             },
             'assigned_book_container_uuids': {
@@ -58,9 +59,9 @@ class AssignmentsController < JsonApiController
               'maxItems': 500,
             },
             'goal_num_tutor_assigned_spes': {'$ref': '#standard_definitions/non_negative_integer'},
-            'spes_are_assigned': {'type': 'boolean'},
-            'goal_num_tutor_assigned_pes': {'$ref': '#standard_definitions/non_negative_integer'},
-            'pes_are_assigned': {'type': 'boolean'},
+            'spes_are_assigned':            {'type': 'boolean'},
+            'goal_num_tutor_assigned_pes':  {'$ref': '#standard_definitions/non_negative_integer'},
+            'pes_are_assigned':             {'type': 'boolean'},
             'assigned_exercises': {
               'type': 'array',
               'items': {'$ref': '#definitions/trial'},
