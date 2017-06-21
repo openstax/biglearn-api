@@ -23,7 +23,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       .order(:sequence_number)
       .project(ce[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
       .take(limit)
-    end.compact.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
+    end.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
 
     # http://radar.oreilly.com/2014/05/more-than-enough-arel.html
     from_query = ce.create_table_alias(event_query, :course_events)
