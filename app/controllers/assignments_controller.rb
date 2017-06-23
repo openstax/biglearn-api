@@ -47,10 +47,9 @@ class AssignmentsController < JsonApiController
               'properties': {
                 'opens_at':    {'$ref': '#standard_definitions/datetime'}, ## NOTE: optional
                 'due_at':      {'$ref': '#standard_definitions/datetime'}, ## NOTE: optional
-                'feedback_at': {'$ref': '#standard_definitions/datetime'}
+                'feedback_at': {'$ref': '#standard_definitions/datetime'}  ## NOTE: optional
               },
-              'required': [ 'feedback_at' ],
-              'additionalProperties': false,
+              'additionalProperties': false
             },
             'assigned_book_container_uuids': {
               'type': 'array',
