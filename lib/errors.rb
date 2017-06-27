@@ -51,6 +51,7 @@ module Errors
 
   end
 
+  class AppRequestAuthenticationError < AppError; end
   class AppRequestValidationError < AppError; end
   class AppRequestHeaderError < AppRequestValidationError; end
   class AppRequestSchemaError < AppRequestValidationError; end
