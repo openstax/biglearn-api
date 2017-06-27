@@ -1,20 +1,21 @@
-## postgres 9.5 setup adapted from: https://github.com/travis-ci/travis-ci/issues/4264
-
+# PostgreSQL 9.5 setup adapted from: https://github.com/travis-ci/travis-ci/issues/4264
+branches:
+  only:
+    - master
 sudo: false
 dist: trusty
+language: ruby
+rvm:
+  - "2.3.3"
 addons:
   postgresql: "9.5"
 services:
   - postgresql
+cache: bundler
+before_install:
+  - gem install bundler
+bundler_args: --without production --retry=6
 before_script:
   - bundle exec rake --trace db:setup
 script:
   - bundle exec rspec --format progress --tag ~type:acceptance
-branches:
-  only:
-    - master
-language: ruby
-rvm:
-  - "2.3.1"
-cache: bundler
-bundler_args: --without production --retry=6
