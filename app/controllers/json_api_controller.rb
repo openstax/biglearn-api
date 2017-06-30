@@ -1,13 +1,17 @@
 require 'json-schema'
 
 class JsonApiController < ApplicationController
+  API_TOKEN_HEADER = 'Biglearn-Api-Token'
+  API_TOKEN = Rails.application.secrets.openstax['biglearn']['api']['token']
+  VALIDATE_JSON = true
 
   # Skip verifying the CSRF token
   skip_before_action :verify_authenticity_token
 
-  rescue_from Errors::AppRequestValidationError,  with: :_render_app_request_validation_error
-  rescue_from ActiveRecord::RecordNotUnique,      with: :_render_app_record_not_unique
-  rescue_from Errors::AppResponseValidationError, with: :_render_app_response_validation_error
+  rescue_from Errors::AppRequestAuthenticationError, with: :_render_app_request_authentication_error
+  rescue_from Errors::AppRequestValidationError,     with: :_render_app_request_validation_error
+  rescue_from ActiveRecord::RecordNotUnique,         with: :_render_app_record_not_unique
+  rescue_from Errors::AppResponseValidationError,    with: :_render_app_response_validation_error
 
   JSON_SCHEMA = 'http://json-schema.org/draft-04/schema#'
 
@@ -32,12 +36,17 @@ class JsonApiController < ApplicationController
   end
 
   def _validate_and_parse_request(input_schema)
+    fail Errors::AppRequestAuthenticationError.new("request has an invalid #{API_TOKEN_HEADER}") \
+      unless request.headers[API_TOKEN_HEADER] == API_TOKEN
+
     return {} if input_schema.nil?
 
     fail Errors::AppRequestHeaderError.new('request must have Content-Type = application/json') \
       unless request.content_type == 'application/json'
 
     _json_parsed_request_payload.tap do |parsed_request|
+      next unless VALIDATE_JSON
+
       validation_errors = JSON::Validator.fully_validate(
         input_schema,
         parsed_request,
@@ -57,9 +66,12 @@ class JsonApiController < ApplicationController
     return {} if output_schema.nil?
 
     JSON.parse(response.body).tap do |parsed_response|
+      next unless VALIDATE_JSON
+
       validation_errors = JSON::Validator.fully_validate(
         output_schema,
         parsed_response,
+        insert_defaults: true,
         validate_schema: true
       )
 
@@ -71,35 +83,41 @@ class JsonApiController < ApplicationController
     fail Errors::AppResponseValidationError.new('could not parse response json payload')
   end
 
+  def _render_app_request_authentication_error(exception)
+    payload = {
+      errors: exception.errors
+    }
+    render json: payload, status: 400
+  end
+
   def _render_app_request_validation_error(exception)
     request.body.rewind
     request_body = request.body.read
     payload = {
-      'errors': exception.errors,
-      'request': request_body
+      errors: exception.errors,
+      request: request_body
     }
-    render json: payload.to_json, status: 400
+    render json: payload, status: 400
   end
 
   def _render_app_record_not_unique(exception)
     payload = {
-      'exception': exception.class.name,
-      'errors': exception.to_s
+      exception: exception.class.name,
+      errors: exception.to_s
     }
-    render json: payload.to_json, status: 422
+    render json: payload, status: 422
   end
 
   def _render_app_response_validation_error(exception)
     payload = {
-      'errors': exception.errors,
-      'response': {
-        'status':  response.status,
-        'headers': response.headers,
-        'body':    response.body
+      errors: exception.errors,
+      response: {
+        status:  response.status,
+        headers: response.headers,
+        body:    response.body
       }
     }
-    response.status = 500
-    response.body   = payload.to_json
+    render json: payload, status: 500
   end
 
   module SchemaDefinitions
