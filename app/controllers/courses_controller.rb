@@ -123,7 +123,7 @@ class CoursesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/course_metadata'},
           'minItems': 0,
-          'maxItems': 1000,
+          'maxItems': 10000
         },
       },
       'required': ['course_responses'],
