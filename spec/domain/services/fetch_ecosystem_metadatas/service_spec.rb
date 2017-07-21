@@ -20,7 +20,7 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
     end
 
     it "all ecosystem uuids are returned in hashes" do
-      expect(action.fetch(:ecosystem_responses)).to eq expected_responses
+      expect(action.fetch(:ecosystem_responses)).to match_array expected_responses
     end
   end
 end

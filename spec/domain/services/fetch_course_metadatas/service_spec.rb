@@ -33,7 +33,7 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
     end
 
     it "all course uuids are returned in hashes" do
-      expect(action.fetch(:course_responses)).to eq expected_responses
+      expect(action.fetch(:course_responses)).to match_array expected_responses
     end
   end
 end
