@@ -1,9 +1,6 @@
 class Services::FetchCourseMetadatas::Service < Services::ApplicationService
   def process
-    courses = CourseEvent.create_course
-                         .distinct
-                         .order(:created_at)
-                         .pluck_with_keys(:course_uuid, :data, :created_at)
+    courses = CourseEvent.create_course.pluck_with_keys(:course_uuid, :data)
 
     course_responses = courses.map do |course|
       {

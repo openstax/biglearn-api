@@ -1,11 +1,8 @@
 class Services::FetchEcosystemMetadatas::Service < Services::ApplicationService
   def process
-    ecosystems = EcosystemEvent.create_ecosystem
-                               .distinct
-                               .order(:created_at)
-                               .pluck_with_keys(:ecosystem_uuid, :created_at)
+    ecosystem_uuids = EcosystemEvent.create_ecosystem.pluck(:ecosystem_uuid)
 
-    ecosystem_responses = ecosystems.map { |ecosystem| { uuid: ecosystem[:ecosystem_uuid] } }
+    ecosystem_responses = ecosystem_uuids.map { |ecosystem_uuid| { uuid: ecosystem_uuid } }
 
     { ecosystem_responses:  ecosystem_responses }
   end
