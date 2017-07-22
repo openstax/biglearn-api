@@ -1,11 +1,13 @@
 class Services::FetchAssignmentPes::Service < Services::ApplicationService
   def process(pe_requests:)
     ape = AssignmentPe.arel_table
-    queries = pe_requests.map do |request|
-      ape[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
-        ape[:algorithm_name].eq(request.fetch(:algorithm_name))
-      )
-    end.reduce(:or)
+    queries = ArelTrees.or_tree(
+      pe_requests.map do |request|
+        ape[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
+          ape[:algorithm_name].eq(request.fetch(:algorithm_name))
+        )
+      end
+    )
     assignment_pes_by_assignment_uuid = queries.nil? ?
       {} : AssignmentPe.where(queries).index_by { |ap| ap.assignment_uuid.downcase }
 

@@ -1,11 +1,13 @@
 class Services::FetchPracticeWorstAreasExercises::Service < Services::ApplicationService
   def process(worst_areas_requests:)
     spe = StudentPe.arel_table
-    queries = worst_areas_requests.map do |request|
-      spe[:student_uuid].eq(request.fetch(:student_uuid)).and(
-        spe[:algorithm_name].eq(request.fetch(:algorithm_name))
-      )
-    end.reduce(:or)
+    queries = ArelTrees.or_tree(
+      worst_areas_requests.map do |request|
+        spe[:student_uuid].eq(request.fetch(:student_uuid)).and(
+          spe[:algorithm_name].eq(request.fetch(:algorithm_name))
+        )
+      end
+    )
 
     student_pes_by_student_uuid = queries.nil? ?
       {} : StudentPe.where(queries).index_by { |sp| sp.student_uuid.downcase }

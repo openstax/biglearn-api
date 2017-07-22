@@ -1,13 +1,15 @@
 class Services::FetchStudentClues::Service < Services::ApplicationService
   def process(student_clue_requests:)
     sc = StudentClue.arel_table
-    queries = student_clue_requests.map do |request|
-      sc[:student_uuid].eq(request.fetch(:student_uuid)).and(
-        sc[:book_container_uuid].eq(request.fetch(:book_container_uuid)).and(
-          sc[:algorithm_name].eq(request.fetch(:algorithm_name))
+    queries = ArelTrees.or_tree(
+      student_clue_requests.map do |request|
+        sc[:student_uuid].eq(request.fetch(:student_uuid)).and(
+          sc[:book_container_uuid].eq(request.fetch(:book_container_uuid)).and(
+            sc[:algorithm_name].eq(request.fetch(:algorithm_name))
+          )
         )
-      )
-    end.reduce(:or)
+      end
+    )
 
     clues_map = Hash.new { |hash, key| hash[key] = {} }
     StudentClue.where(queries).each do |clue|

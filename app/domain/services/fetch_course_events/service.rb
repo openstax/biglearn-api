@@ -8,22 +8,24 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     max_events_per_request = MAX_EVENTS/num_requests
     limits_by_request_uuid = {}
     ce = CourseEvent.arel_table
-    event_query = course_event_requests.map do |request|
-      course_uuid = request.fetch(:course_uuid)
-      sequence_number_offset = request.fetch(:sequence_number_offset)
-      request_uuid = request.fetch(:request_uuid)
-      limit = [request.fetch(:max_num_events, max_events_per_request), max_events_per_request].min
-      limits_by_request_uuid[request_uuid] = limit
+    event_query = ArelTrees.union_all_tree(
+      course_event_requests.map do |request|
+        course_uuid = request.fetch(:course_uuid)
+        sequence_number_offset = request.fetch(:sequence_number_offset)
+        request_uuid = request.fetch(:request_uuid)
+        limit = [request.fetch(:max_num_events, max_events_per_request), max_events_per_request].min
+        limits_by_request_uuid[request_uuid] = limit
 
-      ce.where(
-        ce[:course_uuid].eq(course_uuid)
-          .and(ce[:type].in(request.fetch(:event_types)))
-          .and(ce[:sequence_number].gteq(sequence_number_offset))
-      )
-      .order(:sequence_number)
-      .project(ce[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
-      .take(limit)
-    end.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
+        ce.where(
+          ce[:course_uuid].eq(course_uuid)
+            .and(ce[:sequence_number].gteq(sequence_number_offset))
+            .and(ce[:type].in(request.fetch(:event_types)))
+        )
+        .order(:sequence_number)
+        .project(ce[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
+        .take(limit)
+      end
+    )
 
     # http://radar.oreilly.com/2014/05/more-than-enough-arel.html
     from_query = ce.create_table_alias(event_query, :course_events)

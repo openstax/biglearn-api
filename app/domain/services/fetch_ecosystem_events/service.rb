@@ -8,22 +8,24 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
     max_events_per_request = MAX_EVENTS/num_requests
     limits_by_request_uuid = {}
     ee = EcosystemEvent.arel_table
-    event_query = ecosystem_event_requests.map do |request|
-      ecosystem_uuid = request.fetch(:ecosystem_uuid)
-      sequence_number_offset = request.fetch(:sequence_number_offset)
-      request_uuid = request.fetch(:request_uuid)
-      limit = [request.fetch(:max_num_events, max_events_per_request), max_events_per_request].min
-      limits_by_request_uuid[request_uuid] = limit
+    event_query = ArelTrees.union_all_tree(
+      ecosystem_event_requests.map do |request|
+        ecosystem_uuid = request.fetch(:ecosystem_uuid)
+        sequence_number_offset = request.fetch(:sequence_number_offset)
+        request_uuid = request.fetch(:request_uuid)
+        limit = [request.fetch(:max_num_events, max_events_per_request), max_events_per_request].min
+        limits_by_request_uuid[request_uuid] = limit
 
-      ee.where(
-        ee[:ecosystem_uuid].eq(ecosystem_uuid)
-          .and(ee[:type].in(request.fetch(:event_types)))
-          .and(ee[:sequence_number].gteq(sequence_number_offset))
-      )
-      .order(:sequence_number)
-      .project(ee[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
-      .take(limit)
-    end.compact.reduce { |full_query, new_query| Arel::Nodes::UnionAll.new(full_query, new_query) }
+        ee.where(
+          ee[:ecosystem_uuid].eq(ecosystem_uuid)
+            .and(ee[:sequence_number].gteq(sequence_number_offset))
+            .and(ee[:type].in(request.fetch(:event_types)))
+        )
+        .order(:sequence_number)
+        .project(ee[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
+        .take(limit)
+      end
+    )
 
     # http://radar.oreilly.com/2014/05/more-than-enough-arel.html
     from_query = ee.create_table_alias(event_query, :ecosystem_events)
