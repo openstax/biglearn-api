@@ -13,15 +13,19 @@ end
 
 namespace :protocol do
   desc "Join the 'exper' protocol group"
-  task :exper, [:group_uuid] => :environment do |t, args|
-    group_uuid = args[:group_uuid]
+  task :exper, [:group_uuid, :work_interval, :work_modulo, :work_offset] => :environment do |t, args|
+    group_uuid    = args[:group_uuid]
+    work_interval = (args[:work_interval] || '1.0').to_f.seconds
+    work_modulo   = (args[:work_modulo]   || '1.0').to_f.seconds
+    work_offset   = (args[:work_offset]   || '0.0').to_f.seconds
 
     worker = Worker.new(group_uuid: group_uuid)
 
     protocol = Protocol.new(
       protocol_name: 'exper',
-      min_work_interval: 2.0.seconds,
-      work_offset: 2.seconds,
+      min_work_interval: work_interval,
+      work_modulo: work_modulo,
+      work_offset: work_offset,
       group_uuid: group_uuid
     ) do |instance_count:, instance_modulo:|
       worker.do_work(count: instance_count, modulo: instance_modulo)
