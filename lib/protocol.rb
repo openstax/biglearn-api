@@ -15,20 +15,23 @@ class Protocol
     @instance_uuid      = SecureRandom.uuid.to_s
   end
 
-  def compute_first_work_time(time:)
-    mod1 = time.to_f % @work_modulo
-    time - mod1 + @work_offset + @min_work_interval
-  end
 
-  def compute_next_work_time(last_time:, current_time:)
+  def compute_next_work_time(last_time: nil, current_time:, instance_count:, instance_modulo:)
+    if last_time.nil?
+      last_time = current_time - (current_time.to_f % @work_modulo) + @work_offset + @min_work_interval/instance_count*instance_modulo
+    end
+
     next_time = last_time + @min_work_interval
   end
+
 
   def run
     ActiveRecord::Base.clear_active_connections!
 
-    current_time = Time.now
-    next_work_time = compute_first_work_time(time: current_time)
+    # current_time = Time.now
+    next_work_time       = nil
+    prev_instance_count  = nil
+    prev_instance_modulo = nil
     # puts "current_time:   #{round_time(time: current_time).utc.iso8601(6)}"
     # puts "next_work_time: #{round_time(time: next_work_time).utc.iso8601(6)}"
 
@@ -74,7 +77,17 @@ class Protocol
       end
 
       current_time = Time.now
+      if next_work_time.nil? || my_record.instance_modulo != prev_instance_modulo || boss_record.instance_count != prev_instance_count
+        next_work_time = compute_next_work_time(
+          current_time:    current_time,
+          instance_count:  boss_record.instance_count,
+          instance_modulo: my_record.instance_modulo,
+        )
+        prev_instance_count  = boss_record.instance_count
+        prev_instance_modulo = my_record.instance_modulo
+      end
       # puts "current_time:   #{round_time(time: current_time).utc.iso8601(6)}"
+
       if current_time >= next_work_time
         last_work_time = next_work_time
         # puts "work_time:      #{round_time(time: last_work_time).utc.iso8601(6)}"
@@ -82,10 +95,16 @@ class Protocol
         @work_block.call(
           instance_count:  boss_record.instance_count,
           instance_modulo: my_record.instance_modulo,
+          am_boss:         am_boss,
         )
+
         current_time = Time.now
-        # next_work_time = last_work_time + ((current_time - last_work_time + @min_work_interval - 0.000001.seconds)/@min_work_interval).to_i*@min_work_interval
-        next_work_time = compute_next_work_time(last_time: next_work_time, current_time: current_time)
+        next_work_time = compute_next_work_time(
+          last_time:    next_work_time,
+          current_time: current_time,
+          instance_count:  boss_record.instance_count,
+          instance_modulo: my_record.instance_modulo,
+        )
         # puts "next_work_time: #{round_time(time: next_work_time).utc.iso8601(6)}"
       else
         sleep_interval = [0.5, next_work_time - current_time].min

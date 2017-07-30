@@ -4,9 +4,9 @@ class Worker
     @counter    = 0
   end
 
-  def do_work(count:, modulo:)
+  def do_work(count:, modulo:, am_boss:)
     @counter += 1
-    puts "#{Time.now.utc.iso8601(6)} #{@group_uuid}:[#{modulo}/#{count}] #{@counter % 10} working away as usual..."
+    puts "#{Time.now.utc.iso8601(6)} #{@group_uuid}:[#{modulo}/#{count}] #{am_boss ? '*' : ' '} #{@counter % 10} working away as usual..."
     sleep(0.1)
   end
 end
@@ -27,8 +27,8 @@ namespace :protocol do
       work_modulo: work_modulo,
       work_offset: work_offset,
       group_uuid: group_uuid
-    ) do |instance_count:, instance_modulo:|
-      worker.do_work(count: instance_count, modulo: instance_modulo)
+    ) do |instance_count:, instance_modulo:, am_boss:|
+      worker.do_work(count: instance_count, modulo: instance_modulo, am_boss: am_boss)
     end
 
     protocol.run
