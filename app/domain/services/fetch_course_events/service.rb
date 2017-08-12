@@ -19,11 +19,11 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         ce.where(
           ce[:course_uuid].eq(course_uuid)
             .and(ce[:sequence_number].gteq(sequence_number_offset))
+            .and(ce[:sequence_number].lt(sequence_number_offset + limit))
             .and(ce[:type].in(request.fetch(:event_types)))
         )
         .order(:sequence_number)
         .project(ce[Arel.star], "'#{request_uuid}' AS \"request_uuid\"")
-        .take(limit)
       end
     )
 
@@ -54,8 +54,6 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       is_gap = false
       event_hashes = course_events.map do |event|
         is_gap = true if event.is_after_gap
-
-        next if is_gap
 
         {
           sequence_number: event.sequence_number,
