@@ -55,8 +55,6 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       event_hashes = course_events.map do |event|
         is_gap = true if event.is_after_gap
 
-        next if is_gap
-
         {
           sequence_number: event.sequence_number,
           event_uuid: event.uuid,
