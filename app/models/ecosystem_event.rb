@@ -4,7 +4,8 @@ class EcosystemEvent < ApplicationRecord
   include AppendOnlyWithUniqueUuid
 
   enum type: {
-    create_ecosystem: 0
+    no_op:            -1,
+    create_ecosystem:  0
   }
 
   validates :type,            presence: true

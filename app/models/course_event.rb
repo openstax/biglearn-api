@@ -4,15 +4,16 @@ class CourseEvent < ApplicationRecord
   include AppendOnlyWithUniqueUuid
 
   enum type: {
-    create_course:                      0,
-    prepare_course_ecosystem:           1,
-    update_course_ecosystem:            2,
-    update_roster:                      3,
-    update_course_active_dates:         4,
-    update_globally_excluded_exercises: 5,
-    update_course_excluded_exercises:   6,
-    create_update_assignment:           7,
-    record_response:                    8
+    no_op:                              -1,
+    create_course:                       0,
+    prepare_course_ecosystem:            1,
+    update_course_ecosystem:             2,
+    update_roster:                       3,
+    update_course_active_dates:          4,
+    update_globally_excluded_exercises:  5,
+    update_course_excluded_exercises:    6,
+    create_update_assignment:            7,
+    record_response:                     8
   }
 
   validates :type,            presence: true
