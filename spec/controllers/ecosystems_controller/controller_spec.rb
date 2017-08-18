@@ -103,16 +103,14 @@ RSpec.describe EcosystemsController, type: :request do
     let(:given_event_types_1)            do
       EcosystemEvent.types.keys.sample(rand(EcosystemEvent.types.size) + 1)
     end
-    let(:given_ecosystem_1_uuid)            { SecureRandom.uuid }
+    let(:given_ecosystem_1_uuid)         { SecureRandom.uuid }
     let(:given_sequence_number_offset_1) { rand(1000000) }
-    let(:given_max_num_events_1)            { rand(10) + 1 }
     let(:given_event_request_1)          do
       {
         request_uuid: given_request_1_uuid,
         event_types: given_event_types_1,
         ecosystem_uuid: given_ecosystem_1_uuid,
-        sequence_number_offset: given_sequence_number_offset_1,
-        max_num_events: given_max_num_events_1
+        sequence_number_offset: given_sequence_number_offset_1
       }
     end
 
@@ -120,16 +118,14 @@ RSpec.describe EcosystemsController, type: :request do
     let(:given_event_types_2)            do
       EcosystemEvent.types.keys.sample(rand(EcosystemEvent.types.size) + 1)
     end
-    let(:given_ecosystem_2_uuid)            { SecureRandom.uuid }
+    let(:given_ecosystem_2_uuid)         { SecureRandom.uuid }
     let(:given_sequence_number_offset_2) { rand(1000000) }
-    let(:given_max_num_events_2)            { rand(10) + 1 }
     let(:given_event_request_2)          do
       {
         request_uuid: given_request_2_uuid,
         event_types: given_event_types_2,
         ecosystem_uuid: given_ecosystem_2_uuid,
-        sequence_number_offset: given_sequence_number_offset_2,
-        max_num_events: given_max_num_events_2
+        sequence_number_offset: given_sequence_number_offset_2
       }
     end
 

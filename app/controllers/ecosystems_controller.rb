@@ -178,7 +178,7 @@ class EcosystemsController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/ecosystem_event_request'},
           'minItems': 0,
-          'maxItems': 10
+          'maxItems': 10000
         }
       },
       'required': ['ecosystem_event_requests'],
@@ -195,14 +195,9 @@ class EcosystemsController < JsonApiController
               'minItems': 1
             },
             'ecosystem_uuid':         {'$ref': '#standard_definitions/uuid'},
-            'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'},
-            'max_num_events': {
-              'type': 'integer',
-              'minimum': 1,
-              'maximum': 10
-            }
+            'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'}
           },
-          'required': ['request_uuid', 'ecosystem_uuid', 'sequence_number_offset', 'max_num_events'],
+          'required': ['request_uuid', 'ecosystem_uuid', 'sequence_number_offset'],
           'additionalProperties': false
         }
       }
@@ -218,7 +213,7 @@ class EcosystemsController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/ecosystem_event_response'},
           'minItems': 0,
-          'maxItems': 100
+          'maxItems': 10000
         },
       },
       'required': ['ecosystem_event_responses'],
@@ -244,7 +239,7 @@ class EcosystemsController < JsonApiController
                 'additionalProperties': false
               },
               'minItems': 0,
-              'maxItems': 1000
+              'maxItems': 10000
             },
             'is_gap': {'type': 'boolean'},
             'is_end': {'type': 'boolean'}
