@@ -4,26 +4,24 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
   MAX_DATA_SIZE = 1000000 # For the data field, in characters
 
   def process(ecosystem_event_requests:)
-    # Return the request_uuid that caused each record to be returned
-    request_uuid_cases = ecosystem_event_requests.map do |request|
-      sequence_number_offset = request.fetch(:sequence_number_offset)
-
-      <<-CASE_SQL.strip_heredoc
-        WHEN "ecosystem_uuid" = #{EcosystemEvent.sanitize(request.fetch(:ecosystem_uuid))}
-          AND "sequence_number" >= #{EcosystemEvent.sanitize(sequence_number_offset)}
-        THEN #{EcosystemEvent.sanitize(request.fetch(:request_uuid))}
-      CASE_SQL
-    end.join(' ')
-
-    ce = EcosystemEvent.arel_table
-    # Build a single query that returns the requested events using OR
-    event_query = ArelTrees.or_tree(
-      ecosystem_event_requests.map do |request|
-        ce[:ecosystem_uuid].eq(request.fetch(:ecosystem_uuid))
-          .and(ce[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
-          .and(ce[:type].in(request.fetch(:event_types)))
-      end
-    )
+    # Using a join on VALUES is faster than multiple OR queries
+    event_values = ecosystem_event_requests.map do |request|
+      "(#{
+        [
+          "#{EcosystemEvent.sanitize(request.fetch(:ecosystem_uuid))}::uuid",
+          EcosystemEvent.sanitize(request.fetch(:sequence_number_offset)),
+          "'{#{EcosystemEvent.types.values_at(*request.fetch(:event_types)).join(',')}}'::int[]",
+          "#{EcosystemEvent.sanitize(request.fetch(:request_uuid))}::uuid"
+        ].join(', ')
+      })"
+    end
+    join_query = <<-JOIN_SQL
+      INNER JOIN (VALUES #{event_values.join(', ')})
+        AS "requests" ("ecosystem_uuid", "sequence_number_offset", "event_types", "request_uuid")
+        ON "ecosystem_events"."ecosystem_uuid" = "requests"."ecosystem_uuid"
+          AND "ecosystem_events"."sequence_number" >= "requests"."sequence_number_offset"
+          AND "ecosystem_events"."type" = ANY ("requests"."event_types")
+    JOIN_SQL
 
     # Also return gap information about each record
     ecosystem_event_sql = EcosystemEvent.select(
@@ -41,11 +39,11 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
           ) THEN TRUE
         ELSE FALSE
         END AS "is_after_gap",
-        CASE #{request_uuid_cases} END AS "request_uuid"
+        "requests"."request_uuid"
       SQL
     )
-    .where(event_query)
-    .order(:ecosystem_uuid, :sequence_number)
+    .joins(join_query)
+    .order('"requests"."request_uuid" ASC', :sequence_number)
     .limit(EVENT_LIMIT)
     .to_sql
 
@@ -70,7 +68,7 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
       end
     end
 
-    is_end = !is_size_limited && num_events < EVENT_LIMIT
+    is_limited = is_size_limited || num_events == EVENT_LIMIT
 
     responses = ecosystem_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -90,16 +88,14 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
         }
       end.compact
 
-      # If we detected a gap, this means we are not sending some EcosystemEvents,
-      # so this is not the end of the sequence
-      # If we didn't detect a gap, then we check if we returned
-      # less than the number of EcosystemEvents requested
+      # If we ran into the event limit or detected a gap, this means we are not sending some
+      # EcosystemEvents, so this is not the end of the sequence
       {
         request_uuid: request_uuid,
         ecosystem_uuid: request.fetch(:ecosystem_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: is_end && !is_gap
+        is_end: !is_limited && !is_gap
       }
     end
 

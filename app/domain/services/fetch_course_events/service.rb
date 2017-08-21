@@ -4,24 +4,24 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
   MAX_DATA_SIZE = 1000000 # For the data field, in characters
 
   def process(course_event_requests:)
-    # Return the request_uuid that caused each record to be returned
-    request_uuid_cases = course_event_requests.map do |request|
-      <<-CASE_SQL.strip_heredoc
-        WHEN "course_uuid" = #{CourseEvent.sanitize(request.fetch(:course_uuid))}
-          AND "sequence_number" >= #{CourseEvent.sanitize(request.fetch(:sequence_number_offset))}
-        THEN #{CourseEvent.sanitize(request.fetch(:request_uuid))}
-      CASE_SQL
-    end.join(' ')
-
-    ce = CourseEvent.arel_table
-    # Build a single query that returns the requested events using OR
-    event_query = ArelTrees.or_tree(
-      course_event_requests.map do |request|
-        ce[:course_uuid].eq(request.fetch(:course_uuid))
-          .and(ce[:sequence_number].gteq(request.fetch(:sequence_number_offset)))
-          .and(ce[:type].in(request.fetch(:event_types)))
-      end
-    )
+    # Using a join on VALUES is faster than multiple OR queries
+    event_values = course_event_requests.map do |request|
+      "(#{
+        [
+          "#{CourseEvent.sanitize(request.fetch(:course_uuid))}::uuid",
+          CourseEvent.sanitize(request.fetch(:sequence_number_offset)),
+          "'{#{CourseEvent.types.values_at(*request.fetch(:event_types)).join(',')}}'::int[]",
+          "#{CourseEvent.sanitize(request.fetch(:request_uuid))}::uuid"
+        ].join(', ')
+      })"
+    end
+    join_query = <<-JOIN_SQL
+      INNER JOIN (VALUES #{event_values.join(', ')})
+        AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
+        ON "course_events"."course_uuid" = "requests"."course_uuid"
+          AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"
+          AND "course_events"."type" = ANY ("requests"."event_types")
+    JOIN_SQL
 
     # Also return gap information about each record
     course_event_sql = CourseEvent.select(
@@ -39,11 +39,11 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
           ) THEN TRUE
         ELSE FALSE
         END AS "is_after_gap",
-        CASE #{request_uuid_cases} END AS "request_uuid"
+        "requests"."request_uuid"
       SQL
     )
-    .where(event_query)
-    .order(:course_uuid, :sequence_number)
+    .joins(join_query)
+    .order('"requests"."request_uuid" ASC', :sequence_number)
     .limit(EVENT_LIMIT)
     .to_sql
 
@@ -68,7 +68,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       end
     end
 
-    is_end = !is_size_limited && num_events < EVENT_LIMIT
+    is_limited = is_size_limited || num_events == EVENT_LIMIT
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -88,16 +88,14 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         }
       end.compact
 
-      # If we detected a gap, this means we are not sending some CourseEvents,
-      # so this is not the end of the sequence
-      # If we didn't detect a gap, then we check if we returned
-      # less than the number of CourseEvents requested
+      # If we ran into the event limit or detected a gap, this means we are not sending some
+      # CourseEvents, so this is not the end of the sequence
       {
         request_uuid: request_uuid,
         course_uuid: request.fetch(:course_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: is_end && !is_gap
+        is_end: !is_limited && !is_gap
       }
     end
 
