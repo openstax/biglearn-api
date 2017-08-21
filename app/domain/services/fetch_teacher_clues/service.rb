@@ -1,20 +1,29 @@
 class Services::FetchTeacherClues::Service < Services::ApplicationService
   def process(teacher_clue_requests:)
-    tc = TeacherClue.arel_table
-    queries = ArelTrees.or_tree(
-      teacher_clue_requests.map do |request|
-        tc[:course_container_uuid].eq(request.fetch(:course_container_uuid)).and(
-          tc[:book_container_uuid].eq(request.fetch(:book_container_uuid)).and(
-            tc[:algorithm_name].eq(request.fetch(:algorithm_name))
-          )
-        )
-      end
-    )
+    return { teacher_clue_responses: [] } if teacher_clue_requests.empty?
+
+    # Using a join on VALUES is faster than multiple OR queries
+    values = teacher_clue_requests.map do |request|
+      "(#{
+        [
+          "#{TeacherClue.sanitize(request.fetch(:course_container_uuid))}::uuid",
+          "#{TeacherClue.sanitize(request.fetch(:book_container_uuid))}::uuid",
+          TeacherClue.sanitize(request.fetch(:algorithm_name))
+        ].join(', ')
+      })"
+    end.join(', ')
+    join_query = <<-JOIN_SQL
+      INNER JOIN (VALUES #{values})
+        AS "requests" ("course_container_uuid", "book_container_uuid", "algorithm_name")
+        ON "teacher_clues"."course_container_uuid" = "requests"."course_container_uuid"
+          AND "teacher_clues"."book_container_uuid" = "requests"."book_container_uuid"
+          AND "teacher_clues"."algorithm_name" = "requests"."algorithm_name"
+    JOIN_SQL
 
     clues_map = Hash.new { |hash, key| hash[key] = {} }
-    TeacherClue.where(queries).each do |clue|
+    TeacherClue.joins(join_query).each do |clue|
       clues_map[clue.course_container_uuid.downcase][clue.book_container_uuid.downcase] = clue
-    end unless queries.nil?
+    end
 
     missing_clue_requests = teacher_clue_requests.reject do |request|
       course_container_uuid = request.fetch(:course_container_uuid).downcase

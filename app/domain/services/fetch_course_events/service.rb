@@ -4,6 +4,8 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
   MAX_DATA_SIZE = 1000000 # For the data field, in characters
 
   def process(course_event_requests:)
+    return { course_event_responses: [] } if course_event_requests.empty?
+
     # Using a join on VALUES is faster than multiple OR queries
     event_values = course_event_requests.map do |request|
       "(#{
@@ -14,9 +16,9 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
           "#{CourseEvent.sanitize(request.fetch(:request_uuid))}::uuid"
         ].join(', ')
       })"
-    end
+    end.join(', ')
     join_query = <<-JOIN_SQL
-      INNER JOIN (VALUES #{event_values.join(', ')})
+      INNER JOIN (VALUES #{event_values})
         AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
         ON "course_events"."course_uuid" = "requests"."course_uuid"
           AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"

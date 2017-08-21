@@ -4,6 +4,8 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
   MAX_DATA_SIZE = 1000000 # For the data field, in characters
 
   def process(ecosystem_event_requests:)
+    return { ecosystem_event_responses: [] } if ecosystem_event_requests.empty?
+
     # Using a join on VALUES is faster than multiple OR queries
     event_values = ecosystem_event_requests.map do |request|
       "(#{

@@ -1,15 +1,25 @@
 class Services::FetchAssignmentSpes::Service < Services::ApplicationService
   def process(spe_requests:)
-    aspe = AssignmentSpe.arel_table
-    queries = ArelTrees.or_tree(
-      spe_requests.map do |request|
-        aspe[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
-          aspe[:algorithm_name].eq(request.fetch(:algorithm_name))
-        )
-      end
-    )
-    assignment_spes_by_assignment_uuid = queries.nil? ?
-      {} : AssignmentSpe.where(queries).index_by { |as| as.assignment_uuid.downcase }
+    return { spe_responses: [] } if spe_requests.empty?
+
+    # Using a join on VALUES is faster than multiple OR queries
+    values = spe_requests.map do |request|
+      "(#{
+        [
+          "#{AssignmentSpe.sanitize(request.fetch(:assignment_uuid))}::uuid",
+          AssignmentSpe.sanitize(request.fetch(:algorithm_name))
+        ].join(', ')
+      })"
+    end.join(', ')
+    join_query = <<-JOIN_SQL
+      INNER JOIN (VALUES #{values}) AS "requests" ("assignment_uuid", "algorithm_name")
+        ON "assignment_spes"."assignment_uuid" = "requests"."assignment_uuid"
+          AND "assignment_spes"."algorithm_name" = "requests"."algorithm_name"
+    JOIN_SQL
+
+    assignment_spes_by_assignment_uuid = AssignmentSpe.joins(join_query).index_by do |ap|
+      ap.assignment_uuid.downcase
+    end
 
     assignment_uuids = spe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_spe_assignment_uuids = assignment_uuids - assignment_spes_by_assignment_uuid.keys
