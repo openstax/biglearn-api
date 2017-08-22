@@ -108,14 +108,26 @@ RSpec.describe CoursesController, type: :request do
   end
 
   context '#fetch_course_metadatas' do
-    let(:courses_count)           { rand(10) + 1 }
+    let(:courses_count)                         { rand(10) + 1        }
+    let(:given_metadata_sequence_number_offset) { rand(courses_count) }
+    let(:given_max_num_metadatas)               { 1000 }
+
+    let(:request_payload)                       do
+      {
+        metadata_sequence_number_offset: given_metadata_sequence_number_offset,
+        max_num_metadatas: given_max_num_metadatas
+      }
+    end
 
     let(:target_result)           do
+      num_courses = courses_count - given_metadata_sequence_number_offset
+
       {
-        course_responses: courses_count.times.map do
+        course_responses: num_courses.times.map do |index|
           {
             uuid: SecureRandom.uuid,
-            initial_ecosystem_uuid: SecureRandom.uuid
+            initial_ecosystem_uuid: SecureRandom.uuid,
+            metadata_sequence_number: index
           }
         end
       }
@@ -134,21 +146,21 @@ RSpec.describe CoursesController, type: :request do
     context "when a valid request is made" do
       it "the response payloads are validated against their schemas" do
         expect_any_instance_of(described_class).to receive(:with_json_apis).and_call_original
-        response_status, response_body = fetch_course_metadatas
+        response_status, response_body = fetch_course_metadatas(request_payload: request_payload)
       end
 
       it "the response has status 200 (success)" do
-        response_status, response_body = fetch_course_metadatas
+        response_status, response_body = fetch_course_metadatas(request_payload: request_payload)
         expect(response_status).to eq(200)
       end
 
       it "the FetchCourseMetadatas service is called with the correct course data" do
-        response_status, response_body = fetch_course_metadatas
+        response_status, response_body = fetch_course_metadatas(request_payload: request_payload)
         expect(service_double).to have_received(:process)
       end
 
       it "the response contains the target_result" do
-        response_status, response_body = fetch_course_metadatas
+        response_status, response_body = fetch_course_metadatas(request_payload: request_payload)
         expect(response_body).to eq(target_result.deep_stringify_keys)
       end
     end
@@ -306,9 +318,11 @@ RSpec.describe CoursesController, type: :request do
     [response_status, response_payload]
   end
 
-  def fetch_course_metadatas
+  def fetch_course_metadatas(request_payload:)
     make_post_request(
-      route: '/fetch_course_metadatas'
+      route: '/fetch_course_metadatas',
+      headers: { 'Content-Type' => 'application/json' },
+      body:  request_payload.to_json
     )
     response_status  = response.status
     response_payload = JSON.parse(response.body)

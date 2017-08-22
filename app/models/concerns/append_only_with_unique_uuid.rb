@@ -1,7 +1,7 @@
 module AppendOnlyWithUniqueUuid
   extend ActiveSupport::Concern
 
-  include HasUniqueUuid
+  include UniqueUuid
 
   def readonly?
     !new_record?

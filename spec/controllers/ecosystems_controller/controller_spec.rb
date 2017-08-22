@@ -53,13 +53,25 @@ RSpec.describe EcosystemsController, type: :request do
   end
 
   context '#fetch_ecosystem_metadatas' do
-    let(:ecosystems_count)      { rand(10) + 1 }
+    let(:ecosystems_count)                      { rand(10) + 1           }
+    let(:given_metadata_sequence_number_offset) { rand(ecosystems_count) }
+    let(:given_max_num_metadatas)               { 1000 }
+
+    let(:request_payload)                       do
+      {
+        metadata_sequence_number_offset: given_metadata_sequence_number_offset,
+        max_num_metadatas: given_max_num_metadatas
+      }
+    end
 
     let(:target_result)         do
+      num_ecosystems = ecosystems_count - given_metadata_sequence_number_offset
+
       {
-        ecosystem_responses: ecosystems_count.times.map do
+        ecosystem_responses: num_ecosystems.times.map do |index|
           {
-            uuid: SecureRandom.uuid
+            uuid: SecureRandom.uuid,
+            metadata_sequence_number: index
           }
         end
       }
@@ -78,21 +90,21 @@ RSpec.describe EcosystemsController, type: :request do
     context "when a valid request is made" do
       it "the response payloads are validated against their schemas" do
         expect_any_instance_of(described_class).to receive(:with_json_apis).and_call_original
-        response_status, response_body = fetch_ecosystem_metadatas
+        response_status, response_body = fetch_ecosystem_metadatas(request_payload: request_payload)
       end
 
       it "the response has status 200 (success)" do
-        response_status, response_body = fetch_ecosystem_metadatas
+        response_status, response_body = fetch_ecosystem_metadatas(request_payload: request_payload)
         expect(response_status).to eq(200)
       end
 
       it "the FetchEcosystemMetadatas service is called with the correct course data" do
-        response_status, response_body = fetch_ecosystem_metadatas
+        response_status, response_body = fetch_ecosystem_metadatas(request_payload: request_payload)
         expect(service_double).to have_received(:process)
       end
 
       it "the response contains the target_result" do
-        response_status, response_body = fetch_ecosystem_metadatas
+        response_status, response_body = fetch_ecosystem_metadatas(request_payload: request_payload)
         expect(response_body).to eq(target_result.deep_stringify_keys)
       end
     end
@@ -238,9 +250,11 @@ RSpec.describe EcosystemsController, type: :request do
     [response_status, response_payload]
   end
 
-  def fetch_ecosystem_metadatas
+  def fetch_ecosystem_metadatas(request_payload:)
     make_post_request(
-      route: '/fetch_ecosystem_metadatas'
+      route: '/fetch_ecosystem_metadatas',
+      headers: { 'Content-Type' => 'application/json' },
+      body:  request_payload.to_json
     )
     response_status  = response.status
     response_payload = JSON.parse(response.body)
