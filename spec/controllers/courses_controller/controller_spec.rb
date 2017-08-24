@@ -186,8 +186,11 @@ RSpec.describe CoursesController, type: :request do
     end
 
     let(:given_event_requests)          { [ given_event_request_1, given_event_request_2 ] }
+    let(:given_max_num_events)          { 1000 }
 
-    let(:request_payload)               { { course_event_requests: given_event_requests } }
+    let(:request_payload)               do
+      { course_event_requests: given_event_requests, max_num_events: given_max_num_events }
+    end
 
     let(:target_event_uuid_1)           { SecureRandom.uuid }
     let(:target_event_type_1)           { CourseEvent.types.keys.sample }

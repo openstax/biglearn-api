@@ -1,9 +1,8 @@
 # This code will not return events with gaps in the sequence_number
 class Services::FetchCourseEvents::Service < Services::ApplicationService
-  EVENT_LIMIT = 10000     # Sent to Postgres as the LIMIT clause
   MAX_DATA_SIZE = 1000000 # For the data field, in characters
 
-  def process(course_event_requests:)
+  def process(course_event_requests:, max_num_events:)
     return { course_event_responses: [] } if course_event_requests.empty?
 
     # Using a join on VALUES is faster than multiple OR queries
@@ -46,7 +45,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     )
     .joins(join_query)
     .order('"requests"."request_uuid" ASC', :sequence_number)
-    .limit(EVENT_LIMIT)
+    .limit(max_num_events)
     .to_sql
 
     # Stream the data from Postgres and stop when the size limit is exceeded
@@ -70,7 +69,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       end
     end
 
-    is_limited = is_size_limited || num_events == EVENT_LIMIT
+    is_limited = is_size_limited || num_events >= max_num_events
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)

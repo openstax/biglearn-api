@@ -34,13 +34,16 @@ RSpec.describe Services::FetchCourseEvents::Service, type: :service do
   end
 
   let(:given_course_event_requests)    { [ given_event_request_1, given_event_request_2 ] }
-
   let(:requests_by_request_uuid)       do
     given_course_event_requests.index_by{ |request| request.fetch(:request_uuid) }
   end
+  let(:given_max_num_events)           { 1000 }
 
   let(:action)                         do
-    service.process(course_event_requests: given_course_event_requests)
+    service.process(
+      course_event_requests: given_course_event_requests,
+      max_num_events: given_max_num_events
+    )
   end
 
   let!(:target_event_1)                do
