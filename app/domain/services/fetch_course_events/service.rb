@@ -5,19 +5,16 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
   def process(course_event_requests:, max_num_events:)
     return { course_event_responses: [] } if course_event_requests.empty?
 
-    # Using a join on VALUES is faster than multiple OR queries
-    event_values = course_event_requests.map do |request|
-      "(#{
-        [
-          "#{CourseEvent.sanitize(request.fetch(:course_uuid))}::uuid",
-          CourseEvent.sanitize(request.fetch(:sequence_number_offset)),
-          "'{#{CourseEvent.types.values_at(*request.fetch(:event_types)).join(',')}}'::int[]",
-          "#{CourseEvent.sanitize(request.fetch(:request_uuid))}::uuid"
-        ].join(', ')
-      })"
-    end.join(', ')
-    join_query = <<-JOIN_SQL
-      INNER JOIN (VALUES #{event_values})
+    course_event_values_array = course_event_requests.map do |request|
+      [
+        request.fetch(:course_uuid),
+        request.fetch(:sequence_number_offset),
+        CourseEvent.types.values_at(*request.fetch(:event_types)),
+        request.fetch(:request_uuid)
+      ]
+    end
+    course_event_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(course_event_values_array)})
         AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
         ON "course_events"."course_uuid" = "requests"."course_uuid"
           AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"
@@ -43,7 +40,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         "requests"."request_uuid"
       SQL
     )
-    .joins(join_query)
+    .joins(course_event_join_query)
     .order('"requests"."request_uuid" ASC', :sequence_number)
     .limit(max_num_events)
     .to_sql

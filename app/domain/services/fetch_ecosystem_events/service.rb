@@ -5,19 +5,16 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
   def process(ecosystem_event_requests:, max_num_events:)
     return { ecosystem_event_responses: [] } if ecosystem_event_requests.empty?
 
-    # Using a join on VALUES is faster than multiple OR queries
-    event_values = ecosystem_event_requests.map do |request|
-      "(#{
-        [
-          "#{EcosystemEvent.sanitize(request.fetch(:ecosystem_uuid))}::uuid",
-          EcosystemEvent.sanitize(request.fetch(:sequence_number_offset)),
-          "'{#{EcosystemEvent.types.values_at(*request.fetch(:event_types)).join(',')}}'::int[]",
-          "#{EcosystemEvent.sanitize(request.fetch(:request_uuid))}::uuid"
-        ].join(', ')
-      })"
+    ecosystem_event_values_array = ecosystem_event_requests.map do |request|
+      [
+        request.fetch(:ecosystem_uuid),
+        request.fetch(:sequence_number_offset),
+        EcosystemEvent.types.values_at(*request.fetch(:event_types)),
+        request.fetch(:request_uuid)
+      ]
     end
-    join_query = <<-JOIN_SQL
-      INNER JOIN (VALUES #{event_values.join(', ')})
+    ecosystem_event_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(ecosystem_event_values_array)})
         AS "requests" ("ecosystem_uuid", "sequence_number_offset", "event_types", "request_uuid")
         ON "ecosystem_events"."ecosystem_uuid" = "requests"."ecosystem_uuid"
           AND "ecosystem_events"."sequence_number" >= "requests"."sequence_number_offset"
@@ -43,7 +40,7 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
         "requests"."request_uuid"
       SQL
     )
-    .joins(join_query)
+    .joins(ecosystem_event_join_query)
     .order('"requests"."request_uuid" ASC', :sequence_number)
     .limit(max_num_events)
     .to_sql

@@ -2,22 +2,17 @@ class Services::FetchPracticeWorstAreasExercises::Service < Services::Applicatio
   def process(worst_areas_requests:)
     return { worst_areas_responses: [] } if worst_areas_requests.empty?
 
-    # Using a join on VALUES is faster than multiple OR queries
-    values = worst_areas_requests.map do |request|
-      "(#{
-        [
-          "#{StudentPe.sanitize(request.fetch(:student_uuid))}::uuid",
-          StudentPe.sanitize(request.fetch(:algorithm_name))
-        ].join(', ')
-      })"
-    end.join(', ')
-    join_query = <<-JOIN_SQL
-      INNER JOIN (VALUES #{values}) AS "requests" ("student_uuid", "algorithm_name")
+    student_pe_values_array = worst_areas_requests.map do |request|
+      request.values_at(:student_uuid, :algorithm_name)
+    end
+    student_pe_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(student_pe_values_array)})
+        AS "requests" ("student_uuid", "algorithm_name")
         ON "student_pes"."student_uuid" = "requests"."student_uuid"
           AND "student_pes"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 
-    student_pes_by_student_uuid = StudentPe.joins(join_query).index_by do |sp|
+    student_pes_by_student_uuid = StudentPe.joins(student_pe_join_query).index_by do |sp|
       sp.student_uuid.downcase
     end
 

@@ -2,22 +2,17 @@ class Services::FetchAssignmentPes::Service < Services::ApplicationService
   def process(pe_requests:)
     return { pe_responses: [] } if pe_requests.empty?
 
-    # Using a join on VALUES is faster than multiple OR queries
-    values = pe_requests.map do |request|
-      "(#{
-        [
-          "#{AssignmentPe.sanitize(request.fetch(:assignment_uuid))}::uuid",
-          AssignmentPe.sanitize(request.fetch(:algorithm_name))
-        ].join(', ')
-      })"
-    end.join(', ')
-    join_query = <<-JOIN_SQL
-      INNER JOIN (VALUES #{values}) AS "requests" ("assignment_uuid", "algorithm_name")
+    pe_values_array = pe_requests.map do |request|
+      request.values_at(:assignment_uuid, :algorithm_name)
+    end
+    pe_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(pe_values_array)})
+        AS "requests" ("assignment_uuid", "algorithm_name")
         ON "assignment_pes"."assignment_uuid" = "requests"."assignment_uuid"
           AND "assignment_pes"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 
-    assignment_pes_by_assignment_uuid = AssignmentPe.joins(join_query).index_by do |ap|
+    assignment_pes_by_assignment_uuid = AssignmentPe.joins(pe_join_query).index_by do |ap|
       ap.assignment_uuid.downcase
     end
 
