@@ -1,16 +1,20 @@
 class Services::FetchPracticeWorstAreasExercises::Service < Services::ApplicationService
   def process(worst_areas_requests:)
-    spe = StudentPe.arel_table
-    queries = ArelTrees.or_tree(
-      worst_areas_requests.map do |request|
-        spe[:student_uuid].eq(request.fetch(:student_uuid)).and(
-          spe[:algorithm_name].eq(request.fetch(:algorithm_name))
-        )
-      end
-    )
+    return { worst_areas_responses: [] } if worst_areas_requests.empty?
 
-    student_pes_by_student_uuid = queries.nil? ?
-      {} : StudentPe.where(queries).index_by { |sp| sp.student_uuid.downcase }
+    student_pe_values_array = worst_areas_requests.map do |request|
+      request.values_at(:student_uuid, :algorithm_name)
+    end
+    student_pe_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(student_pe_values_array)})
+        AS "requests" ("student_uuid", "algorithm_name")
+        ON "student_pes"."student_uuid" = "requests"."student_uuid"
+          AND "student_pes"."algorithm_name" = "requests"."algorithm_name"
+    JOIN_SQL
+
+    student_pes_by_student_uuid = StudentPe.joins(student_pe_join_query).index_by do |sp|
+      sp.student_uuid.downcase
+    end
 
     student_uuids = worst_areas_requests.map { |request| request.fetch(:student_uuid).downcase }
     missing_pe_student_uuids = student_uuids - student_pes_by_student_uuid.keys

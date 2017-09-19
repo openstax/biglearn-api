@@ -153,10 +153,15 @@ class CoursesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/course_event_request'},
           'minItems': 0,
-          'maxItems': 100
+          'maxItems': 1000
+        },
+        'max_num_events': {
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000
         }
       },
-      'required': ['course_event_requests'],
+      'required': ['course_event_requests', 'max_num_events'],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions,
       'definitions': {
@@ -170,14 +175,9 @@ class CoursesController < JsonApiController
               'minItems': 1
             },
             'course_uuid': {'$ref': '#standard_definitions/uuid'},
-            'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'},
-            'max_num_events': {
-              'type': 'integer',
-              'minimum': 1,
-              'maximum': 100
-            }
+            'sequence_number_offset': {'$ref': '#standard_definitions/non_negative_integer'}
           },
-          'required': ['request_uuid', 'course_uuid', 'sequence_number_offset', 'max_num_events'],
+          'required': ['request_uuid', 'course_uuid', 'sequence_number_offset'],
           'additionalProperties': false
         }
       }
@@ -193,8 +193,8 @@ class CoursesController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/course_event_response'},
           'minItems': 0,
-          'maxItems': 100
-        },
+          'maxItems': 1000
+        }
       },
       'required': ['course_event_responses'],
       'additionalProperties': false,

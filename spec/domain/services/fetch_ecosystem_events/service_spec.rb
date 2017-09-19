@@ -7,14 +7,12 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   let(:given_event_types_1)            { EcosystemEvent.types.keys.sample(1) }
   let(:given_ecosystem_1_uuid)         { SecureRandom.uuid }
   let(:given_sequence_number_offset_1) { 0 }
-  let(:given_max_num_events_1)         { rand(1000) + 1 }
   let(:given_event_request_1)          do
     {
       request_uuid: given_request_1_uuid,
       event_types: given_event_types_1,
       ecosystem_uuid: given_ecosystem_1_uuid,
-      sequence_number_offset: given_sequence_number_offset_1,
-      max_num_events: given_max_num_events_1
+      sequence_number_offset: given_sequence_number_offset_1
     }
   end
 
@@ -22,25 +20,26 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   let(:given_event_types_2)            { EcosystemEvent.types.keys.sample(1) }
   let(:given_ecosystem_2_uuid)         { SecureRandom.uuid }
   let(:given_sequence_number_offset_2) { 0 }
-  let(:given_max_num_events_2)         { rand(1000) + 1 }
   let(:given_event_request_2)          do
     {
       request_uuid: given_request_2_uuid,
       event_types: given_event_types_2,
       ecosystem_uuid: given_ecosystem_2_uuid,
-      sequence_number_offset: given_sequence_number_offset_2,
-      max_num_events: given_max_num_events_2
+      sequence_number_offset: given_sequence_number_offset_2
     }
   end
 
   let(:given_ecosystem_event_requests) { [ given_event_request_1, given_event_request_2 ] }
-
   let(:requests_by_request_uuid)       do
     given_ecosystem_event_requests.index_by{ |request| request.fetch(:request_uuid) }
   end
+  let(:given_max_num_events)           { 1000 }
 
   let(:action)                         do
-    service.process(ecosystem_event_requests: given_ecosystem_event_requests)
+    service.process(
+      ecosystem_event_requests: given_ecosystem_event_requests,
+      max_num_events: given_max_num_events
+    )
   end
 
   let!(:target_event_1)                do

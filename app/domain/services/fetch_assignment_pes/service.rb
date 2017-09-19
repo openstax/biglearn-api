@@ -1,15 +1,20 @@
 class Services::FetchAssignmentPes::Service < Services::ApplicationService
   def process(pe_requests:)
-    ape = AssignmentPe.arel_table
-    queries = ArelTrees.or_tree(
-      pe_requests.map do |request|
-        ape[:assignment_uuid].eq(request.fetch(:assignment_uuid)).and(
-          ape[:algorithm_name].eq(request.fetch(:algorithm_name))
-        )
-      end
-    )
-    assignment_pes_by_assignment_uuid = queries.nil? ?
-      {} : AssignmentPe.where(queries).index_by { |ap| ap.assignment_uuid.downcase }
+    return { pe_responses: [] } if pe_requests.empty?
+
+    pe_values_array = pe_requests.map do |request|
+      request.values_at(:assignment_uuid, :algorithm_name)
+    end
+    pe_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(pe_values_array)})
+        AS "requests" ("assignment_uuid", "algorithm_name")
+        ON "assignment_pes"."assignment_uuid" = "requests"."assignment_uuid"
+          AND "assignment_pes"."algorithm_name" = "requests"."algorithm_name"
+    JOIN_SQL
+
+    assignment_pes_by_assignment_uuid = AssignmentPe.joins(pe_join_query).index_by do |ap|
+      ap.assignment_uuid.downcase
+    end
 
     assignment_uuids = pe_requests.map { |request| request.fetch(:assignment_uuid).downcase }
     missing_pe_assignment_uuids = assignment_uuids - assignment_pes_by_assignment_uuid.keys

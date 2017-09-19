@@ -161,14 +161,12 @@ RSpec.describe CoursesController, type: :request do
     end
     let(:given_course_1_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_1) { rand(1000000) }
-    let(:given_max_num_events_1)            { rand(100) + 1 }
     let(:given_event_request_1)          do
       {
         request_uuid: given_request_1_uuid,
         event_types: given_event_types_1,
         course_uuid: given_course_1_uuid,
-        sequence_number_offset: given_sequence_number_offset_1,
-        max_num_events: given_max_num_events_1
+        sequence_number_offset: given_sequence_number_offset_1
       }
     end
 
@@ -178,20 +176,21 @@ RSpec.describe CoursesController, type: :request do
     end
     let(:given_course_2_uuid)            { SecureRandom.uuid }
     let(:given_sequence_number_offset_2) { rand(1000000) }
-    let(:given_max_num_events_2)            { rand(100) + 1 }
     let(:given_event_request_2)          do
       {
         request_uuid: given_request_2_uuid,
         event_types: given_event_types_2,
         course_uuid: given_course_2_uuid,
-        sequence_number_offset: given_sequence_number_offset_2,
-        max_num_events: given_max_num_events_2
+        sequence_number_offset: given_sequence_number_offset_2
       }
     end
 
     let(:given_event_requests)          { [ given_event_request_1, given_event_request_2 ] }
+    let(:given_max_num_events)          { 1000 }
 
-    let(:request_payload)               { { course_event_requests: given_event_requests } }
+    let(:request_payload)               do
+      { course_event_requests: given_event_requests, max_num_events: given_max_num_events }
+    end
 
     let(:target_event_uuid_1)           { SecureRandom.uuid }
     let(:target_event_type_1)           { CourseEvent.types.keys.sample }

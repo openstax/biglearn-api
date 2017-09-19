@@ -1,20 +1,22 @@
 class Services::FetchStudentClues::Service < Services::ApplicationService
   def process(student_clue_requests:)
-    sc = StudentClue.arel_table
-    queries = ArelTrees.or_tree(
-      student_clue_requests.map do |request|
-        sc[:student_uuid].eq(request.fetch(:student_uuid)).and(
-          sc[:book_container_uuid].eq(request.fetch(:book_container_uuid)).and(
-            sc[:algorithm_name].eq(request.fetch(:algorithm_name))
-          )
-        )
-      end
-    )
+    return { student_clue_responses: [] } if student_clue_requests.empty?
+
+    student_clue_values_array = student_clue_requests.map do |request|
+      request.values_at(:student_uuid, :book_container_uuid, :algorithm_name)
+    end
+    student_clue_join_query = <<-JOIN_SQL
+      INNER JOIN (#{ValuesTable.new(student_clue_values_array)})
+        AS "requests" ("student_uuid", "book_container_uuid", "algorithm_name")
+        ON "student_clues"."student_uuid" = "requests"."student_uuid"
+          AND "student_clues"."book_container_uuid" = "requests"."book_container_uuid"
+          AND "student_clues"."algorithm_name" = "requests"."algorithm_name"
+    JOIN_SQL
 
     clues_map = Hash.new { |hash, key| hash[key] = {} }
-    StudentClue.where(queries).each do |clue|
+    StudentClue.joins(student_clue_join_query).each do |clue|
       clues_map[clue.student_uuid.downcase][clue.book_container_uuid.downcase] = clue
-    end unless queries.nil?
+    end
 
     missing_clue_requests = student_clue_requests.reject do |request|
       clues_map[request.fetch(:student_uuid).downcase][request.fetch(:book_container_uuid).downcase]
