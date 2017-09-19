@@ -49,24 +49,28 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
     connection = EcosystemEvent.connection.raw_connection
     decoder = PG::TextDecoder::CopyRow.new
     data_size = 0
-    is_size_limited = false
     num_events = 0
     ecosystem_events_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
+    is_limited_by_request_uuid = {}
     connection.copy_data "COPY (#{ecosystem_event_sql}) TO STDOUT", decoder do
-      while row = connection.get_copy_data
+      last_row = nil
+      while current_row = connection.get_copy_data
         if data_size >= MAX_DATA_SIZE
-          is_size_limited = true
+          is_limited_by_request_uuid[current_row[5]] = true
 
           next
+        elsif last_row.present? && last_row[5] != current_row[5]
+          is_limited_by_request_uuid[last_row[5]] = false
         end
 
         num_events += 1
-        data_size += row.fourth.size
-        ecosystem_events_by_request_uuid[row[5]] << row
+        data_size += current_row.fourth.size
+        ecosystem_events_by_request_uuid[current_row[5]] << current_row
+        last_row = current_row
       end
     end
 
-    is_limited = is_size_limited || num_events >= max_num_events
+    is_event_limited = num_events >= max_num_events
 
     responses = ecosystem_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -93,7 +97,7 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
         ecosystem_uuid: request.fetch(:ecosystem_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: !is_limited && !is_gap
+        is_end: !is_gap && !is_limited_by_request_uuid.fetch(request_uuid, is_event_limited)
       }
     end
 
