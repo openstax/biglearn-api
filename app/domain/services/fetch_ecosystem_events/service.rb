@@ -51,26 +51,34 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
     data_size = 0
     num_events = 0
     ecosystem_events_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
-    is_limited_by_request_uuid = {}
+    is_complete_by_request_uuid = {} # defaults to the value of is_event_limited below
     connection.copy_data "COPY (#{ecosystem_event_sql}) TO STDOUT", decoder do
-      last_row = nil
-      while current_row = connection.get_copy_data
+      last_request_uuid = nil
+      while row = connection.get_copy_data
+        request_uuid = row[5]
+        num_events += 1
+
         if data_size >= MAX_DATA_SIZE
-          is_limited_by_request_uuid[current_row[5]] = true
+          # An event was ignored because the request size was exceeded
+          # We know that the current request_uuid is incomplete
+          is_complete_by_request_uuid[request_uuid] = false
 
           next
-        elsif last_row.present? && last_row[5] != current_row[5]
-          is_limited_by_request_uuid[last_row[5]] = false
+        elsif last_request_uuid.present? && last_request_uuid != request_uuid
+          # The request_uuid changed
+          # Because of the SQL order clause, we know that the last_request_uuid is complete
+          is_complete_by_request_uuid[last_request_uuid] = true
         end
 
-        num_events += 1
-        data_size += current_row.fourth.size
-        ecosystem_events_by_request_uuid[current_row[5]] << current_row
-        last_row = current_row
+        data_size += row.fourth.size
+        ecosystem_events_by_request_uuid[request_uuid] << row
+        last_request_uuid = request_uuid
       end
     end
 
-    is_event_limited = num_events >= max_num_events
+    # Whether or not the SQL limit clause took effect
+    # Any missing entries in is_complete_by_request_uuid are set to the opposite of this value
+    is_event_limited = num_events == max_num_events
 
     responses = ecosystem_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -97,7 +105,7 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
         ecosystem_uuid: request.fetch(:ecosystem_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: !is_gap && !is_limited_by_request_uuid.fetch(request_uuid, is_event_limited)
+        is_end: !is_gap && is_complete_by_request_uuid.fetch(request_uuid, !is_event_limited)
       }
     end
 
