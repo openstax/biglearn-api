@@ -51,34 +51,22 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     data_size = 0
     num_events = 0
     course_events_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
-    is_complete_by_request_uuid = {} # defaults to the value of is_event_limited below
+    last_processed_request_uuid = nil
     connection.copy_data "COPY (#{course_event_sql}) TO STDOUT", decoder do
-      last_request_uuid = nil
       while row = connection.get_copy_data
         request_uuid = row[5]
         num_events += 1
 
-        if data_size >= MAX_DATA_SIZE
-          # An event was ignored because the request size was exceeded
-          # We know that the current request_uuid is incomplete
-          is_complete_by_request_uuid[request_uuid] = false
+        next if data_size >= MAX_DATA_SIZE
 
-          next
-        elsif last_request_uuid.present? && last_request_uuid != request_uuid
-          # The request_uuid changed
-          # Because of the SQL order clause, we know that the last_request_uuid is complete
-          is_complete_by_request_uuid[last_request_uuid] = true
-        end
-
+        last_processed_request_uuid = request_uuid
         data_size += row.fourth.size
         course_events_by_request_uuid[request_uuid] << row
-        last_request_uuid = request_uuid
       end
     end
 
-    # Whether or not the SQL limit clause took effect
-    # Any missing entries in is_complete_by_request_uuid are set to the opposite of this value
-    is_event_limited = num_events == max_num_events
+    # If we didn't hit either the size of the event number limit, then all requests were completed
+    all_requests_completed = data_size < MAX_DATA_SIZE && num_events < max_num_events
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -98,6 +86,10 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         }
       end.compact
 
+      # If all requests were completed, any requests without a gap reached the end
+      # Otherwise, only requests that sort before the last_processed_request_uuid reached the end
+      is_end = !is_gap && (all_requests_completed || request_uuid < last_processed_request_uuid)
+
       # If we ran into the event limit or detected a gap, this means we are not sending some
       # CourseEvents, so this is not the end of the sequence
       {
@@ -105,7 +97,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         course_uuid: request.fetch(:course_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: !is_gap && is_complete_by_request_uuid.fetch(request_uuid, !is_event_limited)
+        is_end: is_end
       }
     end
 
