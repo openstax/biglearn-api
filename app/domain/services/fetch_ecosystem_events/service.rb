@@ -90,8 +90,6 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
       # Otherwise, only requests that sort before the last_processed_request_uuid reached the end
       is_end = !is_gap && (all_requests_completed || request_uuid < last_processed_request_uuid)
 
-      # If we ran into the event limit or detected a gap, this means we are not sending some
-      # EcosystemEvents, so this is not the end of the sequence
       {
         request_uuid: request_uuid,
         ecosystem_uuid: request.fetch(:ecosystem_uuid),
