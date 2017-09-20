@@ -49,24 +49,24 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     connection = CourseEvent.connection.raw_connection
     decoder = PG::TextDecoder::CopyRow.new
     data_size = 0
-    is_size_limited = false
     num_events = 0
     course_events_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
+    last_processed_request_uuid = nil
     connection.copy_data "COPY (#{course_event_sql}) TO STDOUT", decoder do
       while row = connection.get_copy_data
-        if data_size >= MAX_DATA_SIZE
-          is_size_limited = true
-
-          next
-        end
-
+        request_uuid = row[5]
         num_events += 1
+
+        next if data_size >= MAX_DATA_SIZE
+
+        last_processed_request_uuid = request_uuid
         data_size += row.fourth.size
-        course_events_by_request_uuid[row[5]] << row
+        course_events_by_request_uuid[request_uuid] << row
       end
     end
 
-    is_limited = is_size_limited || num_events >= max_num_events
+    # If we didn't hit either the size of the event number limit, then all requests were completed
+    all_requests_completed = data_size < MAX_DATA_SIZE && num_events < max_num_events
 
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
@@ -86,14 +86,16 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
         }
       end.compact
 
-      # If we ran into the event limit or detected a gap, this means we are not sending some
-      # CourseEvents, so this is not the end of the sequence
+      # If all requests were completed, any requests without a gap reached the end
+      # Otherwise, only requests that sort before the last_processed_request_uuid reached the end
+      is_end = !is_gap && (all_requests_completed || request_uuid < last_processed_request_uuid)
+
       {
         request_uuid: request_uuid,
         course_uuid: request.fetch(:course_uuid),
         events: event_hashes,
         is_gap: is_gap,
-        is_end: !is_limited && !is_gap
+        is_end: is_end
       }
     end
 
