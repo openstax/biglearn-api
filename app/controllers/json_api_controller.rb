@@ -3,7 +3,7 @@ require 'json-schema'
 class JsonApiController < ApplicationController
   API_TOKEN_HEADER = 'Biglearn-Api-Token'
   API_TOKEN = Rails.application.secrets.openstax['biglearn']['api']['token']
-  VALIDATE_JSON = true
+  VALIDATE_JSON = false
 
   # Skip verifying the CSRF token
   skip_before_action :verify_authenticity_token
