@@ -14,7 +14,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
       ]
     end
     course_event_join_query = <<-JOIN_SQL
-      INNER JOIN (#{ValuesTable.new(course_event_values_array)})
+      RIGHT OUTER JOIN (#{ValuesTable.new(course_event_values_array)})
         AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
         ON "course_events"."course_uuid" = "requests"."course_uuid"
           AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"
@@ -37,65 +37,75 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
           ) THEN TRUE
         ELSE FALSE
         END AS "is_after_gap",
+        CASE WHEN NOT EXISTS (
+          SELECT "next_events".*
+          FROM "course_events" AS "next_events"
+          WHERE "next_events"."course_uuid" = "course_events"."course_uuid"
+            AND "next_events"."sequence_number" > "course_events"."sequence_number"
+            AND "next_events"."type" = ANY ("requests"."event_types")
+        ) THEN TRUE
+        ELSE FALSE
+        END AS "is_end",
         "requests"."request_uuid"
       SQL
     )
     .joins(course_event_join_query)
-    .order('"requests"."request_uuid" ASC', :sequence_number)
+    .order(
+      '"course_events"."sequence_number" - "requests"."sequence_number_offset" ASC NULLS FIRST'
+    )
     .limit(max_num_events)
     .to_sql
 
     # Stream the data from Postgres and stop when the size limit is exceeded
     connection = CourseEvent.connection.raw_connection
     decoder = PG::TextDecoder::CopyRow.new
-    data_size = 0
-    num_events = 0
-    course_events_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
-    last_processed_request_uuid = nil
+    total_data_size = 0
+    rows_by_request_uuid = Hash.new { |hash, key| hash[key] = [] }
     connection.copy_data "COPY (#{course_event_sql}) TO STDOUT", decoder do
       while row = connection.get_copy_data
-        request_uuid = row[5]
-        num_events += 1
+        data_size = row.fourth.nil? ? 0 : row.fourth.size
+        next if data_size > 0 && total_data_size >= MAX_DATA_SIZE
 
-        next if data_size >= MAX_DATA_SIZE
-
-        last_processed_request_uuid = request_uuid
-        data_size += row.fourth.size
-        course_events_by_request_uuid[request_uuid] << row
+        total_data_size += data_size
+        request_uuid = row[6]
+        rows_by_request_uuid[request_uuid] << row
       end
     end
 
-    # If we didn't hit either the size of the event number limit, then all requests were completed
-    all_requests_completed = data_size < MAX_DATA_SIZE && num_events < max_num_events
-
     responses = course_event_requests.map do |request|
       request_uuid = request.fetch(:request_uuid)
+      course_uuid = request.fetch(:course_uuid)
 
-      course_events = course_events_by_request_uuid[request_uuid] || []
+      # Limit reached before the first row for this request could be processed
+      next {
+        request_uuid: request_uuid,
+        course_uuid: course_uuid,
+        events: [],
+        is_gap: false,
+        is_end: false
+      } if !rows_by_request_uuid.has_key?(request_uuid)
+
       is_gap = false
-      event_hashes = course_events.map do |event|
-        is_gap = true if event.fifth == 't'
+      rows = rows_by_request_uuid[request_uuid]
+      event_hashes = rows.map do |row|
+        is_gap = true if row.fifth == 't'
 
-        next if is_gap
+        next if is_gap || row.fourth.nil?
 
         {
-          sequence_number: event.first.to_i,
-          event_uuid: event.second,
-          event_type: CourseEvent.types.key(event.third.to_i),
-          event_data: JSON.parse(event.fourth)
+          sequence_number: row.first.to_i,
+          event_uuid: row.second,
+          event_type: CourseEvent.types.key(row.third.to_i),
+          event_data: JSON.parse(row.fourth)
         }
       end.compact
 
-      # If all requests were completed, any requests without a gap reached the end
-      # Otherwise, only requests that sort before the last_processed_request_uuid reached the end
-      is_end = !is_gap && (all_requests_completed || request_uuid < last_processed_request_uuid)
-
       {
         request_uuid: request_uuid,
-        course_uuid: request.fetch(:course_uuid),
+        course_uuid: course_uuid,
         events: event_hashes,
         is_gap: is_gap,
-        is_end: is_end
+        is_end: !is_gap && rows.last[5] == 't'
       }
     end
 
