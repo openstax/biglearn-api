@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170721222943) do
+ActiveRecord::Schema.define(version: 20170927202945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,7 +72,7 @@ ActiveRecord::Schema.define(version: 20170721222943) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.index ["course_uuid", "sequence_number"], name: "index_course_events_on_course_uuid_and_sequence_number", unique: true, using: :btree
-    t.index ["type", "course_uuid"], name: "index_course_events_on_type_and_course_uuid", using: :btree
+    t.index ["type", "course_uuid", "sequence_number"], name: "index_course_events_on_type_and_c_uuid_and_sequence_number", unique: true, using: :btree
     t.index ["uuid"], name: "index_course_events_on_uuid", unique: true, using: :btree
   end
 
@@ -85,7 +85,7 @@ ActiveRecord::Schema.define(version: 20170721222943) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.index ["ecosystem_uuid", "sequence_number"], name: "index_ecosystem_events_on_ecosystem_uuid_and_sequence_number", unique: true, using: :btree
-    t.index ["type", "ecosystem_uuid"], name: "index_ecosystem_events_on_type_and_ecosystem_uuid", using: :btree
+    t.index ["type", "ecosystem_uuid", "sequence_number"], name: "index_ecosystem_events_on_type_and_e_uuid_and_sequence_number", unique: true, using: :btree
     t.index ["uuid"], name: "index_ecosystem_events_on_uuid", unique: true, using: :btree
   end
 
