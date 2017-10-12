@@ -54,6 +54,9 @@ gem 'oj_mimic_json'
 # Silence logs for certain actions
 gem 'silencer'
 
+# Send dev emails on exceptions
+gem 'openstax_rescue_from'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
@@ -90,4 +93,8 @@ group :test do
 
   # Convenience matchers for specs
   gem 'shoulda-matchers'
+end
+
+group :production do
+  gem 'aws-ses', require: 'aws/ses'
 end
