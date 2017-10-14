@@ -130,7 +130,7 @@ GEM
       shellany (~> 0.0)
     oj (2.18.5)
     oj_mimic_json (1.0.1)
-    openstax_rescue_from (2.0.1)
+    openstax_rescue_from (2.1.0)
       exception_notification (>= 4.1, < 5.0)
       rails (>= 3.1, < 6.0)
     pg (0.20.0)
@@ -275,7 +275,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   oj
   oj_mimic_json
-  openstax_rescue_from
+  openstax_rescue_from (~> 2.1.0)
   pg
   rails (~> 5.0.2)
   rails-erd
@@ -295,4 +295,4 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 BUNDLED WITH
-   1.14.6
+   1.15.4
