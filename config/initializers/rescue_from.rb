@@ -1,9 +1,10 @@
-exception_secrets = Rails.application.secrets.exception
+secrets = Rails.application.secrets
+exception_secrets = secrets.exception
 OpenStax::RescueFrom.configure do |config|
   config.raise_exceptions = Rails.application.config.consider_all_requests_local
 
   config.app_name = 'Biglearn-API'
-  config.app_env = exception_secrets['environment_name']
+  config.app_env = secrets.environment_name
   config.contact_name = exception_secrets['contact_name']
   config.sender_address = exception_secrets['sender']
   config.exception_recipients = exception_secrets['recipients']
