@@ -10,7 +10,10 @@ class ValuesTable
   end
 
   def to_sql
+    raise 'ValuesTable cannot be given an empty array' if values_array.empty?
+
     "VALUES #{values_array.map do |values|
+      raise 'ValuesTable cannot be given an array containing empty arrays' if values.empty?
       next if values.any? { |value| value.is_a?(Array) && value.empty? }
 
       "(#{values.map { |value| sanitize value }.join(', ')})"
