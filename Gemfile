@@ -57,6 +57,9 @@ gem 'silencer'
 # Send dev emails on exceptions
 gem 'openstax_rescue_from', '~> 2.1.0'
 
+# Real time application monitoring
+gem 'scout_apm', '~> 3.0.x'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
