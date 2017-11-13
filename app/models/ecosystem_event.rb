@@ -1,7 +1,8 @@
 class EcosystemEvent < ApplicationRecord
   self.inheritance_column = nil
 
-  include AppendOnlyWithUniqueUuid
+  include NotifyingAppendOnlyWithUniqueUuid
+  self.notify_payload_method = :ecosystem_uuid
 
   enum type: {
     no_op:            -1,
