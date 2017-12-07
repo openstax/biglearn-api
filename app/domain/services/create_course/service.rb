@@ -1,6 +1,5 @@
 class Services::CreateCourse::Service < Services::ApplicationService
   def process(course_uuid:, ecosystem_uuid:, is_real_course:, starts_at:, ends_at:, created_at:)
-
     CourseEvent.append(
       uuid: course_uuid,
       type: :create_course,

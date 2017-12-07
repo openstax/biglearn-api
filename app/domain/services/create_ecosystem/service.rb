@@ -1,6 +1,5 @@
 class Services::CreateEcosystem::Service < Services::ApplicationService
   def process(ecosystem_uuid:, book:, exercises:, imported_at:)
-
     book_container_attributes = book.fetch(:contents).map do |content|
       { uuid: content.fetch(:container_uuid), ecosystem_uuid: ecosystem_uuid }
     end
@@ -24,6 +23,5 @@ class Services::CreateEcosystem::Service < Services::ApplicationService
     end
 
     { created_ecosystem_uuid: ecosystem_uuid }
-
   end
 end
