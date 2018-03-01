@@ -17,6 +17,8 @@ class CoursesController < JsonApiController
   end
 
   def fetch_metadatas
+    ScoutApm::RequestManager.lookup.ignore_request!
+
     respond_with_json_apis_and_service(
       output_schema: _fetch_metadatas_response_payload_schema,
       service: Services::FetchCourseMetadatas::Service
@@ -24,6 +26,8 @@ class CoursesController < JsonApiController
   end
 
   def fetch_events
+    ScoutApm::RequestManager.lookup.ignore_request!
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_events_request_payload_schema,
       output_schema: _fetch_events_response_payload_schema,
