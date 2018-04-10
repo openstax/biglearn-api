@@ -54,8 +54,11 @@ gem 'oj_mimic_json'
 # Silence logs for certain actions
 gem 'silencer'
 
-# Send dev emails on exceptions
-gem 'openstax_rescue_from', '~> 2.1.0'
+# Notify developers of Exceptions in production
+gem 'openstax_rescue_from', '~> 3.0.0'
+
+# Sentry integration (the require disables automatic Rails integration since we use rescue_from)
+gem 'sentry-raven', require: 'raven/base'
 
 # Real time application monitoring
 gem 'scout_apm', '~> 3.0.x'
