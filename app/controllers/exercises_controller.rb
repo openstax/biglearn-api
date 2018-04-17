@@ -1,6 +1,10 @@
 class ExercisesController < JsonApiController
 
+  include ScoutIgnore
+
   def fetch_assignment_pes
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_assignment_pes_request_payload_schema,
       output_schema: _fetch_assignment_pes_response_payload_schema,
@@ -9,6 +13,8 @@ class ExercisesController < JsonApiController
   end
 
   def fetch_assignment_spes
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_assignment_spes_request_payload_schema,
       output_schema: _fetch_assignment_spes_response_payload_schema,
@@ -17,6 +23,8 @@ class ExercisesController < JsonApiController
   end
 
   def fetch_practice_worst_areas
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_practice_worst_areas_request_payload_schema,
       output_schema: _fetch_practice_worst_areas_response_payload_schema,
