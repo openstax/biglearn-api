@@ -1,5 +1,7 @@
 class EcosystemsController < JsonApiController
 
+  include ScoutIgnore
+
   def create
     respond_with_json_apis_and_service(
       input_schema:  _create_request_payload_schema,
@@ -9,6 +11,8 @@ class EcosystemsController < JsonApiController
   end
 
   def fetch_metadatas
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       output_schema: _fetch_metadatas_response_payload_schema,
       service: Services::FetchEcosystemMetadatas::Service
@@ -16,6 +20,8 @@ class EcosystemsController < JsonApiController
   end
 
   def fetch_events
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_events_request_payload_schema,
       output_schema: _fetch_events_response_payload_schema,

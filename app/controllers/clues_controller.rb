@@ -1,6 +1,10 @@
 class CluesController < JsonApiController
 
+  include ScoutIgnore
+
   def fetch_student
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_student_request_payload_schema,
       output_schema: _fetch_student_response_payload_schema,
@@ -9,6 +13,8 @@ class CluesController < JsonApiController
   end
 
   def fetch_teacher
+    scout_ignore! 0.99
+
     respond_with_json_apis_and_service(
       input_schema:  _fetch_teacher_request_payload_schema,
       output_schema: _fetch_teacher_response_payload_schema,
