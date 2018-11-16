@@ -1,6 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  include HasUniqueUuid
+  include UniqueUuid
   include PluckWithKeys
 end

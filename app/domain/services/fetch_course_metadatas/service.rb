@@ -1,11 +1,17 @@
 class Services::FetchCourseMetadatas::Service < Services::ApplicationService
-  def process
-    courses = CourseEvent.create_course.pluck_with_keys(:course_uuid, :data)
+  def process(metadata_sequence_number_offset:, max_num_metadatas:)
+    cc = Course.arel_table
+    courses = Course
+      .where(cc[:metadata_sequence_number].gteq(metadata_sequence_number_offset))
+      .order(:metadata_sequence_number)
+      .limit(max_num_metadatas)
+      .pluck_with_keys(:uuid, :initial_ecosystem_uuid, :metadata_sequence_number)
 
     course_responses = courses.map do |course|
       {
-        uuid: course[:course_uuid],
-        initial_ecosystem_uuid: course[:data].symbolize_keys.fetch(:ecosystem_uuid)
+        uuid: course[:uuid],
+        initial_ecosystem_uuid: course[:initial_ecosystem_uuid],
+        metadata_sequence_number: course[:metadata_sequence_number]
       }
     end
 

@@ -14,6 +14,7 @@ class EcosystemsController < JsonApiController
     scout_ignore! 0.99
 
     respond_with_json_apis_and_service(
+      input_schema:  _fetch_metadatas_request_payload_schema,
       output_schema: _fetch_metadatas_response_payload_schema,
       service: Services::FetchEcosystemMetadatas::Service
     )
@@ -145,6 +146,25 @@ class EcosystemsController < JsonApiController
     }
   end
 
+  def _fetch_metadatas_request_payload_schema
+    {
+      '$schema': JSON_SCHEMA,
+
+      'type': 'object',
+      'properties': {
+        'metadata_sequence_number_offset': {'$ref': '#/standard_definitions/non_negative_integer'},
+        'max_num_metadatas': {
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000
+        }
+      },
+      'required': ['metadata_sequence_number_offset', 'max_num_metadatas'],
+      'additionalProperties': false,
+      'standard_definitions': _standard_definitions
+    }
+  end
+
   def _fetch_metadatas_response_payload_schema
     {
       '$schema': JSON_SCHEMA,
@@ -155,8 +175,8 @@ class EcosystemsController < JsonApiController
           'type': 'array',
           'items': {'$ref': '#definitions/ecosystem_metadata'},
           'minItems': 0,
-          'maxItems': 1000,
-        },
+          'maxItems': 1000
+        }
       },
       'required': ['ecosystem_responses'],
       'additionalProperties': false,
@@ -165,9 +185,10 @@ class EcosystemsController < JsonApiController
         'ecosystem_metadata': {
           'type': 'object',
           'properties': {
-            'uuid': {'$ref': '#/standard_definitions/uuid'}
+            'uuid': {'$ref': '#/standard_definitions/uuid'},
+            'metadata_sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'}
           },
-          'required': ['uuid'],
+          'required': ['uuid', 'metadata_sequence_number'],
           'additionalProperties': false
         }
       }
