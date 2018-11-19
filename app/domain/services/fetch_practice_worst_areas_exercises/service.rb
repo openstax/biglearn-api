@@ -5,10 +5,10 @@ class Services::FetchPracticeWorstAreasExercises::Service < Services::Applicatio
     student_pe_values_array = worst_areas_requests.map do |request|
       request.values_at(:student_uuid, :algorithm_name)
     end
-    student_pe_join_query = <<-JOIN_SQL
+    student_pe_join_query = <<-JOIN_SQL.strip_heredoc
       INNER JOIN (#{ValuesTable.new(student_pe_values_array)})
         AS "requests" ("student_uuid", "algorithm_name")
-        ON "student_pes"."student_uuid" = "requests"."student_uuid"
+        ON "student_pes"."student_uuid"::text = "requests"."student_uuid"
           AND "student_pes"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 

@@ -5,11 +5,11 @@ class Services::FetchTeacherClues::Service < Services::ApplicationService
     teacher_clue_values_array = teacher_clue_requests.map do |request|
       request.values_at(:course_container_uuid, :book_container_uuid, :algorithm_name)
     end
-    teacher_clue_join_query = <<-JOIN_SQL
+    teacher_clue_join_query = <<-JOIN_SQL.strip_heredoc
       INNER JOIN (#{ValuesTable.new(teacher_clue_values_array)})
         AS "requests" ("course_container_uuid", "book_container_uuid", "algorithm_name")
-        ON "teacher_clues"."course_container_uuid" = "requests"."course_container_uuid"
-          AND "teacher_clues"."book_container_uuid" = "requests"."book_container_uuid"
+        ON "teacher_clues"."course_container_uuid"::text = "requests"."course_container_uuid"
+          AND "teacher_clues"."book_container_uuid"::text = "requests"."book_container_uuid"
           AND "teacher_clues"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 

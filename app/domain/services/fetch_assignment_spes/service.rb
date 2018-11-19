@@ -5,10 +5,10 @@ class Services::FetchAssignmentSpes::Service < Services::ApplicationService
     spe_values_array = spe_requests.map do |request|
       request.values_at(:assignment_uuid, :algorithm_name)
     end
-    spe_join_query = <<-JOIN_SQL
+    spe_join_query = <<-JOIN_SQL.strip_heredoc
       INNER JOIN (#{ValuesTable.new(spe_values_array)})
         AS "requests" ("assignment_uuid", "algorithm_name")
-        ON "assignment_spes"."assignment_uuid" = "requests"."assignment_uuid"
+        ON "assignment_spes"."assignment_uuid"::text = "requests"."assignment_uuid"
           AND "assignment_spes"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 
