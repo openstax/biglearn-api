@@ -3,6 +3,12 @@ class CourseEvent < ApplicationRecord
 
   include AppendOnlyWithUniqueUuid
 
+  belongs_to :course, primary_key: :uuid,
+                      foreign_key: :course_uuid,
+                      inverse_of: :course_events
+
+  sequence_number_association :course
+
   enum type: {
     no_op:                              -1,
     create_course:                       0,

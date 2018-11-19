@@ -16,7 +16,9 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     course_event_join_query = <<-JOIN_SQL
       RIGHT OUTER JOIN (#{ValuesTable.new(course_event_values_array)})
         AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
-        ON "course_events"."course_uuid" = "requests"."course_uuid"
+        ON "courses"."uuid" = "requests"."course_uuid"
+          AND "courses"."sequence_number" > "requests"."sequence_number_offset"
+          AND "course_events"."course_uuid" = "courses"."uuid"
           AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"
           AND "course_events"."type" = ANY ("requests"."event_types")
       WINDOW "window" AS (
@@ -58,6 +60,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
             "requests"."request_uuid"
           SELECT_SQL
         )
+        .joins(:course)
         .joins(course_event_join_query)
         .order(
           '"course_events"."sequence_number" - "requests"."sequence_number_offset" ASC NULLS FIRST'

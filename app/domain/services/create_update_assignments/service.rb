@@ -37,9 +37,9 @@ class Services::CreateUpdateAssignments::Service < Services::ApplicationService
     end
 
     CourseEvent.transaction do
-      Assignment.append assignment_attributes
-
       CourseEvent.append course_event_attributes
+
+      Assignment.append assignment_attributes
     end
 
     { updated_assignments: updated_assignments }

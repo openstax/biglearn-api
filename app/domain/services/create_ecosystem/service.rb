@@ -10,8 +10,6 @@ class Services::CreateEcosystem::Service < Services::ApplicationService
     retries = 0
     begin
       Ecosystem.transaction do
-        BookContainer.append book_container_attributes
-
         EcosystemEvent.append(
           uuid: ecosystem_uuid,
           type: :create_ecosystem,
@@ -26,7 +24,7 @@ class Services::CreateEcosystem::Service < Services::ApplicationService
           }
         )
 
-        Ecosystem.create!(uuid: ecosystem_uuid)
+        BookContainer.append book_container_attributes
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => exception
       raise exception if retries >= MAX_RETRIES

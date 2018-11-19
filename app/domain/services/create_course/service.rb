@@ -19,10 +19,9 @@ class Services::CreateCourse::Service < Services::ApplicationService
             starts_at: starts_at,
             ends_at: ends_at,
             created_at: created_at
-          }
+          },
+          sequence_number_association_extra_attributes: { initial_ecosystem_uuid: ecosystem_uuid }
         )
-
-        Course.create!(uuid: course_uuid, initial_ecosystem_uuid: ecosystem_uuid)
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => exception
       raise exception if retries >= MAX_RETRIES

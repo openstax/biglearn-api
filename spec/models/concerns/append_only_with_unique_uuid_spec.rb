@@ -32,4 +32,27 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
       raise_error(ActiveRecord::RecordNotUnique)
     )
   end
+
+  it 'updates the sequence_number of the associated record' do
+    course = FactoryGirl.create(:course)
+    event_1_attributes = FactoryGirl.build(
+      :course_event, course: course, sequence_number: 0
+    ).attributes
+    event_2_attributes = FactoryGirl.build(
+      :course_event, course: course, sequence_number: 2
+    ).attributes
+    attributes_array = [ event_1_attributes, event_2_attributes ]
+
+    expect{ test_class.append attributes_array }.to(
+      change { course.reload.sequence_number }.from(0).to(3)
+    )
+
+    event_3_attributes = FactoryGirl.build(
+      :course_event, course: course, sequence_number: 1
+    ).attributes
+
+    expect{ test_class.append [ event_3_attributes ] }.not_to(
+      change { course.reload.sequence_number }
+    )
+  end
 end

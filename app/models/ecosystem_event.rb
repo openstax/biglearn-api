@@ -3,6 +3,12 @@ class EcosystemEvent < ApplicationRecord
 
   include AppendOnlyWithUniqueUuid
 
+  belongs_to :ecosystem, primary_key: :uuid,
+                         foreign_key: :ecosystem_uuid,
+                         inverse_of: :ecosystem_events
+
+  sequence_number_association :ecosystem
+
   enum type: {
     no_op:            -1,
     create_ecosystem:  0
