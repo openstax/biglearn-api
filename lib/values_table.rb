@@ -1,6 +1,4 @@
 class ValuesTable
-  UUID_REGEX = /\A[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}\z/i
-
   attr_reader :values_array
 
   # values_array is an array of arrays
@@ -29,8 +27,6 @@ class ValuesTable
   def sanitize(value)
     return "ARRAY[#{value.map { |val| sanitize val }.join(', ')}]" if value.is_a?(Array)
 
-    sanitized_value = ActiveRecord::Base.sanitize value
-
-    UUID_REGEX === value ? "#{sanitized_value}::uuid" : sanitized_value
+    ActiveRecord::Base.sanitize value
   end
 end

@@ -13,12 +13,11 @@ class Services::FetchEcosystemEvents::Service < Services::ApplicationService
         request.fetch(:request_uuid)
       ]
     end
-    ecosystem_event_join_query = <<-JOIN_SQL
+    ecosystem_event_join_query = <<-JOIN_SQL.strip_heredoc
       RIGHT OUTER JOIN (#{ValuesTable.new(ecosystem_event_values_array)})
         AS "requests" ("ecosystem_uuid", "sequence_number_offset", "event_types", "request_uuid")
-        ON "ecosystems"."uuid" = "requests"."ecosystem_uuid"
+        ON "ecosystems"."uuid"::text = "requests"."ecosystem_uuid"
           AND "ecosystems"."sequence_number" > "requests"."sequence_number_offset"
-          AND "ecosystem_events"."ecosystem_uuid" = "ecosystems"."uuid"
           AND "ecosystem_events"."sequence_number" >= "requests"."sequence_number_offset"
           AND "ecosystem_events"."type" = ANY ("requests"."event_types")
       WINDOW "window" AS (
