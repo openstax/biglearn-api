@@ -31,9 +31,9 @@ class Services::UpdateRosters::Service < Services::ApplicationService
     end
 
     CourseEvent.transaction do
+      CourseEvent.append     course_event_attributes
       CourseContainer.append course_container_attributes
       Student.append         student_attributes
-      CourseEvent.append     course_event_attributes
     end
 
     { updated_rosters: updated_rosters }

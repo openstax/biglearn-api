@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Ecosystem, type: :model do
   subject { FactoryGirl.create :ecosystem }
 
+  it { is_expected.to have_many :ecosystem_events }
+  it { is_expected.to have_many :book_containers }
+
   it { is_expected.to validate_uniqueness_of(:metadata_sequence_number) }
 
   it do
@@ -11,4 +14,6 @@ RSpec.describe Ecosystem, type: :model do
         .only_integer.is_greater_than_or_equal_to(0)
     )
   end
+
+  it { is_expected.to validate_presence_of(:sequence_number) }
 end

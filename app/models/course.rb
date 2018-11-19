@@ -2,5 +2,11 @@ class Course < ApplicationRecord
   include AppendOnlyWithUniqueUuid
   include MetadataSequenceNumber
 
-  validates :initial_ecosystem_uuid,  presence: true
+  has_many :course_events, primary_key: :uuid,
+                           foreign_key: :course_uuid,
+                           inverse_of: :course
+
+  validates :sequence_number,
+            presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 end
