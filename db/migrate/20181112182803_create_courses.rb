@@ -15,9 +15,9 @@ class CreateCourses < ActiveRecord::Migration[5.0]
                                    .pluck(:course_uuid, :data)
 
         course_values.each do |course_uuid, data|
-          Course.create!(
+          Course.new(
             uuid: course_uuid, initial_ecosystem_uuid: data.symbolize_keys.fetch(:ecosystem_uuid)
-          )
+          ).save(validate: false)
         end
       end
     end

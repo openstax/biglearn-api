@@ -10,7 +10,9 @@ class CreateEcosystems < ActiveRecord::Migration[5.0]
     reversible do |dir|
       dir.up do
         ecosystem_uuids = EcosystemEvent.create_ecosystem.order(:created_at).pluck(:ecosystem_uuid)
-        ecosystem_uuids.each { |ecosystem_uuid| Ecosystem.create!(uuid: ecosystem_uuid) }
+        ecosystem_uuids.each do |ecosystem_uuid|
+          Ecosystem.new(uuid: ecosystem_uuid).save(validate: false)
+        end
       end
     end
   end
