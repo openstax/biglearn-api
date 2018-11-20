@@ -17,7 +17,7 @@ class CreateCourses < ActiveRecord::Migration[5.0]
         course_values.each do |course_uuid, data|
           Course.new(
             uuid: course_uuid, initial_ecosystem_uuid: data.symbolize_keys.fetch(:ecosystem_uuid)
-          ).save(validate: false)
+          ).set_metadata_sequence_number.save(validate: false)
         end
       end
     end
