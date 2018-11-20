@@ -12,5 +12,6 @@ module MetadataSequenceNumber
 
   def set_metadata_sequence_number
     self.metadata_sequence_number ||= (self.class.maximum(:metadata_sequence_number) || -1) + 1
+    self
   end
 end
