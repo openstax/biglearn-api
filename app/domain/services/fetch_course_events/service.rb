@@ -16,7 +16,7 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
     course_event_join_query = <<-JOIN_SQL.strip_heredoc
       RIGHT OUTER JOIN (#{ValuesTable.new(course_event_values_array)})
         AS "requests" ("course_uuid", "sequence_number_offset", "event_types", "request_uuid")
-        ON "courses"."uuid"::text = "requests"."course_uuid"
+        ON "courses"."uuid" = "requests"."course_uuid"::uuid
           AND "courses"."sequence_number" > "requests"."sequence_number_offset"
           AND "course_events"."sequence_number" >= "requests"."sequence_number_offset"
           AND "course_events"."type" = ANY ("requests"."event_types")

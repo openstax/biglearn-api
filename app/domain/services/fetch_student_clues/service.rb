@@ -8,8 +8,8 @@ class Services::FetchStudentClues::Service < Services::ApplicationService
     student_clue_join_query = <<-JOIN_SQL.strip_heredoc
       INNER JOIN (#{ValuesTable.new(student_clue_values_array)})
         AS "requests" ("student_uuid", "book_container_uuid", "algorithm_name")
-        ON "student_clues"."student_uuid"::text = "requests"."student_uuid"
-          AND "student_clues"."book_container_uuid"::text = "requests"."book_container_uuid"
+        ON "student_clues"."student_uuid" = "requests"."student_uuid"::uuid
+          AND "student_clues"."book_container_uuid" = "requests"."book_container_uuid"::uuid
           AND "student_clues"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 

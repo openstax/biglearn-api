@@ -8,7 +8,7 @@ class Services::FetchAssignmentPes::Service < Services::ApplicationService
     pe_join_query = <<-JOIN_SQL.strip_heredoc
       INNER JOIN (#{ValuesTable.new(pe_values_array)})
         AS "requests" ("assignment_uuid", "algorithm_name")
-        ON "assignment_pes"."assignment_uuid"::text = "requests"."assignment_uuid"
+        ON "assignment_pes"."assignment_uuid" = "requests"."assignment_uuid"::uuid
           AND "assignment_pes"."algorithm_name" = "requests"."algorithm_name"
     JOIN_SQL
 
