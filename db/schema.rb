@@ -16,6 +16,30 @@ ActiveRecord::Schema.define(version: 20181112182803) do
   enable_extension "plpgsql"
   enable_extension "citext"
 
+  execute "SET check_function_bodies = off"
+
+  create_function :next_ecosystem_metadata_sequence_number, sql_definition: <<-SQL
+      CREATE OR REPLACE FUNCTION public.next_ecosystem_metadata_sequence_number()
+       RETURNS integer
+       LANGUAGE sql
+      AS $function$
+          SELECT PG_ADVISORY_XACT_LOCK(5676211225851683);
+          SELECT COALESCE(MAX("ecosystems"."metadata_sequence_number"), -1) + 1 FROM "ecosystems"
+        $function$
+  SQL
+
+  create_function :next_course_metadata_sequence_number, sql_definition: <<-SQL
+      CREATE OR REPLACE FUNCTION public.next_course_metadata_sequence_number()
+       RETURNS integer
+       LANGUAGE sql
+      AS $function$
+          SELECT PG_ADVISORY_XACT_LOCK(49102217655775016);
+          SELECT COALESCE(MAX("courses"."metadata_sequence_number"), -1) + 1 FROM "courses"
+        $function$
+  SQL
+
+  execute "SET check_function_bodies = on"
+
   create_table "assignment_pes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
     t.uuid     "assignment_uuid", null: false
@@ -164,23 +188,4 @@ ActiveRecord::Schema.define(version: 20181112182803) do
     t.index ["uuid"], name: "index_teacher_clues_on_uuid", unique: true, using: :btree
   end
 
-
-  create_function :next_ecosystem_metadata_sequence_number, sql_definition: <<-SQL
-      CREATE OR REPLACE FUNCTION public.next_ecosystem_metadata_sequence_number()
-       RETURNS integer
-       LANGUAGE sql
-      AS $function$
-          SELECT PG_ADVISORY_XACT_LOCK(5676211225851683);
-          SELECT COALESCE(MAX("ecosystems"."metadata_sequence_number"), -1) + 1 FROM "ecosystems"
-        $function$
-  SQL
-  create_function :next_course_metadata_sequence_number, sql_definition: <<-SQL
-      CREATE OR REPLACE FUNCTION public.next_course_metadata_sequence_number()
-       RETURNS integer
-       LANGUAGE sql
-      AS $function$
-          SELECT PG_ADVISORY_XACT_LOCK(49102217655775016);
-          SELECT COALESCE(MAX("courses"."metadata_sequence_number"), -1) + 1 FROM "courses"
-        $function$
-  SQL
 end
