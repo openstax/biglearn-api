@@ -28,31 +28,42 @@ module AppendOnlyWithUniqueUuid
         attributes_by_key = attributes_array.group_by do |attributes|
           attributes[sequence_number_association_foreign_key]
         end
-        mapped_attributes_by_key = {}
-        columns = Set[ :sequence_number ]
+
+        sequence_number_association_attributes_by_key = {}
+        default_columns = [ sequence_number_association_primary_key, :sequence_number ]
+        extra_columns = Set.new
         attributes_by_key.each do |key, attributes|
           last_attributes = attributes.max_by { |attrs| attrs[:sequence_number] }
           extra_attributes = last_attributes[:sequence_number_association_extra_attributes] || {}
-          mapped_attributes_by_key[key] = {
+          sequence_number_association_attributes_by_key[key] = {
             sequence_number: last_attributes[:sequence_number] + 1
           }.merge extra_attributes
-          columns += extra_attributes.keys
+          extra_columns += extra_attributes.keys
         end
-        sequence_number_association_records = sequence_number_association_class.where(
-          sequence_number_association_primary_key => mapped_attributes_by_key.keys
-        ).order(sequence_number_association_primary_key).lock('FOR NO KEY UPDATE').to_a
-        sequence_number_association_records_to_import = []
-        sequence_number_association_records.each do |record|
-          key = record.send sequence_number_association_primary_key
-          attributes = mapped_attributes_by_key[key]
-          next if attributes[:sequence_number] <= record.sequence_number
 
-          attributes.each { |key, value| record.send "#{key}=", value }
-          sequence_number_association_records_to_import << record
+        sequence_number_association_records_to_import =
+          sequence_number_association_attributes_by_key.map do |key, attributes|
+          sequence_number_association_class.new(
+            sequence_number_association_primary_key => key, sequence_number: 0
+          ).tap do |record|
+            attributes.each { |key, value| record.send "#{key}=", value }
+          end
         end
-        sequence_number_association_class.import sequence_number_association_records_to_import,
+
+        conflict_columns_sql_array = [
+          "\"sequence_number\" = GREATEST(\"#{sequence_number_association_class.table_name
+            }\".\"sequence_number\", EXCLUDED.\"sequence_number\")"
+        ]
+        extra_columns.each do |column|
+          conflict_columns_sql_array << "\"#{column}\" = EXCLUDED.\"#{column}\""
+        end
+        conflict_columns_sql_array << '"updated_at" = EXCLUDED."updated_at"'
+        conflict_columns_sql = conflict_columns_sql_array.join(', ')
+        sequence_number_association_class.import default_columns + extra_columns.to_a,
+                                                 sequence_number_association_records_to_import,
                                                  validate: false, on_duplicate_key_update: {
-          conflict_target: [ sequence_number_association_primary_key ], columns: columns.to_a
+          conflict_target: [ sequence_number_association_primary_key ],
+          columns: conflict_columns_sql
         }
       end
 

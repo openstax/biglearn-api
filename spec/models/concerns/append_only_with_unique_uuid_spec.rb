@@ -33,25 +33,32 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
     )
   end
 
-  it 'updates the sequence_number of the associated record' do
-    course = FactoryGirl.create(:course)
+  it 'creates the associated record or updates its sequence_number' do
+    course_uuid = SecureRandom.uuid
     event_1_attributes = FactoryGirl.build(
-      :course_event, course: course, sequence_number: 0
+      :course_event, course: nil, course_uuid: course_uuid, sequence_number: 0
     ).attributes
+    expect{ test_class.append [ event_1_attributes ] }.to change { Course.count }.by(1)
+    course = Course.find_by! uuid: course_uuid
+    expect(course.sequence_number).to eq 1
+
     event_2_attributes = FactoryGirl.build(
-      :course_event, course: course, sequence_number: 2
-    ).attributes
-    attributes_array = [ event_1_attributes, event_2_attributes ]
-
-    expect{ test_class.append attributes_array }.to(
-      change { course.reload.sequence_number }.from(0).to(3)
-    )
-
-    event_3_attributes = FactoryGirl.build(
       :course_event, course: course, sequence_number: 1
     ).attributes
+    event_3_attributes = FactoryGirl.build(
+      :course_event, course: course, sequence_number: 3
+    ).attributes
+    attributes_array = [ event_2_attributes, event_3_attributes ]
 
-    expect{ test_class.append [ event_3_attributes ] }.not_to(
+    expect{ test_class.append attributes_array }.to(
+      change { course.reload.sequence_number }.from(1).to(4)
+    )
+
+    event_4_attributes = FactoryGirl.build(
+      :course_event, course: course, sequence_number: 2
+    ).attributes
+
+    expect{ test_class.append [ event_4_attributes ] }.not_to(
       change { course.reload.sequence_number }
     )
   end

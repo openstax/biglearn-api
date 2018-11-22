@@ -1,5 +1,5 @@
 class Ecosystem < ApplicationRecord
-  include AppendOnlyWithUniqueUuid
+  include UniqueUuid
   include MetadataSequenceNumber
 
   has_many :ecosystem_events, primary_key: :uuid,
