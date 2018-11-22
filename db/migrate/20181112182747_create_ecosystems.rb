@@ -11,12 +11,12 @@ class CreateEcosystems < ActiveRecord::Migration[5.0]
 
     create_function :next_ecosystem_metadata_sequence_number
 
-    change_column_default :ecosystems, :metadata_sequence_number, -> do
-      'next_ecosystem_metadata_sequence_number()'
-    end
-
     reversible do |dir|
       dir.up do
+        change_column_default :ecosystems, :metadata_sequence_number, -> do
+          'next_ecosystem_metadata_sequence_number()'
+        end
+
         Ecosystem.reset_column_information
 
         EcosystemEvent

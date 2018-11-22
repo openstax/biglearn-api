@@ -11,12 +11,12 @@ class CreateCourses < ActiveRecord::Migration[5.0]
 
     create_function :next_course_metadata_sequence_number
 
-    change_column_default :courses, :metadata_sequence_number, -> do
-      'next_course_metadata_sequence_number()'
-    end
-
     reversible do |dir|
       dir.up do
+        change_column_default :courses, :metadata_sequence_number, -> do
+          'next_course_metadata_sequence_number()'
+        end
+
         Course.reset_column_information
 
         create_course_data_by_course_uuid = CourseEvent.create_course
