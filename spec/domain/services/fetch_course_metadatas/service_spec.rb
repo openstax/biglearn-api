@@ -22,7 +22,9 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
     let(:courses_count)                         { rand(10) + 1        }
     let(:given_metadata_sequence_number_offset) { rand(courses_count) }
 
-    let!(:courses)           { FactoryGirl.create_list :course, courses_count }
+    let!(:courses)                              do
+      FactoryGirl.create_list(:course, courses_count)
+    end
 
     let(:expected_responses) do
       courses.select do |course|

@@ -10,11 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181119192841) do
+ActiveRecord::Schema.define(version: 20181112182803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "citext"
+
+  execute "SET check_function_bodies = off"
+
+  create_function :next_ecosystem_metadata_sequence_number, sql_definition: <<-SQL
+      CREATE OR REPLACE FUNCTION public.next_ecosystem_metadata_sequence_number()
+       RETURNS integer
+       LANGUAGE sql
+      AS $function$
+          SELECT PG_ADVISORY_XACT_LOCK(5676211225851683);
+          SELECT COALESCE(MAX("ecosystems"."metadata_sequence_number"), -1) + 1 FROM "ecosystems"
+        $function$
+  SQL
+
+  create_function :next_course_metadata_sequence_number, sql_definition: <<-SQL
+      CREATE OR REPLACE FUNCTION public.next_course_metadata_sequence_number()
+       RETURNS integer
+       LANGUAGE sql
+      AS $function$
+          SELECT PG_ADVISORY_XACT_LOCK(49102217655775016);
+          SELECT COALESCE(MAX("courses"."metadata_sequence_number"), -1) + 1 FROM "courses"
+        $function$
+  SQL
+
+  execute "SET check_function_bodies = on"
 
   create_table "assignment_pes", force: :cascade do |t|
     t.uuid     "uuid",            null: false
@@ -77,12 +101,12 @@ ActiveRecord::Schema.define(version: 20181119192841) do
   end
 
   create_table "courses", force: :cascade do |t|
-    t.uuid     "uuid",                                 null: false
+    t.uuid     "uuid",                                                                               null: false
+    t.integer  "metadata_sequence_number", default: -> { "next_course_metadata_sequence_number()" }, null: false
+    t.integer  "sequence_number",                                                                    null: false
     t.uuid     "initial_ecosystem_uuid"
-    t.integer  "metadata_sequence_number",             null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "sequence_number",          default: 0, null: false
+    t.datetime "created_at",                                                                         null: false
+    t.datetime "updated_at",                                                                         null: false
     t.index ["metadata_sequence_number"], name: "index_courses_on_metadata_sequence_number", unique: true, using: :btree
     t.index ["sequence_number"], name: "index_courses_on_sequence_number", using: :btree
     t.index ["uuid"], name: "index_courses_on_uuid", unique: true, using: :btree
@@ -109,11 +133,11 @@ ActiveRecord::Schema.define(version: 20181119192841) do
   end
 
   create_table "ecosystems", force: :cascade do |t|
-    t.uuid     "uuid",                                 null: false
-    t.integer  "metadata_sequence_number",             null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "sequence_number",          default: 0, null: false
+    t.uuid     "uuid",                                                                                  null: false
+    t.integer  "metadata_sequence_number", default: -> { "next_ecosystem_metadata_sequence_number()" }, null: false
+    t.integer  "sequence_number",                                                                       null: false
+    t.datetime "created_at",                                                                            null: false
+    t.datetime "updated_at",                                                                            null: false
     t.index ["metadata_sequence_number"], name: "index_ecosystems_on_metadata_sequence_number", unique: true, using: :btree
     t.index ["sequence_number"], name: "index_ecosystems_on_sequence_number", using: :btree
     t.index ["uuid"], name: "index_ecosystems_on_uuid", unique: true, using: :btree

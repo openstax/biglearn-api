@@ -1,5 +1,5 @@
 class Course < ApplicationRecord
-  include AppendOnlyWithUniqueUuid
+  include UniqueUuid
   include MetadataSequenceNumber
 
   has_many :course_events, primary_key: :uuid,
