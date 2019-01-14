@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181112182803) do
+ActiveRecord::Schema.define(version: 20190114195540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,7 +104,7 @@ ActiveRecord::Schema.define(version: 20181112182803) do
     t.uuid     "uuid",                                                                               null: false
     t.integer  "metadata_sequence_number", default: -> { "next_course_metadata_sequence_number()" }, null: false
     t.integer  "sequence_number",                                                                    null: false
-    t.uuid     "initial_ecosystem_uuid"
+    t.uuid     "initial_ecosystem_uuid",                                                             null: false
     t.datetime "created_at",                                                                         null: false
     t.datetime "updated_at",                                                                         null: false
     t.index ["metadata_sequence_number"], name: "index_courses_on_metadata_sequence_number", unique: true, using: :btree
