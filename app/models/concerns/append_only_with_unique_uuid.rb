@@ -59,6 +59,7 @@ module AppendOnlyWithUniqueUuid
         end
         conflict_columns_sql_array << '"updated_at" = EXCLUDED."updated_at"'
         conflict_columns_sql = conflict_columns_sql_array.join(', ')
+
         sequence_number_association_class.import default_columns + extra_columns.to_a,
                                                  sequence_number_association_records_to_import,
                                                  validate: false, on_duplicate_key_update: {

@@ -11,13 +11,16 @@ class Services::UpdateRosters::Service < Services::ApplicationService
       roster.fetch(:students).each do |student|
         student_attributes << { uuid: student.fetch(:student_uuid) }
       end
-
+      course = Course.find_by(uuid: roster.fetch(:course_uuid))
       course_event_attributes << {
         # No appropriate uuid in the request to use here
-        uuid: roster.fetch(:request_uuid),
+        uuid: course.uuid,
         type: :update_roster,
         course_uuid: roster.fetch(:course_uuid),
         sequence_number: roster.fetch(:sequence_number),
+        sequence_number_association_extra_attributes: {
+            initial_ecosystem_uuid: course.initial_ecosystem_uuid,
+        },
         data: roster.slice(
           :request_uuid,
           :course_uuid,
