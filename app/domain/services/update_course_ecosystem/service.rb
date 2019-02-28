@@ -22,6 +22,9 @@ class Services::UpdateCourseEcosystem::Service < Services::ApplicationService
             type: :update_course_ecosystem,
             course_uuid: request.fetch(:course_uuid),
             sequence_number: request.fetch(:sequence_number),
+            sequence_number_association_extra_attributes: {
+              initial_ecosystem_uuid: request.fetch(:course_ecosystem_uuid),
+            },
             data: request.slice(
               :request_uuid,
               :course_uuid,

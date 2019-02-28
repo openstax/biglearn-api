@@ -91,10 +91,9 @@ RSpec.describe Services::UpdateRosters::Service, type: :service do
 
   context "when a previously-existing course_uuid and sequence_number combination is given" do
       before(:each) do
-          p given_course
-      FactoryGirl.create :course_event,
-                         course_uuid: given_course_uuid,
-                         sequence_number: given_sequence_number
+        FactoryGirl.create :course_event,
+                           course_uuid: given_course_uuid,
+                           sequence_number: given_sequence_number
     end
 
     it "a CourseEvent is NOT created and an error is returned" do
