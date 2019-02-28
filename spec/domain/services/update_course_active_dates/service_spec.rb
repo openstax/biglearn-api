@@ -5,6 +5,7 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
 
   let(:given_request_uuid)    { SecureRandom.uuid }
   let(:given_course_uuid)     { SecureRandom.uuid }
+  let(:given_ecosystem_uuid)  { SecureRandom.uuid }
   let(:given_sequence_number) { rand(10) }
   let(:given_starts_at)       { Time.current.yesterday.iso8601(6) }
   let(:given_ends_at)         { Time.current.tomorrow.iso8601(6)  }
@@ -14,6 +15,7 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
     service.process(
       request_uuid: given_request_uuid,
       course_uuid: given_course_uuid,
+      ecosystem_uuid: given_ecosystem_uuid,
       sequence_number: given_sequence_number,
       starts_at: given_starts_at,
       ends_at: given_ends_at,

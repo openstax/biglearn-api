@@ -71,7 +71,7 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
     ]
   end
 
-  let(:action)                                  { service.process(assignments: given_assignments) }
+  let(:action) { service.process(assignments: given_assignments) }
 
   context "when a previously-existing course_uuid and sequence_number combo is given" do
     before(:each) do

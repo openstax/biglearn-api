@@ -7,6 +7,7 @@ module ExerciseExclusionsServicesSharedExamples
 
     let(:given_request_uuid)    { SecureRandom.uuid }
     let(:given_course_uuid)     { SecureRandom.uuid }
+    let(:given_ecosystem_uuid)  { SecureRandom.uuid }
     let(:given_sequence_number) { rand(10) + 1 }
     let(:given_exclusions)      { generate_exclusions(number_of_exclusions) }
     let(:given_updated_at)      { Time.current.iso8601(6) }
@@ -15,6 +16,7 @@ module ExerciseExclusionsServicesSharedExamples
       service.process(
         request_uuid: given_request_uuid,
         course_uuid: given_course_uuid,
+        ecosystem_uuid: given_ecosystem_uuid,
         sequence_number: given_sequence_number,
         exclusions: given_exclusions,
         updated_at: given_updated_at
@@ -121,12 +123,16 @@ module ExerciseExclusionsServicesSharedExamples
 
   def save_preexisting_exclusions(type, course_uuid, generated_exclusions)
     request_uuid = SecureRandom.uuid
+    ecosystem_uuid = SecureRandom.uuid
 
     CourseEvent.append(
       uuid: request_uuid,
       type: type,
       course_uuid: course_uuid,
       sequence_number: 0,
+      sequence_number_association_extra_attributes: {
+        initial_ecosystem_uuid: ecosystem_uuid,
+      },
       data: {
         request_uuid: request_uuid,
         exclusions: generated_exclusions
