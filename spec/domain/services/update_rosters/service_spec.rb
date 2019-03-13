@@ -4,7 +4,8 @@ RSpec.describe Services::UpdateRosters::Service, type: :service do
   let(:service)                                        { described_class.new }
 
   let(:given_request_uuid)                             { SecureRandom.uuid }
-  let(:given_course_uuid)                              { SecureRandom.uuid }
+  let(:given_course)                                   { FactoryGirl.create :course }
+  let(:given_course_uuid)                              { given_course.uuid }
   let(:given_sequence_number)                          { rand(10) }
 
   let(:given_course_container_1_uuid)                  { SecureRandom.uuid }
@@ -89,10 +90,10 @@ RSpec.describe Services::UpdateRosters::Service, type: :service do
   let(:action)                                         { service.process(rosters: given_rosters) }
 
   context "when a previously-existing course_uuid and sequence_number combination is given" do
-    before(:each) do
-      FactoryGirl.create :course_event,
-                         course_uuid: given_course_uuid,
-                         sequence_number: given_sequence_number
+      before(:each) do
+        FactoryGirl.create :course_event,
+                           course_uuid: given_course_uuid,
+                           sequence_number: given_sequence_number
     end
 
     it "a CourseEvent is NOT created and an error is returned" do
