@@ -8,9 +8,6 @@ class Services::RecordResponses::Service < Services::ApplicationService
         type: :record_response,
         course_uuid: response.fetch(:course_uuid),
         sequence_number: response.fetch(:sequence_number),
-        sequence_number_association_extra_attributes: {
-            initial_ecosystem_uuid: response.fetch(:ecosystem_uuid),
-        },
         data: response.slice(
           :response_uuid,
           :course_uuid,
