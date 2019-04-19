@@ -6,7 +6,6 @@ class Course < ApplicationRecord
                            foreign_key: :course_uuid,
                            inverse_of: :course
 
-  validates :initial_ecosystem_uuid, presence: true
   validates :sequence_number,
             presence: true,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
