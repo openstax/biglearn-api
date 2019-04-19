@@ -11,9 +11,6 @@ class Services::CreateUpdateAssignments::Service < Services::ApplicationService
         type: :create_update_assignment,
         course_uuid: assignment.fetch(:course_uuid),
         sequence_number: assignment.fetch(:sequence_number),
-        sequence_number_association_extra_attributes: {
-          initial_ecosystem_uuid: assignment.fetch(:ecosystem_uuid),
-        },
         data: assignment.slice(
           :request_uuid,
           :course_uuid,

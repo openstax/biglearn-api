@@ -4,7 +4,6 @@ RSpec.describe ExerciseExclusionsController, type: :request do
   context '#update_course_excluded_exercises' do
     let(:given_course_uuid)     { SecureRandom.uuid }
     let(:given_request_uuid)    { SecureRandom.uuid }
-    let(:given_ecosystem_uuid)  { SecureRandom.uuid }
     let(:given_sequence_number) { rand(10) }
     let(:number_of_exclusions)  { 10 }
 
@@ -26,7 +25,6 @@ RSpec.describe ExerciseExclusionsController, type: :request do
       {
         request_uuid:    given_request_uuid,
         course_uuid:     given_course_uuid,
-        ecosystem_uuid:  given_ecosystem_uuid,
         sequence_number: given_sequence_number,
         exclusions:      given_exclusions,
         updated_at:      given_updated_at
@@ -81,7 +79,6 @@ RSpec.describe ExerciseExclusionsController, type: :request do
   context '#update_globally_excluded_exercises' do
     let(:given_request_uuid)    { SecureRandom.uuid }
     let(:given_course_uuid)     { SecureRandom.uuid }
-    let(:given_ecosystem_uuid)  { SecureRandom.uuid }
     let(:given_sequence_number) { rand(10) }
     let(:number_of_exclusions)  { 10 }
 
@@ -103,7 +100,6 @@ RSpec.describe ExerciseExclusionsController, type: :request do
       {
         request_uuid:    given_request_uuid,
         course_uuid:     given_course_uuid,
-        ecosystem_uuid:  given_ecosystem_uuid,
         sequence_number: given_sequence_number,
         exclusions:      given_exclusions,
         updated_at:      given_updated_at

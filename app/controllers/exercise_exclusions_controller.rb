@@ -26,7 +26,6 @@ class ExerciseExclusionsController < JsonApiController
       'properties': {
         'request_uuid':    {'$ref': '#/standard_definitions/uuid'},
         'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
-        'ecosystem_uuid':  {'$ref': '#/standard_definitions/uuid'},
         'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
         'exclusions': {
           'type': 'array',
@@ -36,12 +35,13 @@ class ExerciseExclusionsController < JsonApiController
         },
         'updated_at': {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['request_uuid',
-                   'course_uuid',
-                   'ecosystem_uuid',
-                   'sequence_number',
-                   'exclusions',
-                   'updated_at'],
+      'required': [
+        'request_uuid',
+        'course_uuid',
+        'sequence_number',
+        'exclusions',
+        'updated_at'
+      ],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }
@@ -70,7 +70,6 @@ class ExerciseExclusionsController < JsonApiController
       'properties': {
         'request_uuid':    {'$ref': '#/standard_definitions/uuid'},
         'course_uuid':     {'$ref': '#/standard_definitions/uuid'},
-        'ecosystem_uuid':  {'$ref': '#/standard_definitions/uuid'},
         'sequence_number': {'$ref': '#/standard_definitions/non_negative_integer'},
         'exclusions': {
           'type': 'array',
@@ -80,12 +79,13 @@ class ExerciseExclusionsController < JsonApiController
         },
         'updated_at': {'$ref': '#/standard_definitions/datetime'}
       },
-      'required': ['request_uuid',
-                   'course_uuid',
-                   'ecosystem_uuid',
-                   'sequence_number',
-                   'exclusions',
-                   'updated_at'],
+      'required': [
+        'request_uuid',
+        'course_uuid',
+        'sequence_number',
+        'exclusions',
+        'updated_at'
+      ],
       'additionalProperties': false,
       'standard_definitions': _standard_definitions
     }

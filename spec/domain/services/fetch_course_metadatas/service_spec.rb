@@ -19,15 +19,17 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
   end
 
   context "when there are courses" do
-    let(:courses_count)                         { rand(10) + 1        }
-    let(:given_metadata_sequence_number_offset) { rand(courses_count) }
+    let(:courses_count)                         { rand(10) + 2            }
+    let(:given_metadata_sequence_number_offset) { rand(courses_count - 1) }
 
     let!(:courses)                              do
-      FactoryGirl.create_list(:course, courses_count)
+      FactoryGirl.create_list(:course, courses_count).tap do |courses|
+        courses.last.update_attribute :initial_ecosystem_uuid, nil
+      end
     end
 
     let(:expected_responses) do
-      courses.select do |course|
+      courses[0..-2].select do |course|
         course.metadata_sequence_number >= given_metadata_sequence_number_offset
       end.map do |course|
         {

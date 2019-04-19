@@ -135,7 +135,6 @@ class CourseEcosystemsController < JsonApiController
           'properties': {
             'request_uuid':     {'$ref': '#standard_definitions/uuid'},
             'course_uuid':      {'$ref': '#standard_definitions/uuid'},
-            'ecosystem_uuid':   {'$ref': '#standard_definitions/uuid'},
             'sequence_number':  {'$ref': '#standard_definitions/non_negative_integer'},
             'preparation_uuid': {'$ref': '#standard_definitions/uuid'},
             'updated_at':       {'$ref': '#/standard_definitions/datetime'}
@@ -143,7 +142,6 @@ class CourseEcosystemsController < JsonApiController
           'required': [
             'request_uuid',
             'course_uuid',
-            'ecosystem_uuid',
             'sequence_number',
             'preparation_uuid',
             'updated_at'

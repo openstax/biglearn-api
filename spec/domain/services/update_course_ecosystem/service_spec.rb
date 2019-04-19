@@ -8,14 +8,12 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
   let(:given_sequence_number)  { rand(1000) }
   let(:given_preparation_uuid) { SecureRandom.uuid }
   let(:given_updated_at)       { Time.current.iso8601(6) }
-  let(:given_course_ecosystem_uuid) { SecureRandom.uuid }
 
   let(:given_update_requests)  do
     [
       {
         request_uuid: given_request_uuid,
         course_uuid: given_course_uuid,
-        course_ecosystem_uuid: given_course_ecosystem_uuid,
         sequence_number: given_sequence_number,
         preparation_uuid: given_preparation_uuid,
         updated_at: given_updated_at

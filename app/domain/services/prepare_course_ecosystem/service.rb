@@ -6,9 +6,6 @@ class Services::PrepareCourseEcosystem::Service < Services::ApplicationService
       uuid: preparation_uuid,
       course_uuid: course_uuid,
       sequence_number: sequence_number,
-      sequence_number_association_extra_attributes: {
-        initial_ecosystem_uuid: next_ecosystem_uuid,
-      },
       data: {
         preparation_uuid: preparation_uuid,
         course_uuid: course_uuid,
