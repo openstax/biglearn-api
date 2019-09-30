@@ -51,6 +51,14 @@ class AssignmentsController < JsonApiController
               },
               'additionalProperties': false
             },
+            'calculations': { ## NOTE: optional
+              'type': 'object',
+              'properties': {
+                'pe_calculation_uuid':  {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+                'spe_calculation_uuid': {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+              },
+              'additionalProperties': false
+            },
             'assigned_book_container_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},

@@ -80,9 +80,9 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
     end
 
     it "a CourseEvent and an Assignment are NOT created and an error is returned" do
-      expect{action}.to not_change{CourseEvent.count}
-                    .and not_change{Assignment.count}
-                    .and raise_error(ActiveRecord::RecordNotUnique)
+      expect { action }.to not_change { CourseEvent.count }
+                       .and not_change { Assignment.count }
+                       .and raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 

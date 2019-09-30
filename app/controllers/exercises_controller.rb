@@ -115,7 +115,7 @@ class ExercisesController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
-            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -131,7 +131,7 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'assignment_status'],
           'additionalProperties': false
         },
       },
@@ -195,7 +195,7 @@ class ExercisesController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
-            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -211,7 +211,7 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'assignment_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'assignment_status'],
           'additionalProperties': false
         },
       },
@@ -275,7 +275,7 @@ class ExercisesController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
-            'student_uuid': {'$ref': '#standard_definitions/uuid'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -291,7 +291,7 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'student_uuid', 'exercise_uuids', 'student_status'],
+          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'student_status'],
           'additionalProperties': false
         },
       },
@@ -321,6 +321,7 @@ class ExercisesController < JsonApiController
             'request_uuid':    {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'algorithm_name':  {'type': 'string'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids':  {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -332,7 +333,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid' , 'assignment_uuid', 'algorithm_name', 'exercise_uuids'],
+          'required': [
+            'request_uuid',
+            'assignment_uuid',
+            'algorithm_name',
+            'calculation_uuid',
+            'exercise_uuids'
+          ],
           'additionalProperties': false
         },
       },
@@ -395,6 +402,7 @@ class ExercisesController < JsonApiController
             'request_uuid':    {'$ref': '#standard_definitions/uuid'},
             'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
             'algorithm_name':  {'type': 'string'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids':  {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -406,7 +414,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid' , 'assignment_uuid', 'algorithm_name', 'exercise_uuids'],
+          'required': [
+            'request_uuid' ,
+            'assignment_uuid',
+            'algorithm_name',
+            'calculation_uuid',
+            'exercise_uuids'
+          ],
           'additionalProperties': false,
         },
       },
@@ -470,6 +484,7 @@ class ExercisesController < JsonApiController
             'request_uuid':   {'$ref': '#standard_definitions/uuid'},
             'student_uuid':   {'$ref': '#standard_definitions/uuid'},
             'algorithm_name': {'type': 'string'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -481,7 +496,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid' , 'student_uuid', 'algorithm_name', 'exercise_uuids'],
+          'required': [
+            'request_uuid',
+            'student_uuid',
+            'algorithm_name',
+            'calculation_uuid',
+            'exercise_uuids'
+          ],
           'additionalProperties': false,
         },
       },

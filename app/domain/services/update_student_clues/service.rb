@@ -9,6 +9,7 @@ class Services::UpdateStudentClues::Service < Services::ApplicationService
 
       StudentClue.new(
         uuid: request_uuid,
+        calculation_uuid: update[:calculation_uuid],
         student_uuid: update.fetch(:student_uuid),
         book_container_uuid: update.fetch(:book_container_uuid),
         algorithm_name: update.fetch(:algorithm_name),
@@ -18,7 +19,7 @@ class Services::UpdateStudentClues::Service < Services::ApplicationService
 
     StudentClue.import student_clues, validate: false, on_duplicate_key_update: {
       conflict_target: [ :student_uuid, :book_container_uuid, :algorithm_name ],
-      columns: [ :uuid, :data ]
+      columns: [ :uuid, :calculation_uuid, :data ]
     }
 
     { student_clue_update_responses: update_responses }

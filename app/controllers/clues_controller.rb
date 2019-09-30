@@ -93,13 +93,14 @@ class CluesController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'clue_data':    {'$ref': '#standard_definitions/clue_data'},
             'clue_status': {
               'type': 'string',
               'enum': ['student_unknown', 'book_container_unknown', 'clue_unready', 'clue_ready'],
             },
           },
-          'required': ['request_uuid', 'clue_data', 'clue_status'],
+          'required': ['request_uuid', 'calculation_uuid', 'clue_data', 'clue_status'],
           'additionalProperties': false,
         },
       },
@@ -164,6 +165,7 @@ class CluesController < JsonApiController
           'type': 'object',
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
+            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
             'clue_data':    {'$ref': '#standard_definitions/clue_data'},
             'clue_status': {
               'type': 'string',
@@ -172,7 +174,7 @@ class CluesController < JsonApiController
               ],
             },
           },
-          'required': ['request_uuid', 'clue_data', 'clue_status'],
+          'required': ['request_uuid', 'calculation_uuid', 'clue_data', 'clue_status'],
           'additionalProperties': false,
         },
       },
@@ -203,6 +205,7 @@ class CluesController < JsonApiController
             'student_uuid':        {'$ref': '#standard_definitions/uuid'},
             'book_container_uuid': {'$ref': '#standard_definitions/uuid'},
             'algorithm_name':      {'type': 'string'},
+            'calculation_uuid':    {'$ref': '#standard_definitions/uuid'},
             'clue_data':           {'$ref': '#standard_definitions/clue_data'}
           },
           'required': [
@@ -210,6 +213,7 @@ class CluesController < JsonApiController
             'student_uuid',
             'book_container_uuid',
             'algorithm_name',
+            'calculation_uuid',
             'clue_data'
           ],
           'additionalProperties': false,
@@ -275,6 +279,7 @@ class CluesController < JsonApiController
             'course_container_uuid': {'$ref': '#standard_definitions/uuid'},
             'book_container_uuid':   {'$ref': '#standard_definitions/uuid'},
             'algorithm_name':        {'type': 'string'},
+            'calculation_uuid':      {'$ref': '#standard_definitions/uuid'},
             'clue_data':             {'$ref': '#standard_definitions/clue_data'}
           },
           'required': [
@@ -282,6 +287,7 @@ class CluesController < JsonApiController
             'course_container_uuid',
             'book_container_uuid',
             'algorithm_name',
+            'calculation_uuid',
             'clue_data'
           ],
           'additionalProperties': false,

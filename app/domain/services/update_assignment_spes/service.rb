@@ -8,6 +8,7 @@ class Services::UpdateAssignmentSpes::Service < Services::ApplicationService
 
       AssignmentSpe.new(
         uuid: request_uuid,
+        calculation_uuid: update[:calculation_uuid],
         assignment_uuid: update.fetch(:assignment_uuid),
         algorithm_name: update.fetch(:algorithm_name),
         exercise_uuids: update.fetch(:exercise_uuids),
@@ -17,7 +18,7 @@ class Services::UpdateAssignmentSpes::Service < Services::ApplicationService
 
     AssignmentSpe.import assignment_spes, validate: false, on_duplicate_key_update: {
       conflict_target: [ :assignment_uuid, :algorithm_name ],
-      columns: [ :uuid, :exercise_uuids, :spy_info ]
+      columns: [ :uuid, :calculation_uuid, :exercise_uuids, :spy_info ]
     }
 
     { spe_update_responses: update_responses }

@@ -30,11 +30,13 @@ class Services::FetchAssignmentSpes::Service < Services::ApplicationService
         assignment_spe = assignment_spes_by_assignment_uuid[assignment_uuid]
 
         if assignment_spe.nil?
+          calculation_uuid = nil
           exercise_uuids = []
           assignment = missing_spe_assignments_by_uuid[assignment_uuid]
           assignment_status = assignment.nil? ? 'assignment_unknown' : 'assignment_unready'
           spy_info = {}
         else
+          calculation_uuid = assignment_spe.calculation_uuid
           all_exercise_uuids = assignment_spe.exercise_uuids.uniq
           max_num_exercises = request[:max_num_exercises]
           exercise_uuids = max_num_exercises.nil? ?
@@ -45,6 +47,7 @@ class Services::FetchAssignmentSpes::Service < Services::ApplicationService
 
         {
           request_uuid: request_uuid,
+          calculation_uuid: calculation_uuid,
           assignment_uuid: assignment_uuid,
           exercise_uuids: exercise_uuids,
           assignment_status: assignment_status,

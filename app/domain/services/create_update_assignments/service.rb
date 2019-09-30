@@ -21,6 +21,7 @@ class Services::CreateUpdateAssignments::Service < Services::ApplicationService
           :student_uuid,
           :assignment_type,
           :exclusion_info,
+          :calculations,
           :assigned_book_container_uuids,
           :goal_num_tutor_assigned_spes,
           :spes_are_assigned,
