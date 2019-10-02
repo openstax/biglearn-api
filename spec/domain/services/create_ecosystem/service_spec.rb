@@ -73,7 +73,7 @@ RSpec.describe Services::CreateEcosystem::Service, type: :service do
 
   context "when a previously-existing ecosystem_uuid is given" do
     before(:each) do
-      FactoryGirl.create(:ecosystem_event, uuid: given_ecosystem_uuid, type: :create_ecosystem)
+      FactoryBot.create(:ecosystem_event, uuid: given_ecosystem_uuid, type: :create_ecosystem)
     end
 
     it "an EcosystemEvent is NOT created" do

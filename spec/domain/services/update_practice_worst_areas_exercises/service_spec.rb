@@ -6,11 +6,13 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
   let(:given_algorithm_name)        { 'tesr' }
 
   let(:given_request_uuid_1)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_1)    { SecureRandom.uuid }
   let(:given_student_uuid_1)        { SecureRandom.uuid }
   let(:given_exercise_uuid_count_1) { rand(10) }
   let(:given_spy_info_1)            { { test: true } }
 
   let(:given_request_uuid_2)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_2)    { SecureRandom.uuid }
   let(:given_student_uuid_2)        { SecureRandom.uuid }
   let(:given_exercise_uuid_count_2) { rand(10) }
   let(:given_spy_info_2)            { { another_test: true } }
@@ -19,6 +21,7 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
     [
       {
         request_uuid: given_request_uuid_1,
+        calculation_uuid: given_calculation_uuid_1,
         student_uuid: given_student_uuid_1,
         algorithm_name: given_algorithm_name,
         exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
@@ -26,6 +29,7 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
       },
       {
         request_uuid: given_request_uuid_2,
+        calculation_uuid: given_calculation_uuid_2,
         student_uuid: given_student_uuid_2,
         algorithm_name: given_algorithm_name,
         exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
@@ -48,6 +52,7 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
 
       given_practice_worst_areas_updates.each do |update|
         student_pe = StudentPe.find_by uuid: update[:request_uuid]
+        expect(student_pe.calculation_uuid).to eq update[:calculation_uuid]
         expect(student_pe.student_uuid).to eq update[:student_uuid]
         expect(student_pe.exercise_uuids).to eq update[:exercise_uuids]
         expect(student_pe.spy_info).to eq update[:spy_info].deep_stringify_keys
@@ -62,9 +67,9 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
 
   context "when the student pe records already exist" do
     before do
-      FactoryGirl.create :student_pe, student_uuid: given_student_uuid_1,
+      FactoryBot.create :student_pe, student_uuid: given_student_uuid_1,
                                       algorithm_name: given_algorithm_name
-      FactoryGirl.create :student_pe, student_uuid: given_student_uuid_2,
+      FactoryBot.create :student_pe, student_uuid: given_student_uuid_2,
                                       algorithm_name: given_algorithm_name
     end
 
@@ -73,6 +78,7 @@ RSpec.describe Services::UpdatePracticeWorstAreasExercises::Service, type: :serv
 
       given_practice_worst_areas_updates.each do |update|
         student_pe = StudentPe.find_by uuid: update[:request_uuid]
+        expect(student_pe.calculation_uuid).to eq update[:calculation_uuid]
         expect(student_pe.student_uuid).to eq update[:student_uuid]
         expect(student_pe.exercise_uuids).to eq update[:exercise_uuids]
         expect(student_pe.spy_info).to eq update[:spy_info].deep_stringify_keys

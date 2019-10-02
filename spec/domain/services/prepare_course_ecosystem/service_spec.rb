@@ -33,7 +33,7 @@ RSpec.describe Services::PrepareCourseEcosystem::Service, type: :service do
 
   context "when a previously-existing preparation_uuid is given" do
     before do
-      FactoryGirl.create :course_event, uuid: given_preparation_uuid
+      FactoryBot.create :course_event, uuid: given_preparation_uuid
     end
 
     it "a CourseEvent is NOT created" do

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe EcosystemEvent, type: :model do
-  subject { FactoryGirl.create :ecosystem_event }
+  subject { FactoryBot.create :ecosystem_event }
 
   it { is_expected.to belong_to :ecosystem }
 

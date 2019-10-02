@@ -8,6 +8,7 @@ class TeacherClue < ApplicationRecord
                               optional: true,
                               inverse_of: :teacher_clues
 
+  validates :calculation_uuid,      presence: true
   validates :course_container_uuid, presence: true
   validates :book_container_uuid,   presence: true
   validates :algorithm_name,        presence: true,

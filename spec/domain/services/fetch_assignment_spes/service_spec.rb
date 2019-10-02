@@ -46,7 +46,7 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
     context "when previously-existing Assignment uuids are given" do
       before do
         [ given_assignment_uuid_1, given_assignment_uuid_2 ].each do |assignment_uuid|
-          FactoryGirl.create :assignment, uuid: assignment_uuid
+          FactoryBot.create :assignment, uuid: assignment_uuid
         end
       end
 
@@ -68,7 +68,7 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       end
     end
     let!(:assignment_spe_1) do
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_1,
+      FactoryBot.create :assignment_spe, assignment_uuid: given_assignment_uuid_1,
                                           algorithm_name: given_algorithm_name,
                                           exercise_uuids: exercise_uuids_1
     end
@@ -76,7 +76,7 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       rand(10).times.map { SecureRandom.uuid }
     end
     let!(:assignment_spe_2) do
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_2,
+      FactoryBot.create :assignment_spe, assignment_uuid: given_assignment_uuid_2,
                                           algorithm_name: given_algorithm_name,
                                           exercise_uuids: exercise_uuids_2
     end

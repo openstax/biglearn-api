@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Ecosystem, type: :model do
-  subject { FactoryGirl.create :ecosystem }
+  subject { FactoryBot.create :ecosystem }
 
   it { is_expected.to have_many :ecosystem_events }
   it { is_expected.to have_many :book_containers }

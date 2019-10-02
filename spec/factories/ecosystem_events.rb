@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :ecosystem_event do
     uuid            { SecureRandom.uuid }
     ecosystem

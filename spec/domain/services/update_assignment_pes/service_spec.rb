@@ -6,11 +6,13 @@ RSpec.describe Services::UpdateAssignmentPes::Service, type: :service do
   let(:given_algorithm_name)        { 'tesr' }
 
   let(:given_request_uuid_1)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_1)    { SecureRandom.uuid }
   let(:given_assignment_uuid_1)     { SecureRandom.uuid }
   let(:given_exercise_uuid_count_1) { rand(10) }
   let(:given_spy_info_1)            { { test: true } }
 
   let(:given_request_uuid_2)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_2)    { SecureRandom.uuid }
   let(:given_assignment_uuid_2)     { SecureRandom.uuid }
   let(:given_exercise_uuid_count_2) { rand(10) }
   let(:given_spy_info_2)            { { another_test: true } }
@@ -19,6 +21,7 @@ RSpec.describe Services::UpdateAssignmentPes::Service, type: :service do
     [
       {
         request_uuid: given_request_uuid_1,
+        calculation_uuid: given_calculation_uuid_1,
         assignment_uuid: given_assignment_uuid_1,
         algorithm_name: given_algorithm_name,
         exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
@@ -26,6 +29,7 @@ RSpec.describe Services::UpdateAssignmentPes::Service, type: :service do
       },
       {
         request_uuid: given_request_uuid_2,
+        calculation_uuid: given_calculation_uuid_2,
         assignment_uuid: given_assignment_uuid_2,
         algorithm_name: given_algorithm_name,
         exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
@@ -44,10 +48,11 @@ RSpec.describe Services::UpdateAssignmentPes::Service, type: :service do
 
   context "when the assignment pe records do not yet exist" do
     it "new assignment pe records are created with the correct attributes" do
-      expect{action}.to change{AssignmentPe.count}.by(2)
+      expect { action }.to change { AssignmentPe.count }.by(2)
 
       given_pe_updates.each do |update|
         assignment_pe = AssignmentPe.find_by uuid: update[:request_uuid]
+        expect(assignment_pe.calculation_uuid).to eq update[:calculation_uuid]
         expect(assignment_pe.assignment_uuid).to eq update[:assignment_uuid]
         expect(assignment_pe.exercise_uuids).to eq update[:exercise_uuids]
         expect(assignment_pe.spy_info).to eq update[:spy_info].deep_stringify_keys
@@ -62,17 +67,18 @@ RSpec.describe Services::UpdateAssignmentPes::Service, type: :service do
 
   context "when the assignment pe records already exist" do
     before do
-      FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_1,
-                                         algorithm_name: given_algorithm_name
-      FactoryGirl.create :assignment_pe, assignment_uuid: given_assignment_uuid_2,
-                                         algorithm_name: given_algorithm_name
+      FactoryBot.create :assignment_pe, assignment_uuid: given_assignment_uuid_1,
+                                        algorithm_name: given_algorithm_name
+      FactoryBot.create :assignment_pe, assignment_uuid: given_assignment_uuid_2,
+                                        algorithm_name: given_algorithm_name
     end
 
     it "existing assignment pe records are updated with the correct attributes" do
-      expect{action}.not_to change{AssignmentPe.count}
+      expect { action }.not_to change { AssignmentPe.count }
 
       given_pe_updates.each do |update|
         assignment_pe = AssignmentPe.find_by uuid: update[:request_uuid]
+        expect(assignment_pe.calculation_uuid).to eq update[:calculation_uuid]
         expect(assignment_pe.assignment_uuid).to eq update[:assignment_uuid]
         expect(assignment_pe.exercise_uuids).to eq update[:exercise_uuids]
         expect(assignment_pe.spy_info).to eq update[:spy_info].deep_stringify_keys

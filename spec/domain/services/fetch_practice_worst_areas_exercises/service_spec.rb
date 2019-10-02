@@ -50,7 +50,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
     context "when previously-existing Student uuids are given" do
       before do
         [ given_student_uuid_1, given_student_uuid_2 ].each do |student_uuid|
-          FactoryGirl.create :student, uuid: student_uuid
+          FactoryBot.create :student, uuid: student_uuid
         end
       end
 
@@ -72,7 +72,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
       end
     end
     let!(:student_pe_1) do
-      FactoryGirl.create :student_pe, student_uuid: given_student_uuid_1,
+      FactoryBot.create :student_pe, student_uuid: given_student_uuid_1,
                                       algorithm_name: given_algorithm_name,
                                       exercise_uuids: exercise_uuids_1
     end
@@ -80,7 +80,7 @@ RSpec.describe Services::FetchPracticeWorstAreasExercises::Service, type: :servi
       rand(10).times.map { SecureRandom.uuid }
     end
     let!(:student_pe_2) do
-      FactoryGirl.create :student_pe, student_uuid: given_student_uuid_2,
+      FactoryBot.create :student_pe, student_uuid: given_student_uuid_2,
                                       algorithm_name: given_algorithm_name,
                                       exercise_uuids: exercise_uuids_2
     end

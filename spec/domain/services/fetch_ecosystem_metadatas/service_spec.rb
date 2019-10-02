@@ -23,7 +23,7 @@ RSpec.describe Services::FetchEcosystemMetadatas::Service, type: :service do
     let(:given_metadata_sequence_number_offset) { rand(ecosystems_count) }
 
     let!(:ecosystems)                           do
-      FactoryGirl.create_list(:ecosystem, ecosystems_count)
+      FactoryBot.create_list(:ecosystem, ecosystems_count)
     end
 
     let(:expected_responses) do

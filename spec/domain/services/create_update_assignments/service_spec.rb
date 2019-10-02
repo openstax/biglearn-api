@@ -75,7 +75,7 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
 
   context "when a previously-existing course_uuid and sequence_number combo is given" do
     before(:each) do
-      FactoryGirl.create(:course_event, course_uuid: given_course_uuid,
+      FactoryBot.create(:course_event, course_uuid: given_course_uuid,
                                         sequence_number: given_sequence_number)
     end
 

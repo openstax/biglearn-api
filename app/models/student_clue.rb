@@ -8,6 +8,7 @@ class StudentClue < ApplicationRecord
                               optional: true,
                               inverse_of: :student_clues
 
+  validates :calculation_uuid,    presence: true
   validates :student_uuid,        presence: true
   validates :book_container_uuid, presence: true
   validates :algorithm_name,      presence: true,

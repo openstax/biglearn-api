@@ -35,13 +35,13 @@ RSpec.describe Services::CourseEcosystemStatus::Service, type: :service do
   context "when an existing course_uuid is given" do
     let(:initial_ecosystem_uuid) { SecureRandom.uuid }
     let!(:create_ecosystem)      do
-      FactoryGirl.create :ecosystem_event, uuid: initial_ecosystem_uuid,
+      FactoryBot.create :ecosystem_event, uuid: initial_ecosystem_uuid,
                                            ecosystem_uuid: initial_ecosystem_uuid,
                                            type: :create_ecosystem,
                                            data: { ecosystem_uuid: initial_ecosystem_uuid }
     end
     let!(:create_course)         do
-      FactoryGirl.create :course_event, uuid: given_course_uuid,
+      FactoryBot.create :course_event, uuid: given_course_uuid,
                                         course_uuid: given_course_uuid,
                                         type: :create_course,
                                         data: { ecosystem_uuid: initial_ecosystem_uuid }
@@ -71,12 +71,12 @@ RSpec.describe Services::CourseEcosystemStatus::Service, type: :service do
     context "and the next ecosystem is prepared" do
       let(:next_ecosystem_uuid) { SecureRandom.uuid }
       let!(:next_ecosystem)      do
-        FactoryGirl.create :ecosystem_event, uuid: next_ecosystem_uuid,
+        FactoryBot.create :ecosystem_event, uuid: next_ecosystem_uuid,
                                              ecosystem_uuid: next_ecosystem_uuid,
                                              type: :create_ecosystem
       end
       let!(:preparation) do
-        FactoryGirl.create :course_event, course_uuid: given_course_uuid,
+        FactoryBot.create :course_event, course_uuid: given_course_uuid,
                                           type: :prepare_course_ecosystem,
                                           data: {
                                             preparation_uuid: SecureRandom.uuid,
@@ -108,7 +108,7 @@ RSpec.describe Services::CourseEcosystemStatus::Service, type: :service do
 
       context "and precompute is complete" do
         let!(:ready) do
-          FactoryGirl.create :ecosystem_preparation_ready, uuid: preparation.uuid
+          FactoryBot.create :ecosystem_preparation_ready, uuid: preparation.uuid
         end
 
         context "but the update has not yet been made" do
@@ -134,7 +134,7 @@ RSpec.describe Services::CourseEcosystemStatus::Service, type: :service do
 
         context "and the update has already been made" do
           let!(:update) do
-            FactoryGirl.create :course_event, course_uuid: given_course_uuid,
+            FactoryBot.create :course_event, course_uuid: given_course_uuid,
                                               type: :update_course_ecosystem,
                                               data: { preparation_uuid: preparation.uuid }
           end

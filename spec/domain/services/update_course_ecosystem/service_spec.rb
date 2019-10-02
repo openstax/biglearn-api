@@ -39,7 +39,7 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
 
   context "when an existing EcosystemPreparation uuid is given" do
     let!(:preparation) do
-      FactoryGirl.create :course_event, uuid: given_preparation_uuid,
+      FactoryBot.create :course_event, uuid: given_preparation_uuid,
                                         type: :prepare_course_ecosystem,
                                         course_uuid: given_course_uuid
     end
@@ -60,7 +60,7 @@ RSpec.describe Services::UpdateCourseEcosystem::Service, type: :service do
 
     context "and the preparation is not obsolete" do
       context "and the update is ready" do
-        before { FactoryGirl.create :ecosystem_preparation_ready, uuid: given_preparation_uuid }
+        before { FactoryBot.create :ecosystem_preparation_ready, uuid: given_preparation_uuid }
 
         it "a CourseEvent is created with the correct attributes" do
           expect{action}.to change{CourseEvent.count}.by(1)

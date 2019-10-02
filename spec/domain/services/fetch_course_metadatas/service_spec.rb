@@ -23,7 +23,7 @@ RSpec.describe Services::FetchCourseMetadatas::Service, type: :service do
     let(:given_metadata_sequence_number_offset) { rand(courses_count - 1) }
 
     let!(:courses)                              do
-      FactoryGirl.create_list(:course, courses_count).tap do |courses|
+      FactoryBot.create_list(:course, courses_count).tap do |courses|
         courses.last.update_attribute :initial_ecosystem_uuid, nil
       end
     end

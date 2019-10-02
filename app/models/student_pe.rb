@@ -4,6 +4,7 @@ class StudentPe < ApplicationRecord
                        optional: true,
                        inverse_of: :student_pes
 
-  validates :student_uuid,   presence: true
-  validates :algorithm_name, presence: true, uniqueness: { scope: :student_uuid }
+  validates :calculation_uuid, presence: true
+  validates :student_uuid,     presence: true
+  validates :algorithm_name,   presence: true, uniqueness: { scope: :student_uuid }
 end

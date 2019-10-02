@@ -5,9 +5,10 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
 
   let(:given_algorithm_name)        { 'sparfa' }
 
-  let(:given_request_1_uuid)        { SecureRandom.uuid }
-  let(:given_student_1_uuid)        { SecureRandom.uuid }
-  let(:given_book_container_1_uuid) { SecureRandom.uuid }
+  let(:given_request_uuid_1)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_1)    { SecureRandom.uuid }
+  let(:given_student_uuid_1)        { SecureRandom.uuid }
+  let(:given_book_container_uuid_1) { SecureRandom.uuid }
   let(:given_clue_data_1)           do
     {
       minimum: 0.7,
@@ -18,9 +19,10 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
     }
   end
 
-  let(:given_request_2_uuid)        { SecureRandom.uuid }
-  let(:given_student_2_uuid)        { SecureRandom.uuid }
-  let(:given_book_container_2_uuid) { SecureRandom.uuid }
+  let(:given_request_uuid_2)        { SecureRandom.uuid }
+  let(:given_calculation_uuid_2)    { SecureRandom.uuid }
+  let(:given_student_uuid_2)        { SecureRandom.uuid }
+  let(:given_book_container_uuid_2) { SecureRandom.uuid }
   let(:given_clue_data_2)           do
     {
       minimum: 0,
@@ -33,16 +35,18 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   let(:given_clue_updates)          do
     [
       {
-        request_uuid: given_request_1_uuid,
-        student_uuid: given_student_1_uuid,
-        book_container_uuid: given_book_container_1_uuid,
+        request_uuid: given_request_uuid_1,
+        calculation_uuid: given_calculation_uuid_1,
+        student_uuid: given_student_uuid_1,
+        book_container_uuid: given_book_container_uuid_1,
         algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_1
       },
       {
-        request_uuid: given_request_2_uuid,
-        student_uuid: given_student_2_uuid,
-        book_container_uuid: given_book_container_2_uuid,
+        request_uuid: given_request_uuid_2,
+        calculation_uuid: given_calculation_uuid_2,
+        student_uuid: given_student_uuid_2,
+        book_container_uuid: given_book_container_uuid_2,
         algorithm_name: given_algorithm_name,
         clue_data: given_clue_data_2
       }
@@ -54,15 +58,16 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
   end
 
   let(:valid_request_uuids)         do
-    [ given_request_1_uuid, given_request_2_uuid ]
+    [ given_request_uuid_1, given_request_uuid_2 ]
   end
 
   context "when the CLUe records do not yet exist" do
     it "new CLUe records are created with the correct attributes" do
-      expect{action}.to change{StudentClue.count}.by(2)
+      expect { action }.to change { StudentClue.count }.by(2)
 
       given_clue_updates.each do |update|
         student_clue = StudentClue.find_by uuid: update[:request_uuid]
+        expect(student_clue.calculation_uuid).to eq update[:calculation_uuid]
         expect(student_clue.student_uuid).to eq update[:student_uuid]
         expect(student_clue.book_container_uuid).to eq update[:book_container_uuid]
         expect(student_clue.data.deep_symbolize_keys).to eq update[:clue_data]
@@ -77,19 +82,20 @@ RSpec.describe Services::UpdateStudentClues::Service, type: :service do
 
   context "when the CLUe records already exist" do
     before do
-      FactoryGirl.create :student_clue, student_uuid: given_student_1_uuid,
-                                        book_container_uuid: given_book_container_1_uuid,
+      FactoryBot.create :student_clue, student_uuid: given_student_uuid_1,
+                                        book_container_uuid: given_book_container_uuid_1,
                                         algorithm_name: given_algorithm_name
-      FactoryGirl.create :student_clue, student_uuid: given_student_2_uuid,
-                                        book_container_uuid: given_book_container_2_uuid,
+      FactoryBot.create :student_clue, student_uuid: given_student_uuid_2,
+                                        book_container_uuid: given_book_container_uuid_2,
                                         algorithm_name: given_algorithm_name
     end
 
     it "existing CLUe records are updated with the correct attributes" do
-      expect{action}.not_to change{StudentClue.count}
+      expect { action }.not_to change { StudentClue.count }
 
       given_clue_updates.each do |update|
         student_clue = StudentClue.find_by uuid: update[:request_uuid]
+        expect(student_clue.calculation_uuid).to eq update[:calculation_uuid]
         expect(student_clue.student_uuid).to eq update[:student_uuid]
         expect(student_clue.book_container_uuid).to eq update[:book_container_uuid]
         expect(student_clue.data.deep_symbolize_keys).to eq update[:clue_data]
