@@ -27,6 +27,6 @@ class ValuesTable
   def sanitize(value)
     return "ARRAY[#{value.map { |val| sanitize val }.join(', ')}]" if value.is_a?(Array)
 
-    ActiveRecord::Base.sanitize value
+    ActiveRecord::Base.connection.quote value
   end
 end

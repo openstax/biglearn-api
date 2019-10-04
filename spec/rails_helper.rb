@@ -94,7 +94,7 @@ end
 
 def make_post_request(route:, headers: {}, body: nil)
   headers = headers.merge(
-    'Biglearn-Api-Token': Rails.application.secrets.openstax['biglearn']['api']['token']
+    'Biglearn-Api-Token': Rails.application.secrets.openstax[:biglearn][:api][:token]
   )
 
   post route, params: body, headers: headers

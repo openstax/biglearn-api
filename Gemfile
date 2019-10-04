@@ -6,22 +6,19 @@ git_source(:github) do |repo_name|
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.0.2'
+gem 'rails', '~> 5.2.3'
 
 # Use PostgreSQL as the database for Active Record
 gem 'pg'
 
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
-
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.5'
+gem 'turbolinks'
 
 # Run unicorn when using the `rails server` or `rails s` command
 gem 'unicorn-rails'
@@ -46,13 +43,13 @@ gem 'oj_mimic_json'
 gem 'silencer'
 
 # Notify developers of Exceptions in production
-gem 'openstax_rescue_from', '~> 3.0.0'
+gem 'openstax_rescue_from'
 
 # Sentry integration (the require disables automatic Rails integration since we use rescue_from)
 gem 'sentry-raven', require: 'raven/base'
 
 # Real time application monitoring
-gem 'scout_apm', '~> 3.0.x'
+gem 'scout_apm'
 
 # Respond to ELB healthchecks in /ping and /ping/
 gem 'openstax_healthcheck'
@@ -76,12 +73,12 @@ end
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
-  gem 'listen', '~> 3.0.5'
+  gem 'web-console'
+  gem 'listen'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'spring-watcher-listen'
 
   # Re-run specs when files change
   gem 'spring-commands-rspec'
