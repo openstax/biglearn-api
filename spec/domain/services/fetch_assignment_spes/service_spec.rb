@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
   let(:service)                   { described_class.new }
 
-  let(:given_algorithm_name)      { 'tesr_instructor_driven' }
+  let(:given_algorithm_name)      { 'biglearn_sparfa_instructor_driven' }
 
   let(:given_request_uuid_1)      { SecureRandom.uuid }
   let(:given_assignment_uuid_1)   { SecureRandom.uuid }
@@ -36,6 +36,8 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       it "the assignment_uuids are returned with assignment_status: 'assignment_unknown'" do
         action.fetch(:spe_responses).each do |response|
           request = requests_by_request_uuid.fetch(response.fetch(:request_uuid))
+          expect(response.fetch(:calculation_uuid)).to be_nil
+          expect(response.fetch(:ecosystem_matrix_uuid)).to be_nil
           expect(response.fetch(:assignment_uuid)).to eq request.fetch(:assignment_uuid)
           expect(response.fetch(:exercise_uuids)).to eq []
           expect(response.fetch(:assignment_status)).to eq 'assignment_unknown'
@@ -53,6 +55,8 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       it "the assignment_uuids are returned with assignment_status: 'assignment_unready'" do
         action.fetch(:spe_responses).each do |response|
           request = requests_by_request_uuid.fetch(response.fetch(:request_uuid))
+          expect(response.fetch(:calculation_uuid)).to be_nil
+          expect(response.fetch(:ecosystem_matrix_uuid)).to be_nil
           expect(response.fetch(:assignment_uuid)).to eq request.fetch(:assignment_uuid)
           expect(response.fetch(:exercise_uuids)).to eq []
           expect(response.fetch(:assignment_status)).to eq 'assignment_unready'
@@ -93,6 +97,8 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
                            all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
         spy_info = assignment_spe.spy_info
 
+        expect(response.fetch(:calculation_uuid)).to be_a(String)
+        expect(response.fetch(:ecosystem_matrix_uuid)).to be_a(String)
         expect(response.fetch(:assignment_uuid)).to eq assignment_uuid
         expect(response.fetch(:exercise_uuids)).to eq exercise_uuids
         expect(response.fetch(:assignment_status)).to eq 'assignment_ready'

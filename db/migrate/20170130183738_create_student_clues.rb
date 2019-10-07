@@ -1,4 +1,4 @@
-class CreateStudentClues < ActiveRecord::Migration
+class CreateStudentClues < ActiveRecord::Migration[4.2]
   def change
     enable_extension 'citext'
 

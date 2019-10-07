@@ -1,4 +1,4 @@
-class CreateCourseEvents < ActiveRecord::Migration
+class CreateCourseEvents < ActiveRecord::Migration[4.2]
   def change
     create_table :course_events do |t|
       t.uuid    :uuid,            null: false, index: { unique: true }

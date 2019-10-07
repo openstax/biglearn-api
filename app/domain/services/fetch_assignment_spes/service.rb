@@ -31,12 +31,14 @@ class Services::FetchAssignmentSpes::Service < Services::ApplicationService
 
         if assignment_spe.nil?
           calculation_uuid = nil
+          ecosystem_matrix_uuid = nil
           exercise_uuids = []
           assignment = missing_spe_assignments_by_uuid[assignment_uuid]
           assignment_status = assignment.nil? ? 'assignment_unknown' : 'assignment_unready'
           spy_info = {}
         else
           calculation_uuid = assignment_spe.calculation_uuid
+          ecosystem_matrix_uuid = assignment_spe.ecosystem_matrix_uuid
           all_exercise_uuids = assignment_spe.exercise_uuids.uniq
           max_num_exercises = request[:max_num_exercises]
           exercise_uuids = max_num_exercises.nil? ?
@@ -48,6 +50,7 @@ class Services::FetchAssignmentSpes::Service < Services::ApplicationService
         {
           request_uuid: request_uuid,
           calculation_uuid: calculation_uuid,
+          ecosystem_matrix_uuid: ecosystem_matrix_uuid,
           assignment_uuid: assignment_uuid,
           exercise_uuids: exercise_uuids,
           assignment_status: assignment_status,

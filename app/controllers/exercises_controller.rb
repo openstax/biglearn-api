@@ -116,6 +116,7 @@ class ExercisesController < JsonApiController
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -131,7 +132,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': [
+            'request_uuid',
+            'calculation_uuid',
+            'ecosystem_matrix_uuid',
+            'exercise_uuids',
+            'assignment_status'
+          ],
           'additionalProperties': false
         },
       },
@@ -196,6 +203,7 @@ class ExercisesController < JsonApiController
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -211,7 +219,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'assignment_status'],
+          'required': [
+            'request_uuid',
+            'calculation_uuid',
+            'ecosystem_matrix_uuid',
+            'exercise_uuids',
+            'assignment_status'
+          ],
           'additionalProperties': false
         },
       },
@@ -276,6 +290,7 @@ class ExercisesController < JsonApiController
           'properties': {
             'request_uuid': {'$ref': '#standard_definitions/uuid'},
             'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -291,7 +306,13 @@ class ExercisesController < JsonApiController
               'additionalProperties': true
             }
           },
-          'required': ['request_uuid', 'calculation_uuid', 'exercise_uuids', 'student_status'],
+          'required': [
+            'request_uuid',
+            'calculation_uuid',
+            'ecosystem_matrix_uuid',
+            'exercise_uuids',
+            'student_status'
+          ],
           'additionalProperties': false
         },
       },
@@ -318,10 +339,11 @@ class ExercisesController < JsonApiController
         'pe_update': {
           'type': 'object',
           'properties': {
-            'request_uuid':    {'$ref': '#standard_definitions/uuid'},
-            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
-            'algorithm_name':  {'type': 'string'},
-            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':          {'$ref': '#standard_definitions/uuid'},
+            'assignment_uuid':       {'$ref': '#standard_definitions/uuid'},
+            'algorithm_name':        {'type': 'string'},
+            'calculation_uuid':      {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids':  {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -338,6 +360,7 @@ class ExercisesController < JsonApiController
             'assignment_uuid',
             'algorithm_name',
             'calculation_uuid',
+            'ecosystem_matrix_uuid',
             'exercise_uuids'
           ],
           'additionalProperties': false
@@ -399,10 +422,11 @@ class ExercisesController < JsonApiController
         'spe_update': {
           'type': 'object',
           'properties': {
-            'request_uuid':    {'$ref': '#standard_definitions/uuid'},
-            'assignment_uuid': {'$ref': '#standard_definitions/uuid'},
-            'algorithm_name':  {'type': 'string'},
-            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':          {'$ref': '#standard_definitions/uuid'},
+            'assignment_uuid':       {'$ref': '#standard_definitions/uuid'},
+            'algorithm_name':        {'type': 'string'},
+            'calculation_uuid':      {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids':  {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -419,6 +443,7 @@ class ExercisesController < JsonApiController
             'assignment_uuid',
             'algorithm_name',
             'calculation_uuid',
+            'ecosystem_matrix_uuid',
             'exercise_uuids'
           ],
           'additionalProperties': false,
@@ -481,10 +506,11 @@ class ExercisesController < JsonApiController
         'practice_worst_areas_update': {
           'type': 'object',
           'properties': {
-            'request_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'student_uuid':   {'$ref': '#standard_definitions/uuid'},
-            'algorithm_name': {'type': 'string'},
-            'calculation_uuid': {'$ref': '#standard_definitions/uuid'},
+            'request_uuid':          {'$ref': '#standard_definitions/uuid'},
+            'student_uuid':          {'$ref': '#standard_definitions/uuid'},
+            'algorithm_name':        {'type': 'string'},
+            'calculation_uuid':      {'$ref': '#standard_definitions/uuid'},
+            'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'},
             'exercise_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},
@@ -501,6 +527,7 @@ class ExercisesController < JsonApiController
             'student_uuid',
             'algorithm_name',
             'calculation_uuid',
+            'ecosystem_matrix_uuid',
             'exercise_uuids'
           ],
           'additionalProperties': false,
