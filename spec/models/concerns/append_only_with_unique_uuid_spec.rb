@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
   let(:test_class)    { CourseEvent }
 
-  let(:test_instance) { FactoryGirl.build(:course_event) }
+  let(:test_instance) { FactoryBot.build(:course_event) }
 
   it 'makes instances of the including class append-only' do
     expect(test_instance.new_record?).to eq true
@@ -18,12 +18,12 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
   end
 
   it 'can import multiple records through append' do
-    event_1_attributes = FactoryGirl.build(:course_event).attributes.merge(
+    event_1_attributes = FactoryBot.build(:course_event).attributes.merge(
       sequence_number_association_extra_attributes: {
         initial_ecosystem_uuid: SecureRandom.uuid,
       }
     )
-    event_2_attributes = FactoryGirl.build(:course_event).attributes
+    event_2_attributes = FactoryBot.build(:course_event).attributes
     attributes_array = [ event_1_attributes, event_2_attributes ]
     expect{test_class.append attributes_array}.to change{test_class.count}.by(2)
     expect{test_class.append attributes_array}.not_to change{test_class.count}
@@ -40,7 +40,7 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
   it 'creates the associated record or updates its sequence_number' do
     course_uuid = SecureRandom.uuid
     ecosystem_uuid = SecureRandom.uuid
-    event_1_attributes = FactoryGirl.build(
+    event_1_attributes = FactoryBot.build(
       :course_event, course: nil, course_uuid: course_uuid, sequence_number: 0
     ).attributes.merge(
       sequence_number_association_extra_attributes: {
@@ -52,10 +52,10 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
     expect(course.sequence_number).to eq 1
     expect(course.initial_ecosystem_uuid).to eq ecosystem_uuid
 
-    event_2_attributes = FactoryGirl.build(
+    event_2_attributes = FactoryBot.build(
       :course_event, course: course, sequence_number: 1
     ).attributes
-    event_3_attributes = FactoryGirl.build(
+    event_3_attributes = FactoryBot.build(
       :course_event, course: course, sequence_number: 3
     ).attributes
     attributes_array = [ event_2_attributes, event_3_attributes ]
@@ -65,7 +65,7 @@ RSpec.describe AppendOnlyWithUniqueUuid, type: :concern do
     )
     expect(course.initial_ecosystem_uuid).to eq ecosystem_uuid
 
-    event_4_attributes = FactoryGirl.build(
+    event_4_attributes = FactoryBot.build(
       :course_event, course: course, sequence_number: 2
     ).attributes
 

@@ -1,4 +1,4 @@
-class CreateStudentPes < ActiveRecord::Migration
+class CreateStudentPes < ActiveRecord::Migration[4.2]
   def change
     create_table :student_pes do |t|
       t.uuid   :uuid,           null: false, index: { unique: true }

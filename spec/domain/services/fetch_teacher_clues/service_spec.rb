@@ -62,10 +62,10 @@ RSpec.describe Services::FetchTeacherClues::Service, type: :service do
 
   context "when existing book_container uuids are given" do
       let!(:book_container_1) do
-        FactoryGirl.create :book_container, uuid: given_book_container_1_uuid
+        FactoryBot.create :book_container, uuid: given_book_container_1_uuid
       end
       let!(:book_container_2) do
-        FactoryGirl.create :book_container, uuid: given_book_container_2_uuid
+        FactoryBot.create :book_container, uuid: given_book_container_2_uuid
       end
 
     context "when non-existing course_container uuids are given" do
@@ -84,10 +84,10 @@ RSpec.describe Services::FetchTeacherClues::Service, type: :service do
 
     context "when existing course_container uuids are given" do
       let!(:course_container_1) do
-        FactoryGirl.create :course_container, uuid: given_course_container_1_uuid
+        FactoryBot.create :course_container, uuid: given_course_container_1_uuid
       end
       let!(:course_container_2) do
-        FactoryGirl.create :course_container, uuid: given_course_container_2_uuid
+        FactoryBot.create :course_container, uuid: given_course_container_2_uuid
       end
 
       context "when the CLUe is not yet ready" do
@@ -106,12 +106,12 @@ RSpec.describe Services::FetchTeacherClues::Service, type: :service do
 
       context "when the CLUe is ready" do
         let!(:clue_1) do
-          FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_1_uuid,
+          FactoryBot.create :teacher_clue, course_container_uuid: given_course_container_1_uuid,
                                             book_container_uuid: given_book_container_1_uuid,
                                             algorithm_name: given_algorithm_name
         end
         let!(:clue_2) do
-          FactoryGirl.create :teacher_clue, course_container_uuid: given_course_container_2_uuid,
+          FactoryBot.create :teacher_clue, course_container_uuid: given_course_container_2_uuid,
                                             book_container_uuid: given_book_container_2_uuid,
                                             algorithm_name: given_algorithm_name
         end

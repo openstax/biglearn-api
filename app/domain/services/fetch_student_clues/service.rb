@@ -44,6 +44,8 @@ class Services::FetchStudentClues::Service < Services::ApplicationService
         if clue.nil?
           book_container = missing_clue_book_containers_by_uuid[book_container_uuid]
 
+          calculation_uuid = nil
+
           clue_data = {
             minimum: 0,
             most_likely: 0.5,
@@ -63,13 +65,18 @@ class Services::FetchStudentClues::Service < Services::ApplicationService
             end
           end
         else
+          calculation_uuid = clue.calculation_uuid
+
           clue_data = clue.data
 
           clue_status = 'clue_ready'
         end
 
         {
-          request_uuid: request.fetch(:request_uuid), clue_data: clue_data, clue_status: clue_status
+          request_uuid: request.fetch(:request_uuid),
+          calculation_uuid: calculation_uuid,
+          clue_data: clue_data,
+          clue_status: clue_status
         }
       end
 

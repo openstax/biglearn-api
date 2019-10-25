@@ -51,6 +51,22 @@ class AssignmentsController < JsonApiController
               },
               'additionalProperties': false
             },
+            'pes': { ## NOTE: optional
+              'type': 'object',
+              'properties': {
+                'calculation_uuid':      {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+                'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+              },
+              'additionalProperties': false
+            },
+            'spes': { ## NOTE: optional
+              'type': 'object',
+              'properties': {
+                'calculation_uuid':      {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+                'ecosystem_matrix_uuid': {'$ref': '#standard_definitions/uuid'}, ## NOTE: optional
+              },
+              'additionalProperties': false
+            },
             'assigned_book_container_uuids': {
               'type': 'array',
               'items': {'$ref': '#standard_definitions/uuid'},

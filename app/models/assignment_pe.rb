@@ -4,6 +4,7 @@ class AssignmentPe < ApplicationRecord
                           optional: true,
                           inverse_of: :assignment_pes
 
-  validates :assignment_uuid, presence: true
-  validates :algorithm_name,  presence: true, uniqueness: { scope: :assignment_uuid }
+  validates :calculation_uuid, presence: true
+  validates :assignment_uuid,  presence: true
+  validates :algorithm_name,   presence: true, uniqueness: { scope: :assignment_uuid }
 end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe CourseEvent, type: :model do
-  subject { FactoryGirl.create :course_event }
+  subject { FactoryBot.create :course_event }
 
   it { is_expected.to belong_to :course }
 

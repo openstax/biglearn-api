@@ -2,7 +2,7 @@ require 'json-schema'
 
 class JsonApiController < ApplicationController
   API_TOKEN_HEADER = 'Biglearn-Api-Token'
-  API_TOKEN = Rails.application.secrets.openstax['biglearn']['api']['token']
+  API_TOKEN = Rails.application.secrets.openstax[:biglearn][:api][:token]
   VALIDATE_JSON = false
 
   # Skip verifying the CSRF token
@@ -121,13 +121,12 @@ class JsonApiController < ApplicationController
   end
 
   module SchemaDefinitions
-
     def _standard_definitions
       {
         'uuid': {
           'type': 'string',
           'pattern': '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-' +
-                     '4[a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
+                     '[04][a-fA-F0-9]{3}-[a-fA-F0-9]{4}-' +
                      '[a-fA-F0-9]{12}$',
         },
         'number_between_0_and_1': {
@@ -228,11 +227,9 @@ class JsonApiController < ApplicationController
         'additionalProperties': false
       }
     end
-
   end
 
   # make methods available both on instance and class
   include SchemaDefinitions
   extend SchemaDefinitions
-
 end

@@ -42,7 +42,7 @@ RSpec.describe Services::RecordResponses::Service do
 
     let!(:existing_responses)    do
       existing_response_data.map do |response_data|
-        FactoryGirl.create :course_event,
+        FactoryBot.create :course_event,
                            uuid: response_data.fetch(:response_uuid),
                            type: :record_response,
                            course_uuid: response_data.fetch(:course_uuid),

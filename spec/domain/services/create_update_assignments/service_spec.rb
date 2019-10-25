@@ -75,14 +75,14 @@ RSpec.describe Services::CreateUpdateAssignments::Service, type: :service do
 
   context "when a previously-existing course_uuid and sequence_number combo is given" do
     before(:each) do
-      FactoryGirl.create(:course_event, course_uuid: given_course_uuid,
+      FactoryBot.create(:course_event, course_uuid: given_course_uuid,
                                         sequence_number: given_sequence_number)
     end
 
     it "a CourseEvent and an Assignment are NOT created and an error is returned" do
-      expect{action}.to not_change{CourseEvent.count}
-                    .and not_change{Assignment.count}
-                    .and raise_error(ActiveRecord::RecordNotUnique)
+      expect { action }.to not_change { CourseEvent.count }
+                       .and not_change { Assignment.count }
+                       .and raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 

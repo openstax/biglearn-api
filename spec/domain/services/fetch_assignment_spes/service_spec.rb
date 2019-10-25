@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
   let(:service)                   { described_class.new }
 
-  let(:given_algorithm_name)      { 'tesr_instructor_driven' }
+  let(:given_algorithm_name)      { 'biglearn_sparfa_instructor_driven' }
 
   let(:given_request_uuid_1)      { SecureRandom.uuid }
   let(:given_assignment_uuid_1)   { SecureRandom.uuid }
@@ -36,6 +36,8 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       it "the assignment_uuids are returned with assignment_status: 'assignment_unknown'" do
         action.fetch(:spe_responses).each do |response|
           request = requests_by_request_uuid.fetch(response.fetch(:request_uuid))
+          expect(response.fetch(:calculation_uuid)).to be_nil
+          expect(response.fetch(:ecosystem_matrix_uuid)).to be_nil
           expect(response.fetch(:assignment_uuid)).to eq request.fetch(:assignment_uuid)
           expect(response.fetch(:exercise_uuids)).to eq []
           expect(response.fetch(:assignment_status)).to eq 'assignment_unknown'
@@ -46,13 +48,15 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
     context "when previously-existing Assignment uuids are given" do
       before do
         [ given_assignment_uuid_1, given_assignment_uuid_2 ].each do |assignment_uuid|
-          FactoryGirl.create :assignment, uuid: assignment_uuid
+          FactoryBot.create :assignment, uuid: assignment_uuid
         end
       end
 
       it "the assignment_uuids are returned with assignment_status: 'assignment_unready'" do
         action.fetch(:spe_responses).each do |response|
           request = requests_by_request_uuid.fetch(response.fetch(:request_uuid))
+          expect(response.fetch(:calculation_uuid)).to be_nil
+          expect(response.fetch(:ecosystem_matrix_uuid)).to be_nil
           expect(response.fetch(:assignment_uuid)).to eq request.fetch(:assignment_uuid)
           expect(response.fetch(:exercise_uuids)).to eq []
           expect(response.fetch(:assignment_status)).to eq 'assignment_unready'
@@ -68,7 +72,7 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       end
     end
     let!(:assignment_spe_1) do
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_1,
+      FactoryBot.create :assignment_spe, assignment_uuid: given_assignment_uuid_1,
                                           algorithm_name: given_algorithm_name,
                                           exercise_uuids: exercise_uuids_1
     end
@@ -76,7 +80,7 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
       rand(10).times.map { SecureRandom.uuid }
     end
     let!(:assignment_spe_2) do
-      FactoryGirl.create :assignment_spe, assignment_uuid: given_assignment_uuid_2,
+      FactoryBot.create :assignment_spe, assignment_uuid: given_assignment_uuid_2,
                                           algorithm_name: given_algorithm_name,
                                           exercise_uuids: exercise_uuids_2
     end
@@ -93,6 +97,8 @@ RSpec.describe Services::FetchAssignmentSpes::Service, type: :service do
                            all_exercise_uuids : all_exercise_uuids.first(max_num_exercises)
         spy_info = assignment_spe.spy_info
 
+        expect(response.fetch(:calculation_uuid)).to be_a(String)
+        expect(response.fetch(:ecosystem_matrix_uuid)).to be_a(String)
         expect(response.fetch(:assignment_uuid)).to eq assignment_uuid
         expect(response.fetch(:exercise_uuids)).to eq exercise_uuids
         expect(response.fetch(:assignment_status)).to eq 'assignment_ready'

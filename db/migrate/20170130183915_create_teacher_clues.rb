@@ -1,4 +1,4 @@
-class CreateTeacherClues < ActiveRecord::Migration
+class CreateTeacherClues < ActiveRecord::Migration[4.2]
   def change
     create_table :teacher_clues do |t|
       t.uuid   :uuid,                  null: false, index: { unique: true }

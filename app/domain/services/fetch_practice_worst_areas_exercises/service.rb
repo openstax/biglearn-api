@@ -28,11 +28,15 @@ class Services::FetchPracticeWorstAreasExercises::Service < Services::Applicatio
         student_pe = student_pes_by_student_uuid[student_uuid]
 
         if student_pe.nil?
+          calculation_uuid = nil
+          ecosystem_matrix_uuid = nil
           exercise_uuids = []
           student = missing_pe_students_by_uuid[student_uuid]
           student_status = student.nil? ? 'student_unknown' : 'student_unready'
           spy_info = {}
         else
+          calculation_uuid = student_pe.calculation_uuid
+          ecosystem_matrix_uuid = student_pe.ecosystem_matrix_uuid
           all_exercise_uuids = student_pe.exercise_uuids.uniq
           max_num_exercises = request[:max_num_exercises]
           exercise_uuids = max_num_exercises.nil? ?
@@ -43,6 +47,8 @@ class Services::FetchPracticeWorstAreasExercises::Service < Services::Applicatio
 
         {
           request_uuid: request_uuid,
+          calculation_uuid: calculation_uuid,
+          ecosystem_matrix_uuid: ecosystem_matrix_uuid,
           student_uuid: student_uuid,
           exercise_uuids: exercise_uuids,
           student_status: student_status,

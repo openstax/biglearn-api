@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe AssignmentSpe, type: :model do
-  subject { FactoryGirl.create :assignment_spe }
+  subject { FactoryBot.create :assignment_spe }
 
-  it { is_expected.to belong_to :assignment }
+  it { is_expected.to belong_to(:assignment).optional }
 
+  it { is_expected.to validate_presence_of :calculation_uuid }
   it { is_expected.to validate_presence_of :assignment_uuid }
   it { is_expected.to validate_presence_of :algorithm_name }
 

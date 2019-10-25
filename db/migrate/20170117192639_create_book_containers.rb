@@ -1,4 +1,4 @@
-class CreateBookContainers < ActiveRecord::Migration
+class CreateBookContainers < ActiveRecord::Migration[4.2]
   def change
     create_table :book_containers do |t|
       t.uuid :uuid,           null: false, index: { unique: true }

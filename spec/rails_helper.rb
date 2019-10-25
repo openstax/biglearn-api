@@ -89,12 +89,12 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 end
 
 def make_post_request(route:, headers: {}, body: nil)
   headers = headers.merge(
-    'Biglearn-Api-Token': Rails.application.secrets.openstax['biglearn']['api']['token']
+    'Biglearn-Api-Token': Rails.application.secrets.openstax[:biglearn][:api][:token]
   )
 
   post route, params: body, headers: headers

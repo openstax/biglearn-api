@@ -43,12 +43,12 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
   end
 
   let!(:target_event_1)                do
-    FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
+    FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
                                          sequence_number: given_sequence_number_offset_1,
                                          type: given_event_types_1.sample
   end
   let!(:target_event_2)                do
-    FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
+    FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
                                          sequence_number: given_sequence_number_offset_2,
                                          type: given_event_types_2.sample
   end
@@ -57,12 +57,12 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
 
   context "when there are no gaps in the EcosystemEvent sequence_numbers" do
     let!(:target_event_3)              do
-      FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
+      FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
                                            sequence_number: given_sequence_number_offset_1 + 1,
                                            type: given_event_types_1.sample
     end
     let!(:target_event_4)              do
-      FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
+      FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
                                            sequence_number: given_sequence_number_offset_2 + 1,
                                            type: given_event_types_2.sample
     end
@@ -90,12 +90,12 @@ RSpec.describe Services::FetchEcosystemEvents::Service, type: :service do
 
   context "when there are gaps in the EcosystemEvent sequence_numbers" do
     let!(:gap_event_1)                 do
-      FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
+      FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_1_uuid,
                                            sequence_number: given_sequence_number_offset_1 + 2,
                                            type: given_event_types_1.sample
     end
     let!(:gap_event_2)                 do
-      FactoryGirl.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
+      FactoryBot.create :ecosystem_event, ecosystem_uuid: given_ecosystem_2_uuid,
                                            sequence_number: given_sequence_number_offset_2 + 2,
                                            type: given_event_types_2.sample
     end

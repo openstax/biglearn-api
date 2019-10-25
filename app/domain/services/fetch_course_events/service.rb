@@ -74,10 +74,12 @@ class Services::FetchCourseEvents::Service < Services::ApplicationService
             JOIN_SQL
           )
           .order(
-            <<-ORDER_SQL.strip_heredoc
-              "course_events"."sequence_number" - "requests"."sequence_number_offset"
-              ASC NULLS FIRST
-            ORDER_SQL
+            Arel.sql(
+              <<-ORDER_SQL.strip_heredoc
+                "course_events"."sequence_number" - "requests"."sequence_number_offset"
+                ASC NULLS FIRST
+              ORDER_SQL
+            )
           )
           .limit(max_num_events)
           .to_sql

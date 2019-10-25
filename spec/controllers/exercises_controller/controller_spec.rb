@@ -1,10 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe ExercisesController, type: :request do
-  let(:given_algorithm_name)        { 'tesr' }
+  let(:given_algorithm_name)          { 'biglearn_sparfa' }
 
-  let(:given_request_uuid_1)        { SecureRandom.uuid }
-  let(:given_request_uuid_2)        { SecureRandom.uuid }
+  let(:given_request_uuid_1)          { SecureRandom.uuid }
+  let(:given_request_uuid_2)          { SecureRandom.uuid }
+  let(:given_calculation_uuid_1)      { SecureRandom.uuid }
+  let(:given_calculation_uuid_2)      { SecureRandom.uuid }
+  let(:given_ecosystem_matrix_uuid_1) { SecureRandom.uuid }
+  let(:given_ecosystem_matrix_uuid_2) { SecureRandom.uuid }
 
   context '#fetch_assignment_pes' do
     let(:given_assignment_uuid_1)   { SecureRandom.uuid }
@@ -36,6 +40,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           assignment_status: 'assignment_ready',
           spy_info: given_spy_info_1
@@ -43,6 +49,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           exercise_uuids: [],
           assignment_status: 'assignment_unready',
           spy_info: given_spy_info_2
@@ -118,6 +126,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           assignment_status: 'assignment_ready',
           spy_info: given_spy_info_1
@@ -125,6 +135,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           exercise_uuids: [],
           assignment_status: 'assignment_unready',
           spy_info: given_spy_info_2
@@ -200,6 +212,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_1,
           student_uuid: given_student_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           exercise_uuids: given_max_num_exercises_1.times.map{ SecureRandom.uuid },
           student_status: 'student_ready',
           spy_info: given_spy_info_1
@@ -207,6 +221,8 @@ RSpec.describe ExercisesController, type: :request do
         {
           request_uuid: given_request_uuid_2,
           student_uuid: given_student_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           exercise_uuids: [],
           student_status: 'student_unready',
           spy_info: given_spy_info_2
@@ -278,6 +294,8 @@ RSpec.describe ExercisesController, type: :request do
       [
         {
           request_uuid: given_request_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
@@ -285,6 +303,8 @@ RSpec.describe ExercisesController, type: :request do
         },
         {
           request_uuid: given_request_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
@@ -356,6 +376,8 @@ RSpec.describe ExercisesController, type: :request do
       [
         {
           request_uuid: given_request_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           assignment_uuid: given_assignment_uuid_1,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
@@ -363,6 +385,8 @@ RSpec.describe ExercisesController, type: :request do
         },
         {
           request_uuid: given_request_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           assignment_uuid: given_assignment_uuid_2,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },
@@ -434,6 +458,8 @@ RSpec.describe ExercisesController, type: :request do
       [
         {
           request_uuid: given_request_uuid_1,
+          calculation_uuid: given_calculation_uuid_1,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_1,
           student_uuid: given_student_uuid_1,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_1.times.map{ SecureRandom.uuid },
@@ -441,6 +467,8 @@ RSpec.describe ExercisesController, type: :request do
         },
         {
           request_uuid: given_request_uuid_2,
+          calculation_uuid: given_calculation_uuid_2,
+          ecosystem_matrix_uuid: given_ecosystem_matrix_uuid_2,
           student_uuid: given_student_uuid_2,
           algorithm_name: given_algorithm_name,
           exercise_uuids: given_exercise_uuid_count_2.times.map{ SecureRandom.uuid },

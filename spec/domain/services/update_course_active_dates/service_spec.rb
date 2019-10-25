@@ -23,7 +23,7 @@ RSpec.describe Services::UpdateCourseActiveDates::Service, type: :service do
 
   context "when a previously existing course_uuid and sequence_number combination is given" do
     before do
-      FactoryGirl.create :course_event, course_uuid: given_course_uuid,
+      FactoryBot.create :course_event, course_uuid: given_course_uuid,
                                         sequence_number: given_sequence_number
     end
 
