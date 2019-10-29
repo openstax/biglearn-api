@@ -1,19 +1,15 @@
 class AddCalculationUuidAndEcosystemMatrixUuidToExercisesAndClues < ActiveRecord::Migration[5.2]
   NIL_UUID = '00000000-0000-0000-0000-000000000000'
 
-  disable_ddl_transaction!
-
   def up
-    ActiveRecord::Base.transaction do
-      add_column :assignment_pes, :calculation_uuid, :uuid
-      add_column :assignment_pes, :ecosystem_matrix_uuid, :uuid
-      add_column :assignment_spes, :calculation_uuid, :uuid
-      add_column :assignment_spes, :ecosystem_matrix_uuid, :uuid
-      add_column :student_pes, :calculation_uuid, :uuid
-      add_column :student_pes, :ecosystem_matrix_uuid, :uuid
-      add_column :student_clues, :calculation_uuid, :uuid
-      add_column :teacher_clues, :calculation_uuid, :uuid
-    end
+    add_column :assignment_pes, :calculation_uuid, :uuid
+    add_column :assignment_pes, :ecosystem_matrix_uuid, :uuid
+    add_column :assignment_spes, :calculation_uuid, :uuid
+    add_column :assignment_spes, :ecosystem_matrix_uuid, :uuid
+    add_column :student_pes, :calculation_uuid, :uuid
+    add_column :student_pes, :ecosystem_matrix_uuid, :uuid
+    add_column :student_clues, :calculation_uuid, :uuid
+    add_column :teacher_clues, :calculation_uuid, :uuid
 
     # A simple background migration with the drawback that it will not retry errors
     # This code will run after all migrations have finished
@@ -47,15 +43,13 @@ class AddCalculationUuidAndEcosystemMatrixUuidToExercisesAndClues < ActiveRecord
   end
 
   def down
-    ActiveRecord::Base.transaction do
-      remove_column :teacher_clues, :calculation_uuid, :uuid
-      remove_column :student_clues, :calculation_uuid, :uuid
-      remove_column :student_pes, :ecosystem_matrix_uuid, :uuid
-      remove_column :student_pes, :calculation_uuid, :uuid
-      remove_column :assignment_spes, :ecosystem_matrix_uuid, :uuid
-      remove_column :assignment_spes, :calculation_uuid, :uuid
-      remove_column :assignment_pes, :ecosystem_matrix_uuid, :uuid
-      remove_column :assignment_pes, :calculation_uuid, :uuid
-    end
+    remove_column :teacher_clues, :calculation_uuid, :uuid
+    remove_column :student_clues, :calculation_uuid, :uuid
+    remove_column :student_pes, :ecosystem_matrix_uuid, :uuid
+    remove_column :student_pes, :calculation_uuid, :uuid
+    remove_column :assignment_spes, :ecosystem_matrix_uuid, :uuid
+    remove_column :assignment_spes, :calculation_uuid, :uuid
+    remove_column :assignment_pes, :ecosystem_matrix_uuid, :uuid
+    remove_column :assignment_pes, :calculation_uuid, :uuid
   end
 end
