@@ -14,7 +14,6 @@ class AddCalculationUuidAndEcosystemMatrixUuidToExercisesAndClues < ActiveRecord
     reversible do |dir|
       dir.up do
         # A simple background migration with the drawback that it will not retry errors
-        # This code will run after all migrations have finished
         background_migration = -> do
           # Become a daemon so the calling process can exit successfully
           Process.daemon
@@ -41,6 +40,7 @@ class AddCalculationUuidAndEcosystemMatrixUuidToExercisesAndClues < ActiveRecord
           Rake::Task['db:_dump'].invoke
         end
 
+        # This code will run after all foreground migrations have finished
         at_exit { background_migration.call }
       end
     end
