@@ -10,6 +10,8 @@ addons:
   postgresql: 9.6
 cache: bundler
 bundler_args: --without production --retry=6
+before_install:
+  - gem install bundler --force
 before_script:
   - bundle exec rake --trace db:setup
 script:
